@@ -1,6 +1,6 @@
-# jenkins-log-reader README
+# Jenkins Log Reader
 
-This is the README for your extension "jenkins-log-reader". After writing up a brief description, we recommend including the following sections.
+This Visual Studio Code extension allows you to use local AI model to analyse the jenkins log, figures out the failure reason.
 
 ## Features
 
@@ -61,5 +61,21 @@ You can author your README using Visual Studio Code. Here are some useful editor
 
 - [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
 - [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+
+
+---
+
+Please note that this extension is currently a proof of concept and may have some limitations or bugs. We welcome feedback and contributions to improve the extension. If you enjoy this extension, please consider [buying me a coffee ☕️ ](https://www.buymeacoffee.com/huangjien) to support my work!
+
+<div >
+            <a href="https://www.buymeacoffee.com/huangjien" target="_blank" style="display: inline-block;">
+                <img
+                    src="https://img.shields.io/badge/Donate-Buy%20Me%20A%20Coffee-orange.svg?style=flat-square&logo=buymeacoffee" 
+                    align="center"
+                />
+            </a></div>
+<br />
+
+
 
 **Enjoy!**
