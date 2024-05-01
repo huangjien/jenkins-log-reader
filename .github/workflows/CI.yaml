@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Deploy to VS Code marketplace
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 21
+
+      - run: npm install
+      - run: npm install -g @vscode/vsce
+      - run: npm run vscode:prepublish
+      - run: vsce package
+      - run: vsce publish -p ${{ secrets.VSCE_PAT }}
