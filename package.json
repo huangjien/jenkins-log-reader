@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -27,9 +27,12 @@
     ]
   },
   "scripts": {
+    "prepublish": "yarn run package",
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "vscode-test",
+    "prettier": "prettier --write .",
+    "update-package-lock": "npm install --package-lock-only",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -38,10 +41,13 @@
     "@types/vscode": "^1.88.0",
     "@vscode/test-cli": "^0.0.8",
     "@vscode/test-electron": "^2.3.9",
+    "prettier": "^3.2.5",
     "eslint": "^8.57.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "crypto": "^1.0.1",
+    "openai": "^4.40.0",
     "husky": "^9.0.11"
   }
 }
