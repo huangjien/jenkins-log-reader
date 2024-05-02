@@ -2,13 +2,14 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.0.4",
+  "version": "0.0.8",
   "engines": {
     "vscode": "^1.88.0"
   },
   "main": "./extension.js",
   "author": "huangjien <huangjien@gmail.com>",
   "license": "MIT",
+  "icon": "resources/jenkins_reader.png",
   "publisher": "huangjien",
   "homepage": "https://github.com/huangjien/jenkins-log-reader/blob/main/README.md",
   "bugs": {
@@ -27,7 +28,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:jenkins-log-reader.readJenkinsLog"
+  ],
   "contributes": {
     "configuration": {
       "title": "Jenkins Job Log Reader Configuration",
@@ -76,8 +79,8 @@
     },
     "commands": [
       {
-        "command": "jenkins-log-reader.helloWorld",
-        "title": "Hello World"
+        "command": "jenkins-log-reader.readJenkinsLog",
+        "title": "Read Jenkins Log"
       }
     ]
   },

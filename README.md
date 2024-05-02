@@ -14,7 +14,13 @@ For example if there is an image subfolder under your extension project workspac
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+You need to install a local AI with model. I will recommend [ollama](https://ollama.com/) and llama3
+
+* Install ollama from [here](https://ollama.com/download)
+
+* Get llama3
+
+```ollama run llama3 ``` or ```ollama pull llama3```
 
 ## Extension Settings
 
@@ -62,7 +68,6 @@ You can author your README using Visual Studio Code. Here are some useful editor
 - [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
 - [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
-
 ---
 
 Please note that this extension is currently a proof of concept and may have some limitations or bugs. We welcome feedback and contributions to improve the extension. If you enjoy this extension, please consider [buying me a coffee ☕️ ](https://www.buymeacoffee.com/huangjien) to support my work!
@@ -75,7 +80,5 @@ Please note that this extension is currently a proof of concept and may have som
                 />
             </a></div>
 <br />
-
-
 
 **Enjoy!**

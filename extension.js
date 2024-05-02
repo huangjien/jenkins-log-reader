@@ -6,7 +6,7 @@ const axios = require('axios');
 async function fetchJenkinsLog(jobUrl, username, apiToken) {
   const auth = Buffer.from(`${username}:${apiToken}`).toString('base64');
   try {
-    const response = await axios.get(`${jobUrl}/lastBuild/consoleText`, {
+    const response = await axios.get(`${jobUrl}consoleText`, {
       headers: { Authorization: `Basic ${auth}` },
     });
     return response.data;
@@ -26,42 +26,77 @@ async function fetchJenkinsLog(jobUrl, username, apiToken) {
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log(
-    'Congratulations, your extension "jenkins-log-reader" is now active!'
-  );
+
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with  registerCommand
   // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand('extension.fetchJenkinsLog', async () => {
-    // You could prompt the user for these or use configuration settings
-    const jobUrl = vscode.workspace.getConfiguration().get('jenkinsViewer.jobUrl');
-    const username = vscode.workspace.getConfiguration().get('jenkinsViewer.username');
-    const apiToken = vscode.workspace.getConfiguration().get('jenkinsViewer.apiToken');
+  let disposable = vscode.commands.registerCommand(
+    'jenkins-log-reader.readJenkinsLog',
+    async () => {
+      // You could prompt the user for these or use configuration settings
+      // const jobUrl = vscode.workspace
+      //   .getConfiguration()
+      //   .get('jenkins-log-reader.jenkinsUrl');
+      const username = vscode.workspace
+        .getConfiguration()
+        .get('jenkins-log-reader.jenkinsUsername');
+      const apiToken = vscode.workspace
+        .getConfiguration()
+        .get('jenkins-log-reader.jenkinsToken');
 
-    if (!jobUrl || !username || !apiToken) {
-        vscode.window.showInformationMessage('Please configure your Jenkins settings.');
+      if (!username || !apiToken) {
+        vscode.window.showInformationMessage(
+          'Please configure your Jenkins settings.'
+        );
         return;
-    }
+      }
 
-    const log = await fetchJenkinsLog(jobUrl, username, apiToken);
-    if (log) {
-        const panel = vscode.window.createWebviewPanel('jenkinsLog', 'Jenkins Log', vscode.ViewColumn.One);
-        panel.webview.html = `<pre>${escapeHtml(log)}</pre>`;
+      await vscode.window.showInputBox({
+        placeHolder: 'Enter the Jenkins job URL, e.g., http://jenkins.local/job/my-job'
+      }).then((jobUrl) => {
+        if (!jobUrl) {
+          return;
+        }
+        fetchJenkinsLog(jobUrl, username, apiToken).then(log => {
+          if (log) {
+            const info = keepLongTail(log)
+            const panel = vscode.window.createWebviewPanel(
+              'jenkinsLog',
+              'Jenkins Log',
+              vscode.ViewColumn.One
+            );
+            panel.webview.html = `<details><summary>${jobUrl}</summary><pre>${escapeHtml(info)}</pre></details><br/>`;
+            // analyse with local AI
+            // await OpenAI.chat.completion
+          }
+        });
+
+      });
+
     }
-});
+  );
 
   context.subscriptions.push(disposable);
 }
 
+// sometimes, the log is too long. we believe that 5k should be enough.
+function keepLongTail(inputString) {
+  if (inputString.length > 5120) {
+    return inputString.slice(-5120);
+  }
+  return inputString;
+}
+
 function escapeHtml(html) {
-  return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return html
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 // This method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
   activate,
