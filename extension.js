@@ -1,7 +1,11 @@
 // The module 'vscode' contains the VS Code extensibility API
+
+
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const axios = require('axios');
+const OpenAI = require('openai')
+const Showdown = require('showdown')
 
 async function fetchJenkinsLog(jobUrl, username, apiToken) {
   const auth = Buffer.from(`${username}:${apiToken}`).toString('base64');
@@ -34,6 +38,9 @@ function activate(context) {
   let disposable = vscode.commands.registerCommand(
     'jenkins-log-reader.readJenkinsLog',
     async () => {
+
+      const converter = new Showdown.Converter();
+
       // You could prompt the user for these or use configuration settings
       // const jobUrl = vscode.workspace
       //   .getConfiguration()
@@ -52,12 +59,37 @@ function activate(context) {
         return;
       }
 
+      const localAiUrl = vscode.workspace
+        .getConfiguration()
+        .get('jenkins-log-reader.aiModelUrl');
+
+      const model = vscode.workspace
+        .getConfiguration()
+        .get('jenkins-log-reader.aiModel');
+
+      const prompt = vscode.workspace
+      .getConfiguration()
+      .get('jenkins-log-reader.aiPrompt');
+
+      if (!localAiUrl || !model) {
+        vscode.window.showInformationMessage(
+          'Please configure your Local AI settings.'
+        );
+        return;
+      }
+
+      let localAi = new OpenAI.OpenAI({
+        baseURL: localAiUrl,
+        apiKey: model
+      });
+
       await vscode.window.showInputBox({
         placeHolder: 'Enter the Jenkins job URL, e.g., http://jenkins.local/job/my-job'
       }).then((jobUrl) => {
         if (!jobUrl) {
           return;
         }
+        
         fetchJenkinsLog(jobUrl, username, apiToken).then(log => {
           if (log) {
             const info = keepLongTail(log)
@@ -67,9 +99,13 @@ function activate(context) {
               vscode.ViewColumn.One
             );
             panel.webview.html = `<br/><details><summary>${jobUrl}</summary><pre>${escapeHtml(info)}</pre></details><br/>`;
+            const promptString = prompt.replace('$PROMPT$', info);
             // analyse with local AI
-            // await OpenAI.chat.completion
+            const longRunTask = aiAnalyse(localAi, model, promptString, panel, converter);
+            showStatusBarProgress(longRunTask);
           }
+        }).catch((err) => {
+          vscode.window.showErrorMessage(err.message);
         });
 
       });
@@ -78,6 +114,40 @@ function activate(context) {
   );
 
   context.subscriptions.push(disposable);
+}
+
+function showStatusBarProgress(task) {
+  vscode.window.withProgress(
+    {
+      location: vscode.ProgressLocation.Notification,
+      title: 'Processing AI Analysis...',
+      cancellable: true, // Set to true if you want to allow cancelling the task
+    },
+    () => {
+      return task; // The progress UI will show until this Promise resolves
+    }
+  );
+}
+
+
+async function aiAnalyse(localAi, model, promptString, panel, converter) {
+  localAi.chat.completions.create({
+    model: model,
+    messages: [{ role: 'assistant', content: promptString }],
+    temperature: 0.8,
+    max_tokens: 8192,
+  }).then(data => {
+    return JSON.stringify(data);
+  }).then(data => {
+    const evalContent = JSON.parse(data);
+    console.log(evalContent)
+    const infomation = evalContent.choices[0]['message']['content'];
+    console.log(infomation);
+    const html = converter.makeHtml(infomation);
+    panel.webview.html = `<div>` + panel.webview.html + `<details><summary>${model}</summary><div>${html}</div></details></div>`;
+  }).catch((err) => {
+    vscode.window.showErrorMessage(err.message);
+  });
 }
 
 // sometimes, the log is too long. we believe that 5k should be enough.

@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -52,7 +52,7 @@
         },
         "jenkins-log-reader.aiModelUrl": {
           "type": "string",
-          "default": "",
+          "default": "http://localhost:11434/v1",
           "order": 3,
           "description": "Local AI Model URL"
         },
@@ -110,6 +110,7 @@
     "axios": "^1.6.8",
     "crypto": "^1.0.1",
     "husky": "^9.0.11",
-    "openai": "^4.40.0"
+    "openai": "^4.40.0",
+    "showdown": "^2.1.0"
   }
 }
