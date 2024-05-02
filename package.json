@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -27,9 +27,6 @@
   "repository": "https://github.com/huangjien/jenkins-log-reader.git",
   "categories": [
     "Other"
-  ],
-  "activationEvents": [
-    "onCommand:jenkins-log-reader.readJenkinsLog"
   ],
   "contributes": {
     "configuration": {

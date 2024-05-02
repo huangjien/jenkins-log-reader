@@ -66,7 +66,7 @@ function activate(context) {
               'Jenkins Log',
               vscode.ViewColumn.One
             );
-            panel.webview.html = `<details><summary>${jobUrl}</summary><pre>${escapeHtml(info)}</pre></details><br/>`;
+            panel.webview.html = `<br/><details><summary>${jobUrl}</summary><pre>${escapeHtml(info)}</pre></details><br/>`;
             // analyse with local AI
             // await OpenAI.chat.completion
           }
