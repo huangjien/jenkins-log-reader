@@ -1,0 +1,118 @@
+{
+  "name": "jenkins-log-reader",
+  "displayName": "jenkins-log-reader",
+  "description": "read jenkins log, analyse with local AI.",
+  "version": "0.0.10",
+  "engines": {
+    "vscode": "^1.88.0"
+  },
+  "main": "./extension.js",
+  "author": "huangjien <huangjien@gmail.com>",
+  "license": "MIT",
+  "icon": "resources/jenkins_reader.png",
+  "publisher": "huangjien",
+  "homepage": "https://github.com/huangjien/jenkins-log-reader/blob/main/README.md",
+  "bugs": {
+    "url": "https://github.com/huangjien/jenkins-log-reader/issues",
+    "email": "huangjien@gmail.com"
+  },
+  "keywords": [
+    "jenkins",
+    "job log",
+    "AI",
+    "local AI model"
+  ],
+  "preview": false,
+  "private": false,
+  "repository": "https://github.com/huangjien/jenkins-log-reader.git",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:jenkins-log-reader.readJenkinsLog"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "Jenkins Job Log Reader Configuration",
+      "properties": {
+        "jenkins-log-reader.jenkinsUrl": {
+          "type": "string",
+          "default": "",
+          "order": 0,
+          "description": "Jenkins Instance URL"
+        },
+        "jenkins-log-reader.jenkinsUsername": {
+          "type": "string",
+          "default": "",
+          "order": 1,
+          "description": "Jenkins Username to connect to Jenkins Instance"
+        },
+        "jenkins-log-reader.jenkinsToken": {
+          "type": "string",
+          "default": "",
+          "order": 2,
+          "description": "Jenkins Token to connect to Jenkins Instance"
+        },
+        "jenkins-log-reader.aiModelUrl": {
+          "type": "string",
+          "default": "",
+          "order": 3,
+          "description": "Local AI Model URL"
+        },
+        "jenkins-log-reader.aiModel": {
+          "type": "string",
+          "enum": [
+            "llama3",
+            "qwen:7b"
+          ],
+          "default": "llama3",
+          "order": 4,
+          "description": "AI Model"
+        },
+        "jenkins-log-reader.aiPrompt": {
+          "type": "string",
+          "default": "Please analyse below jenkins job log, figure out the failure reason:\n$PROMPT$",
+          "order": 5,
+          "description": "Local AI Model URL"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "jenkins-log-reader.readJenkinsLog",
+        "title": "Read Jenkins Log"
+      }
+    ]
+  },
+  "scripts": {
+    "prepublish": "yarn run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test",
+    "prettier": "prettier --write .",
+    "update-package-lock": "npm install --package-lock-only",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.88.0",
+    "@vscode/test-cli": "^0.0.8",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "crypto": "^1.0.1",
+    "husky": "^9.0.11",
+    "openai": "^4.40.0"
+  }
+}
