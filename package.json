@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.0.14",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -71,14 +71,14 @@
         "jenkins-log-reader.aiPrompt": {
           "type": "string",
           "title": "AI Prompt",
-          "default": "Please analyse below jenkins job log, figure out the failure reason:\n$PROMPT$",
+          "default": "Please analyse below jenkins job log, figure out the failure reason: $PROMPT$",
           "order": 5,
           "description": "Local AI Prompt, $PROMPT$ will be replaced by log information."
         },
         "jenkins-log-reader.aiTemperature": {
           "type": "number",
           "title": "AI Temperature",
-          "default": 0.3,
+          "default": 0.6,
           "order": 6,
           "description": "The more temperature is, the model will use more \"creativity\", and the less temperature instruct model to be \"less creative\", but following your prompt stronger."
         },

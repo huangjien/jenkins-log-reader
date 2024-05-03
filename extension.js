@@ -44,7 +44,9 @@ function activate(context) {
       // You could prompt the user for these or use configuration settings
 
       const logSize = getConfig('jenkins-log-reader.jenkinsLogSize');
+      
       const username = getConfig('jenkins-log-reader.jenkinsUsername');
+      
       const apiToken = getConfig('jenkins-log-reader.jenkinsToken');
       
       if (!username || !apiToken) {

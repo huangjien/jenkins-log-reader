@@ -2,16 +2,6 @@
 
 This Visual Studio Code extension allows you to use local AI model to analyse the jenkins log, figures out the failure reason.
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
 ## Requirements
 
 You need to install a local AI with model. I will recommend [ollama](https://ollama.com/) and llama3
@@ -22,46 +12,36 @@ You need to install a local AI with model. I will recommend [ollama](https://oll
 
 ```ollama run llama3 ``` or ```ollama pull llama3```
 
+## How to use it
+
+1. Copy the URL to the failed jenkins job build.
+
+2. press **Command + Shift + p** (For windows: **Ctrl + Shift + p**), choose **Read Jenkins Log** to activate this extension.
+
+<img src="resources/activate.png" alt="Settings" />
+
+3. Paste the copied URL to the input box, then press **Enter**.
+
+4. A new web view will appear at editor column. First, it will load the tail of the build log. Then, it will append the AI analysis to this panel.
+
 ## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
 
 This extension contributes the following settings:
 
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
+- `jenkins-log-reader.jenkinsLogSize`: Sometimes, the jenkins log is too big, we only analyse the last part of it, default value is: **5120**.
+- `jenkins-log-reader.jenkinsUsername`: Jenkins username.
+- `jenkins-log-reader.jenkinsToken`: Jenkins user's token, to connect to jenkins instance.
+- `jenkins-log-reader.aiModelUrl`: Local AI's rest API endpoint, default value is: **http://localhost:11434/v1**
+- `jenkins-log-reader.aiModel`: The local AI model used for log analysis, default value is: **llama3**.
+- `jenkins-log-reader.aiPrompt`: Local AI Prompt, \$PROMPT\$ will be replaced by log information, default value is: **Please analyse below jenkins job log, figure out the failure reason: \$PROMPT\$**.
+- `jenkins-log-reader.aiTemperature`: The more temperature is, the model will use more \"creativity\", and the less temperature instruct model to be \"less creative\", but following your prompt stronger, default value is: **0.6**.
+- `jenkins-log-reader.aiMaxToken`: Max token response from AI model, default value is: **8192**.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Somtimes, it may not return the meaningful result. Just re-run it again, it will generate different analysis.
 
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
+- Sometimes, the return show incorrect format. That's caused by the markdown to html converter issue. Will fix it soon.
 
 ## For more information
 
@@ -70,7 +50,7 @@ You can author your README using Visual Studio Code. Here are some useful editor
 
 ---
 
-Please note that this extension is currently a proof of concept and may have some limitations or bugs. We welcome feedback and contributions to improve the extension. If you enjoy this extension, please consider [buying me a coffee ☕️ ](https://www.buymeacoffee.com/huangjien) to support my work!
+> Please note that this extension is currently a proof of concept and may have some limitations or bugs. We welcome feedback and contributions to improve the extension. If you enjoy this extension, please consider [buying me a coffee ☕️ ](https://www.buymeacoffee.com/huangjien) to support my work!
 
 <div >
             <a href="https://www.buymeacoffee.com/huangjien" target="_blank" style="display: inline-block;">
