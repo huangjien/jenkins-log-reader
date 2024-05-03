@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -32,11 +32,11 @@
     "configuration": {
       "title": "Jenkins Job Log Reader Configuration",
       "properties": {
-        "jenkins-log-reader.jenkinsUrl": {
-          "type": "string",
-          "default": "",
+        "jenkins-log-reader.jenkinsLogSize": {
+          "type": "number",
+          "default": 5120,
           "order": 0,
-          "description": "Jenkins Instance URL"
+          "description": "Jenkins Log Size for Analysis"
         },
         "jenkins-log-reader.jenkinsUsername": {
           "type": "string",
@@ -52,6 +52,7 @@
         },
         "jenkins-log-reader.aiModelUrl": {
           "type": "string",
+          "title": "AI Model URL",
           "default": "http://localhost:11434/v1",
           "order": 3,
           "description": "Local AI Model URL"
@@ -63,14 +64,30 @@
             "qwen:7b"
           ],
           "default": "llama3",
+          "title": "AI Model",
           "order": 4,
           "description": "AI Model"
         },
         "jenkins-log-reader.aiPrompt": {
           "type": "string",
+          "title": "AI Prompt",
           "default": "Please analyse below jenkins job log, figure out the failure reason:\n$PROMPT$",
           "order": 5,
-          "description": "Local AI Model URL"
+          "description": "Local AI Prompt, $PROMPT$ will be replaced by log information."
+        },
+        "jenkins-log-reader.aiTemperature": {
+          "type": "number",
+          "title": "AI Temperature",
+          "default": 0.3,
+          "order": 6,
+          "description": "The more temperature is, the model will use more \"creativity\", and the less temperature instruct model to be \"less creative\", but following your prompt stronger."
+        },
+        "jenkins-log-reader.aiMaxToken": {
+          "type": "number",
+          "title": "AI Max Token",
+          "default": 8192,
+          "order": 7,
+          "description": "Max token response from AI model."
         }
       }
     },

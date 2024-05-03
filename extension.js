@@ -42,16 +42,11 @@ function activate(context) {
       const converter = new Showdown.Converter();
 
       // You could prompt the user for these or use configuration settings
-      // const jobUrl = vscode.workspace
-      //   .getConfiguration()
-      //   .get('jenkins-log-reader.jenkinsUrl');
-      const username = vscode.workspace
-        .getConfiguration()
-        .get('jenkins-log-reader.jenkinsUsername');
-      const apiToken = vscode.workspace
-        .getConfiguration()
-        .get('jenkins-log-reader.jenkinsToken');
 
+      const logSize = getConfig('jenkins-log-reader.jenkinsLogSize');
+      const username = getConfig('jenkins-log-reader.jenkinsUsername');
+      const apiToken = getConfig('jenkins-log-reader.jenkinsToken');
+      
       if (!username || !apiToken) {
         vscode.window.showInformationMessage(
           'Please configure your Jenkins settings.'
@@ -59,17 +54,16 @@ function activate(context) {
         return;
       }
 
-      const localAiUrl = vscode.workspace
-        .getConfiguration()
-        .get('jenkins-log-reader.aiModelUrl');
+      const localAiUrl = getConfig('jenkins-log-reader.aiModelUrl');
 
-      const model = vscode.workspace
-        .getConfiguration()
-        .get('jenkins-log-reader.aiModel');
+      const model = getConfig('jenkins-log-reader.aiModel');
 
-      const prompt = vscode.workspace
-      .getConfiguration()
-      .get('jenkins-log-reader.aiPrompt');
+      const prompt = getConfig('jenkins-log-reader.aiPrompt');
+
+      const temperature = getConfig('jenkins-log-reader.aiTemperature');
+
+      const maxToken = getConfig('jenkins-log-reader.aiMaxToken');
+
 
       if (!localAiUrl || !model) {
         vscode.window.showInformationMessage(
@@ -92,7 +86,7 @@ function activate(context) {
         
         fetchJenkinsLog(jobUrl, username, apiToken).then(log => {
           if (log) {
-            const info = keepLongTail(log)
+            const info = keepLongTail(log, logSize)
             const panel = vscode.window.createWebviewPanel(
               'jenkinsLog',
               'Jenkins Log',
@@ -101,7 +95,7 @@ function activate(context) {
             panel.webview.html = `<br/><details><summary>${jobUrl}</summary><pre>${escapeHtml(info)}</pre></details><br/>`;
             const promptString = prompt.replace('$PROMPT$', info);
             // analyse with local AI
-            const longRunTask = aiAnalyse(localAi, model, promptString, panel, converter);
+            const longRunTask = aiAnalyse(localAi, model, promptString, panel, converter, temperature, maxToken);
             showStatusBarProgress(longRunTask);
           }
         }).catch((err) => {
@@ -114,6 +108,12 @@ function activate(context) {
   );
 
   context.subscriptions.push(disposable);
+}
+
+function getConfig(config_key) {
+  return vscode.workspace
+    .getConfiguration()
+    .get(config_key);
 }
 
 function showStatusBarProgress(task) {
@@ -130,12 +130,12 @@ function showStatusBarProgress(task) {
 }
 
 
-async function aiAnalyse(localAi, model, promptString, panel, converter) {
-  localAi.chat.completions.create({
+async function aiAnalyse(localAi, model, promptString, panel, converter, temperature, maxToken) {
+  await localAi.chat.completions.create({
     model: model,
     messages: [{ role: 'assistant', content: promptString }],
-    temperature: 0.8,
-    max_tokens: 8192,
+    temperature: temperature,
+    max_tokens: maxToken,
   }).then(data => {
     return JSON.stringify(data);
   }).then(data => {
@@ -151,9 +151,9 @@ async function aiAnalyse(localAi, model, promptString, panel, converter) {
 }
 
 // sometimes, the log is too long. we believe that 5k should be enough.
-function keepLongTail(inputString) {
-  if (inputString.length > 5120) {
-    return inputString.slice(-5120);
+function keepLongTail(inputString , size) {
+  if (inputString.length > size) {
+    return inputString.slice(-size);
   }
   return inputString;
 }
