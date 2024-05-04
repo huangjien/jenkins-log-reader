@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -95,6 +95,13 @@
       {
         "command": "jenkins-log-reader.readJenkinsLog",
         "title": "Read Jenkins Log"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "jenkins-log-reader.readJenkinsLog",
+        "key": "ctrl+r",
+        "mac": "cmd+r"
       }
     ]
   },
