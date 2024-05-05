@@ -18,6 +18,8 @@ You need to install a local AI with model. I will recommend [ollama](https://oll
 
 2. press **Command + Shift + p** (For windows: **Ctrl + Shift + p**), choose **Read Jenkins Log** to activate this extension.
 
+    or press shortcut **Command + r** (For windows: **Ctrl + r**)
+
 <img src="resources/activate.png" alt="Settings" />
 
 3. Paste the copied URL to the input box, then press **Enter**.
