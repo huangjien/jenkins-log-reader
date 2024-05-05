@@ -5,7 +5,7 @@
 const vscode = require('vscode');
 const axios = require('axios');
 const OpenAI = require('openai')
-const Showdown = require('showdown')
+const marked = require('marked')
 
 async function fetchJenkinsLog(jobUrl, username, apiToken) {
   const auth = Buffer.from(`${username}:${apiToken}`).toString('base64');
@@ -38,8 +38,6 @@ function activate(context) {
   let disposable = vscode.commands.registerCommand(
     'jenkins-log-reader.readJenkinsLog',
     async () => {
-
-      const converter = new Showdown.Converter();
 
       // You could prompt the user for these or use configuration settings
 
@@ -94,10 +92,10 @@ function activate(context) {
               'Jenkins Log',
               vscode.ViewColumn.One
             );
-            panel.webview.html = `<br/><details><summary>${jobUrl}</summary><pre>${escapeHtml(info)}</pre></details><br/>`;
+            panel.webview.html = `<br/><details><summary>Jenkins Job Build: ${jobUrl}</summary><pre>${escapeHtml(info)}</pre></details><br/>`;
             const promptString = prompt.replace('$PROMPT$', info);
             // analyse with local AI
-            const longRunTask = aiAnalyse(localAi, model, promptString, panel, converter, temperature, maxToken);
+            const longRunTask = aiAnalyse(localAi, model, promptString, panel, temperature, maxToken);
             showStatusBarProgress(longRunTask);
           }
         }).catch((err) => {
@@ -110,6 +108,16 @@ function activate(context) {
   );
 
   context.subscriptions.push(disposable);
+}
+
+function removePrefixUsingRegex(text, prefix) {
+  // Create a dynamic regex based on the prefix
+  let regex = new RegExp("^" + escapeRegex(prefix));
+  return text.replace(regex, '');
+}
+
+function escapeRegex(string) {
+  return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');  // Escapes regex special characters
 }
 
 function getConfig(config_key) {
@@ -132,7 +140,7 @@ function showStatusBarProgress(task) {
 }
 
 
-async function aiAnalyse(localAi, model, promptString, panel, converter, temperature, maxToken) {
+async function aiAnalyse(localAi, model, promptString, panel, temperature, maxToken) {
   await localAi.chat.completions.create({
     model: model,
     messages: [{ role: 'assistant', content: promptString }],
@@ -143,10 +151,11 @@ async function aiAnalyse(localAi, model, promptString, panel, converter, tempera
   }).then(data => {
     const evalContent = JSON.parse(data);
     console.log(evalContent)
-    const infomation = evalContent.choices[0]['message']['content'];
-    console.log(infomation);
-    const html = converter.makeHtml(infomation);
-    panel.webview.html = `<div>` + panel.webview.html + `<details><summary>${model}</summary><div>${html}</div></details></div>`;
+    const information = evalContent.choices[0]['message']['content'];
+    console.log(information);
+    const html = marked.parse(removePrefixUsingRegex(information, '```'))
+    
+    panel.webview.html = `<div>` + panel.webview.html + `<details><summary>AI Analysis (Model: ${model})</summary><div>${html} </div></details></div>`;
   }).catch((err) => {
     vscode.window.showErrorMessage(err.message);
   });
