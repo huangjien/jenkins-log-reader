@@ -10,8 +10,8 @@ jobs:
     name: Build and Deploy to VS Code marketplace
 
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
 
     steps:
       - name: Checkout

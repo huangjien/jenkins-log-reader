@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "engines": {
     "vscode": "^1.89.0"
   },
@@ -28,7 +28,17 @@
   "categories": [
     "Other"
   ],
+  "activationEvents": [],
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "weather.weatherView",
+          "name": "Weather"
+        }
+      ]
+    },
     "configuration": {
       "title": "Jenkins Job Log Reader Configuration",
       "properties": {
@@ -107,9 +117,10 @@
   },
   "scripts": {
     "prepublish": "yarn run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
+    "vscode:prepublish": "npm run package",
+    "compile": "node ./esbuild.js",
+    "package": "NODE_ENV=production node ./esbuild.js",
+    "watch": "node ./esbuild.js --bundle",
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "vscode-test",
@@ -118,19 +129,26 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.12.11",
+    "@types/node": "20.x",
     "@types/vscode": "^1.89.0",
+    "@types/vscode-webview": "^1.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.3.9",
+    "esbuild": "^0.21.1",
+    "esbuild-plugin-copy": "^2.0.1",
     "eslint": "^9.2.0",
+    "postcss": "^8.4.38",
+    "glob": "^10.3.15",
+    "tailwindcss": "^3.4.3",
     "prettier": "^3.2.5",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.4.5",
-    "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@vscode/webview-ui-toolkit": "^1.4.0",
     "axios": "^1.6.8",
     "crypto": "^1.0.1",
     "husky": "^9.0.11",
@@ -139,6 +157,7 @@
     "react-markdown": "^9.0.1",
     "rehype-highlight": "^7.0.0",
     "rehype-raw": "^7.0.0",
+    "weather-js": "2.0.0",
     "remark-gfm": "^4.0.0"
   }
 }
