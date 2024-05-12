@@ -2,11 +2,11 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "engines": {
     "vscode": "^1.89.0"
   },
-  "main": "./extension.js",
+  "main": "./out/extension.js",
   "author": "huangjien <huangjien@gmail.com>",
   "license": "MIT",
   "icon": "resources/jenkins_reader.png",
