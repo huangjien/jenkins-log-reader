@@ -1,5 +1,4 @@
 const { build } = require("esbuild");
-const { copy } = require("esbuild-plugin-copy");
 
 //@ts-check
 /** @typedef {import('esbuild').BuildOptions} BuildOptions **/
@@ -31,16 +30,7 @@ const webviewConfig = {
   format: "esm",
   entryPoints: ["./src/webview/main.ts"],
   outfile: "./out/webview.js",
-  plugins: [
-    // Copy webview css files to `out` directory unaltered
-    copy({
-      resolveFrom: "cwd",
-      assets: {
-        from: ["./src/webview/*.css"],
-        to: ["./out"],
-      },
-    }),
-  ],
+  bundle: true
 };
 
 // This watch config adheres to the conventions of the esbuild-problem-matchers
