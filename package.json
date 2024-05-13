@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "engines": {
     "vscode": "^1.89.0"
   },
@@ -28,17 +28,10 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onWebviewPanel:jenkins-log-reader"
+  ],
   "contributes": {
-    "views": {
-      "explorer": [
-        {
-          "type": "webview",
-          "id": "weather.weatherView",
-          "name": "Weather"
-        }
-      ]
-    },
     "configuration": {
       "title": "Jenkins Job Log Reader Configuration",
       "properties": {
@@ -103,13 +96,13 @@
     },
     "commands": [
       {
-        "command": "jenkins-log-reader.readJenkinsLog",
+        "command": "jenkins-log-reader.webView",
         "title": "Read Jenkins Log"
       }
     ],
     "keybindings": [
       {
-        "command": "jenkins-log-reader.readJenkinsLog",
+        "command": "jenkins-log-reader.webView",
         "key": "ctrl+r",
         "mac": "cmd+r"
       }
@@ -133,7 +126,7 @@
   "devDependencies": {
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.6",
-    "@types/node": "20.x",
+    "@types/node": "20.12.11",
     "@types/vscode": "^1.89.0",
     "@types/vscode-webview": "^1.57.0",
     "@typescript-eslint/eslint-plugin": "^7.8.0",

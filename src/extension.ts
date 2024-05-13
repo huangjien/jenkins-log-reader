@@ -4,18 +4,15 @@
  *
  * https://github.com/microsoft/vscode-extension-samples/tree/main/webview-view-sample
  */
-import { ExtensionContext, window } from "vscode";
-import { WeatherViewProvider } from "./providers/WeatherViewProvider";
+import { ExtensionContext, window, commands, ViewColumn } from "vscode";
+import { JenkinsPanel } from "./panels/JenkinsPanel";
 
 export function activate(context: ExtensionContext) {
-  // Instantiate a new instance of the WeatherViewProvider class
-  const provider = new WeatherViewProvider(context.extensionUri);
 
-  // Register the provider for a Webview View
-  const weatherViewDisposable = window.registerWebviewViewProvider(
-    WeatherViewProvider.viewType,
-    provider
-  );
+  let disposal = commands.registerCommand('jenkins-log-reader.webView', () => {
+    JenkinsPanel.render(context.extensionUri);
+    
+  });
 
-  context.subscriptions.push(weatherViewDisposable);
+  context.subscriptions.push(disposal);
 }

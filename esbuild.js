@@ -30,7 +30,7 @@ const webviewConfig = {
   format: "esm",
   entryPoints: ["./src/webview/main.ts"],
   outfile: "./out/webview.js",
-  bundle: true
+  bundle: true,
 };
 
 // This watch config adheres to the conventions of the esbuild-problem-matchers
@@ -57,12 +57,10 @@ const watchConfig = {
 (async () => {
   const args = process.argv.slice(2);
   try {
-
-      // Build extension and webview code
-      await build(extensionConfig);
-      await build(webviewConfig);
-      console.log("build complete");
-
+    // Build extension and webview code
+    await build(extensionConfig);
+    await build(webviewConfig);
+    console.log("build complete");
   } catch (err) {
     process.stderr.write(err.stderr);
     process.exit(1);
