@@ -3,9 +3,11 @@ import {
   Button,
   Dropdown,
   ProgressRing,
+  Divider,
   TextField,
   vsCodeButton,
   vsCodeDropdown,
+  vsCodeDivider,vsCodeTextArea,
   vsCodeOption,vsCodeDataGrid,vsCodeDataGridRow,vsCodeDataGridCell,vsCodeLink,vsCodePanelTab,
   vsCodeTextField,
   vsCodeProgressRing,
@@ -35,7 +37,7 @@ function main() {
   // To get improved type annotations/IntelliSense the associated class for
   // a given toolkit component can be imported and used to type cast a reference
   // to the element (i.e. the `as Button` syntax)
-  const checkWeatherButton = document.getElementById("check-weather-button") as Button;
+  const checkWeatherButton = document.getElementById("refresh") as Button;
   checkWeatherButton.addEventListener("click", checkWeather);
 
   setVSCodeMessageListener();

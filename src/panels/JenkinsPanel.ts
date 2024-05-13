@@ -62,21 +62,28 @@ export class JenkinsPanel{
     <title>Weather Checker</title>
   </head>
     <body>
-      <div class="container align-bottom mx-auto px-4">
+      <div class="container align-center mx-auto px-16">
         <h1 class="text-xl font-bold text-red-600">Jenkins Instance</h1>
-        <section class="align-bottom" id="search-container">
+        <section class="grid grid-cols-4 gap-4 content-start" id="search-container">
           <vscode-text-field
-            id="location"
-            placeholder="Location"
-            value="Seattle, WA">
+            id="server_url"
+            placeholder="Jenkins Server URL"
+            value="${JenkinsPanel.settings?.jenkinsServerUrl}">Jenkins Server URL
           </vscode-text-field>
-          <vscode-dropdown id="unit">
-            <vscode-option value="F">Fahrenheit</vscode-option>
-            <vscode-option value="C">Celsius</vscode-option>
-          </vscode-dropdown>
-          <vscode-button id="check-weather-button">Check</vscode-button>
+          <vscode-text-field
+            id="username"
+            placeholder="Jenkins User Name"
+            value="${JenkinsPanel.settings?.username}">Jenkins User Name
+          </vscode-text-field>
+          <vscode-text-field
+            id="username"
+            placeholder="Jenkins API Token"
+            type="password"
+            value="${JenkinsPanel.settings?.apiToken}">Jenkins API Token
+          </vscode-text-field>
+          <vscode-button appearance="primary" aria-label="Refresh" id="refresh">Refresh</vscode-button>
         </section>
-
+        <vscode-divider role="separator"></vscode-divider>
         <h2 class="text-xl font-bold text-yellow-600">City</h2>
         <section id="results-container">
           <vscode-progress-ring id="loading" class="hidden"></vscode-progress-ring>

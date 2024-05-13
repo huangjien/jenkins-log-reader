@@ -1,4 +1,5 @@
 export default class Settings {
+  jenkinsServerUrl:string;
   logSize: number;
   username: string;
   apiToken: string;
@@ -8,6 +9,7 @@ export default class Settings {
   temperature: number;
   maxToken: number;
   constructor(
+    jenkinsServerUrl:string,
     logSize: number,
     username: string,
     apiToken: string,
@@ -17,6 +19,7 @@ export default class Settings {
     temperature: number,
     maxToken: number
   ) {
+    this.jenkinsServerUrl = jenkinsServerUrl;
     this.logSize = logSize;
     this.username = username;
     this.apiToken = apiToken;
