@@ -14,11 +14,14 @@ import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import * as weather from "weather-js";
 import "../extension.css";
+import JenkinsSettings from "./JenkinsSettings";
 
-export class JenkinsPanel {
+
+export class JenkinsPanel{
   public static currentPanel: JenkinsPanel | undefined;
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
+  public static settings: JenkinsSettings | undefined;
 
   private constructor(panel: WebviewPanel, extensionUri: Uri) {
     this._panel = panel;
@@ -27,7 +30,9 @@ export class JenkinsPanel {
     this._setWebviewMessageListener(this._panel.webview);
   }
 
-  public static render(extensionUri: Uri) {
+  public static render(extensionUri: Uri, settings: JenkinsSettings) {
+    console.log(settings);
+    JenkinsPanel.settings = settings;
     if (JenkinsPanel.currentPanel) {
       JenkinsPanel.currentPanel._panel.reveal(ViewColumn.One);
     } else {
@@ -57,9 +62,9 @@ export class JenkinsPanel {
     <title>Weather Checker</title>
   </head>
     <body>
-      <div class="container align-bottom mx-auto px-16">
-        <h1 class="text-2xl font-bold text-yellow-600">Jenkins Instance</h1>
-        <section id="search-container">
+      <div class="container align-bottom mx-auto px-4">
+        <h1 class="text-xl font-bold text-red-600">Jenkins Instance</h1>
+        <section class="align-bottom" id="search-container">
           <vscode-text-field
             id="location"
             placeholder="Location"
@@ -78,6 +83,7 @@ export class JenkinsPanel {
           <p id="icon"></p>
           <p id="summary"></p>
         </section>
+        <pre>${JSON.stringify(JenkinsPanel.settings, null, 2)}</pre>
         <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
       </div>
     </body>
