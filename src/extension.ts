@@ -8,10 +8,8 @@ import { ExtensionContext, window, commands, ViewColumn } from "vscode";
 import { JenkinsPanel } from "./panels/JenkinsPanel";
 
 export function activate(context: ExtensionContext) {
-
-  let disposal = commands.registerCommand('jenkins-log-reader.webView', () => {
+  let disposal = commands.registerCommand("jenkins-log-reader.webView", () => {
     JenkinsPanel.render(context.extensionUri);
-    
   });
 
   context.subscriptions.push(disposal);

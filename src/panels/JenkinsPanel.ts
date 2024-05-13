@@ -1,9 +1,12 @@
 import {
   CancellationToken,
-  Uri,Disposable,
-  Webview,window,
+  Uri,
+  Disposable,
+  Webview,
+  window,
   WebviewView,
-  WebviewPanel,ViewColumn,
+  WebviewPanel,
+  ViewColumn,
   WebviewViewProvider,
   WebviewViewResolveContext,
 } from "vscode";
@@ -21,6 +24,7 @@ export class JenkinsPanel {
     this._panel = panel;
     this._panel.webview.html = this._getWebviewContent(panel.webview, extensionUri);
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+    this._setWebviewMessageListener(this._panel.webview);
   }
 
   public static render(extensionUri: Uri) {
@@ -28,7 +32,8 @@ export class JenkinsPanel {
       JenkinsPanel.currentPanel._panel.reveal(ViewColumn.One);
     } else {
       const panel = window.createWebviewPanel("webView", "Jenkins Log Analysis", ViewColumn.One, {
-        // Empty for now
+        enableScripts: true,
+        localResourceRoots: [Uri.joinPath(extensionUri, "out")]
       });
 
       JenkinsPanel.currentPanel = new JenkinsPanel(panel, extensionUri);
@@ -80,8 +85,8 @@ export class JenkinsPanel {
           `;
   }
 
-  private _setWebviewMessageListener(webviewView: WebviewView) {
-    webviewView.webview.onDidReceiveMessage((message) => {
+  private _setWebviewMessageListener(webView: Webview) {
+    webView.onDidReceiveMessage((message) => {
       const command = message.command;
       const location = message.location;
       const unit = message.unit;
@@ -91,7 +96,7 @@ export class JenkinsPanel {
           console.log("weather message received");
           weather.find({ search: location, degreeType: unit }, (err: any, result: any) => {
             if (err) {
-              webviewView.webview.postMessage({
+              webView.postMessage({
                 command: "error",
                 message: "Sorry couldn't get weather at this time...",
               });
@@ -100,7 +105,7 @@ export class JenkinsPanel {
             // Get the weather forecast results
             const weatherForecast = result[0];
             // Pass the weather forecast object to the webview
-            webviewView.webview.postMessage({
+            webView.postMessage({
               command: "weather",
               payload: JSON.stringify(weatherForecast),
             });

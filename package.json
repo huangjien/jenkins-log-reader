@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "engines": {
     "vscode": "^1.89.0"
   },
@@ -128,7 +128,7 @@
     "@types/mocha": "^10.0.6",
     "@types/node": "20.12.11",
     "@types/vscode": "^1.89.0",
-    "@types/vscode-webview": "^1.57.0",
+    "@types/vscode-webview": "^1.57.5",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.7.1",
     "@vscode/test-cli": "^0.0.9",
