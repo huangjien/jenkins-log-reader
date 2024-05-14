@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "engines": {
     "vscode": "^1.89.0"
   },
@@ -153,7 +153,6 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.13",
-    "@vscode/codicons": "^0.0.36",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "autoprefixer": "^10.4.19",
     "axios": "^1.6.8",

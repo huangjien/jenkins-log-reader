@@ -12,6 +12,8 @@ import {
   vsCodeTextField,
   vsCodeProgressRing,
 } from "@vscode/webview-ui-toolkit";
+import { GridValue } from "autoprefixer";
+
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -34,25 +36,22 @@ window.addEventListener("load", main);
 
 // Main function that gets executed once the webview DOM loads
 function main() {
-  // To get improved type annotations/IntelliSense the associated class for
-  // a given toolkit component can be imported and used to type cast a reference
-  // to the element (i.e. the `as Button` syntax)
-  const checkWeatherButton = document.getElementById("refresh") as Button;
-  checkWeatherButton.addEventListener("click", checkWeather);
-
+  const refreshButton = document.getElementById("refresh") as Button;
+  refreshButton.addEventListener("click", refresh);
   setVSCodeMessageListener();
 }
 
-function checkWeather() {
-  const location = document.getElementById("location") as TextField;
-  const unit = document.getElementById("unit") as Dropdown;
-
-  // Passes a message back to the extension context with the location that
-  // should be searched for and the degree unit (F or C) that should be returned
+function refresh() {
+  
+  const username = document.getElementById("username") as TextField;
+  const token = document.getElementById("token") as TextField;
+  const server_url = document.getElementById("server_url") as TextField;
+  // const unit = document.getElementById("unit") as Dropdown;
+  const response =  btoa(username.value+":" + token.value);
   vscode.postMessage({
-    command: "weather",
-    location: location.value,
-    unit: unit.value,
+    command: "refresh",
+    server_url: server_url.value,
+    auth: response
   });
 
   displayLoadingState();
@@ -62,12 +61,13 @@ function checkWeather() {
 // and executes code based on the message that is recieved
 function setVSCodeMessageListener() {
   window.addEventListener("message", (event) => {
+    console.log(event.data);
     const command = event.data.command;
 
     switch (command) {
-      case "weather":
-        const weatherData = JSON.parse(event.data.payload);
-        displayWeatherData(weatherData);
+      case "refresh":
+        const response = JSON.parse(event.data.payload);
+        displayGridData(response);
         break;
       case "error":
         displayError(event.data.message);
@@ -78,24 +78,22 @@ function setVSCodeMessageListener() {
 
 function displayLoadingState() {
   const loading = document.getElementById("loading") as ProgressRing;
-  const icon = document.getElementById("icon");
+  // const icon = document.getElementById("icon");
   const summary = document.getElementById("summary");
-  if (loading && icon && summary) {
+  if (summary) {
     loading.classList.remove("hidden");
-    icon.classList.add("hidden");
+    // icon.classList.add("hidden");
     summary.textContent = "Getting weather...";
   }
 }
 
-function displayWeatherData(weatherData) {
+function displayGridData(response) {
   const loading = document.getElementById("loading") as ProgressRing;
-  const icon = document.getElementById("icon");
+  
   const summary = document.getElementById("summary");
-  if (loading && icon && summary) {
+  if (summary) {
     loading.classList.add("hidden");
-    icon.classList.remove("hidden");
-    icon.textContent = getWeatherIcon(weatherData);
-    summary.textContent = getWeatherSummary(weatherData);
+    summary.textContent = response;
   }
 }
 
@@ -104,8 +102,8 @@ function displayError(errorMsg) {
   const icon = document.getElementById("icon");
   const summary = document.getElementById("summary");
   if (loading && icon && summary) {
-    loading.classList.add("hidden");
-    icon.classList.add("hidden");
+    // loading.classList.add("hidden");
+    // icon.classList.add("hidden");
     summary.textContent = errorMsg;
   }
 }
@@ -118,38 +116,4 @@ function getWeatherSummary(weatherData) {
   return `${skyText}, ${temperature}${degreeType}`;
 }
 
-function getWeatherIcon(weatherData) {
-  const skyText = weatherData.current.skytext.toLowerCase();
-  let icon = "";
 
-  switch (skyText) {
-    case "sunny":
-      icon = "☀️";
-      break;
-    case "mostly sunny":
-      icon = "🌤";
-      break;
-    case "partly sunny":
-      icon = "🌥";
-      break;
-    case "clear":
-      icon = "☀️";
-      break;
-    case "fair":
-      icon = "🌥";
-      break;
-    case "mostly cloudy":
-      icon = "☁️";
-      break;
-    case "cloudy":
-      icon = "☁️";
-      break;
-    case "rain showers":
-      icon = "🌦";
-      break;
-    default:
-      icon = "✨";
-  }
-
-  return icon;
-}

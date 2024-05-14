@@ -1,14 +1,10 @@
 import {
-  CancellationToken,
   Uri,
   Disposable,
   Webview,
   window,
-  WebviewView,
   WebviewPanel,
-  ViewColumn,
-  WebviewViewProvider,
-  WebviewViewResolveContext,
+  ViewColumn
 } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
@@ -63,8 +59,9 @@ export class JenkinsPanel{
   </head>
     <body>
       <div class="container align-center mx-auto px-16">
-        <h1 class="text-xl font-bold text-red-600">Jenkins Instance</h1>
-        <section class="grid grid-cols-4 gap-4 content-start" id="search-container">
+        <h1 class="text-xl text-center font-bold text-red-600">Jenkins Instance</h1>
+        <br/>
+        <section class="grid grid-flow-row grid-rows-3 grid-cols-4 gap-4 content-start" id="search-container">
           <vscode-text-field
             id="server_url"
             placeholder="Jenkins Server URL"
@@ -76,21 +73,39 @@ export class JenkinsPanel{
             value="${JenkinsPanel.settings?.username}">Jenkins User Name
           </vscode-text-field>
           <vscode-text-field
-            id="username"
+            id="token"
             placeholder="Jenkins API Token"
             type="password"
             value="${JenkinsPanel.settings?.apiToken}">Jenkins API Token
           </vscode-text-field>
-          <vscode-button appearance="primary" aria-label="Refresh" id="refresh">Refresh</vscode-button>
+          <vscode-button class="rounded text h-8 px-4 m-2" id="refresh">Refresh</vscode-button>
+          <vscode-text-field
+            id="localAiUrl"
+            placeholder="Local AI Endpoint"
+            value="${JenkinsPanel.settings?.localAiUrl}">Local AI Endpoint
+          </vscode-text-field>
+          <vscode-text-field
+            id="model"
+            placeholder="Local AI Model"
+            value="${JenkinsPanel.settings?.model}">Local AI Model
+          </vscode-text-field>
+          <vscode-text-field
+            id="temperature"
+            placeholder="Local AI Model"
+            value="${JenkinsPanel.settings?.temperature}">Local AI Temperature
+          </vscode-text-field>
+          <vscode-progress-ring id="loading" class="place-self-center hidden"></vscode-progress-ring>
         </section>
-        <vscode-divider role="separator"></vscode-divider>
-        <h2 class="text-xl font-bold text-yellow-600">City</h2>
+        <vscode-divider ></vscode-divider>
+        <br/>
+        <h2 class="text-xl text-center font-bold text-yellow-600">Jobs - Builds</h2>
+        <br />
         <section id="results-container">
-          <vscode-progress-ring id="loading" class="hidden"></vscode-progress-ring>
-          <p id="icon"></p>
+          
+          
           <p id="summary"></p>
         </section>
-        <pre>${JSON.stringify(JenkinsPanel.settings, null, 2)}</pre>
+        
         <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
       </div>
     </body>
@@ -100,13 +115,14 @@ export class JenkinsPanel{
 
   private _setWebviewMessageListener(webView: Webview) {
     webView.onDidReceiveMessage((message) => {
+      console.log(message);
       const command = message.command;
       const location = message.location;
       const unit = message.unit;
 
       switch (command) {
-        case "weather":
-          console.log("weather message received");
+        case "refresh":
+          console.log("refresh button clicked in Jenkins");
           weather.find({ search: location, degreeType: unit }, (err: any, result: any) => {
             if (err) {
               webView.postMessage({
