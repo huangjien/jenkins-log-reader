@@ -7,13 +7,18 @@ import {
   TextField,
   vsCodeButton,
   vsCodeDropdown,
-  vsCodeDivider,vsCodeTextArea,
-  vsCodeOption,vsCodeDataGrid,vsCodeDataGridRow,vsCodeDataGridCell,vsCodeLink,vsCodePanelTab,
+  vsCodeDivider,
+  vsCodeTextArea,
+  vsCodeOption,
+  vsCodeDataGrid,
+  vsCodeDataGridRow,
+  vsCodeDataGridCell,
+  vsCodeLink,
+  vsCodePanelTab,
   vsCodeTextField,
   vsCodeProgressRing,
 } from "@vscode/webview-ui-toolkit";
 import { GridValue } from "autoprefixer";
-
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -42,16 +47,15 @@ function main() {
 }
 
 function refresh() {
-  
   const username = document.getElementById("username") as TextField;
   const token = document.getElementById("token") as TextField;
   const server_url = document.getElementById("server_url") as TextField;
   // const unit = document.getElementById("unit") as Dropdown;
-  const response =  btoa(username.value+":" + token.value);
+  const response = btoa(username.value + ":" + token.value);
   vscode.postMessage({
     command: "refresh",
     server_url: server_url.value,
-    auth: response
+    auth: response,
   });
 
   displayLoadingState();
@@ -89,7 +93,7 @@ function displayLoadingState() {
 
 function displayGridData(response) {
   const loading = document.getElementById("loading") as ProgressRing;
-  
+
   const summary = document.getElementById("summary");
   if (summary) {
     loading.classList.add("hidden");
@@ -115,5 +119,3 @@ function getWeatherSummary(weatherData) {
 
   return `${skyText}, ${temperature}${degreeType}`;
 }
-
-

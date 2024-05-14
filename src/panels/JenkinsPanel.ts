@@ -1,19 +1,11 @@
-import {
-  Uri,
-  Disposable,
-  Webview,
-  window,
-  WebviewPanel,
-  ViewColumn
-} from "vscode";
+import { Uri, Disposable, Webview, window, WebviewPanel, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import * as weather from "weather-js";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
 
-
-export class JenkinsPanel{
+export class JenkinsPanel {
   public static currentPanel: JenkinsPanel | undefined;
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
@@ -34,7 +26,7 @@ export class JenkinsPanel{
     } else {
       const panel = window.createWebviewPanel("webView", "Jenkins Log Analysis", ViewColumn.One, {
         enableScripts: true,
-        localResourceRoots: [Uri.joinPath(extensionUri, "out")]
+        localResourceRoots: [Uri.joinPath(extensionUri, "out")],
       });
 
       JenkinsPanel.currentPanel = new JenkinsPanel(panel, extensionUri);
