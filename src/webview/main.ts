@@ -2,6 +2,9 @@ import {
   provideVSCodeDesignSystem,
   Button,
   Dropdown,
+  DataGrid,
+  DataGridCell,
+  DataGridRow,
   ProgressRing,
   Divider,
   TextField,
@@ -27,6 +30,9 @@ provideVSCodeDesignSystem().register(
   vsCodeButton(),
   vsCodeDropdown(),
   vsCodeOption(),
+  vsCodeDataGridRow(),
+  vsCodeDataGridCell(),
+  vsCodeDataGrid(),
   vsCodeProgressRing(),
   vsCodeTextField()
 );
@@ -65,11 +71,10 @@ function refresh() {
 // and executes code based on the message that is recieved
 function setVSCodeMessageListener() {
   window.addEventListener("message", (event) => {
-    console.log(event.data);
     const command = event.data.command;
 
     switch (command) {
-      case "refresh":
+      case "dataGrid":
         const response = JSON.parse(event.data.payload);
         displayGridData(response);
         break;
@@ -87,26 +92,41 @@ function displayLoadingState() {
   if (summary) {
     loading.classList.remove("hidden");
     // icon.classList.add("hidden");
-    summary.textContent = "Getting weather...";
+    summary.textContent = "Getting Information...";
   }
 }
 
 function displayGridData(response) {
   const loading = document.getElementById("loading") as ProgressRing;
-
+  loading.classList.add("hidden");
   const summary = document.getElementById("summary");
+
+  const basicGrid = document.getElementById("basic-grid") as DataGrid;
+
+  // Add custom column titles to grid
+  basicGrid.columnDefinitions = [
+    { columnDataKey: "url", title: "build url" },
+    { columnDataKey: "result", title: "result" },
+    { columnDataKey: "timestamp", title: "time stamp" },
+    { columnDataKey: "hash", title: "hash" },
+    { columnDataKey: "duration", title: "duration" }
+  ];
+
   if (summary) {
-    loading.classList.add("hidden");
-    summary.textContent = response;
+    summary.textContent = "";
+  }
+
+  if (basicGrid) {
+    // Populate grid with data
+    basicGrid.rowsData = JSON.parse(JSON.stringify(response));    
   }
 }
 
 function displayError(errorMsg) {
   const loading = document.getElementById("loading") as ProgressRing;
-  const icon = document.getElementById("icon");
   const summary = document.getElementById("summary");
-  if (loading && icon && summary) {
-    // loading.classList.add("hidden");
+  if (loading && summary) {
+    loading.classList.add("hidden");
     // icon.classList.add("hidden");
     summary.textContent = errorMsg;
   }

@@ -1,6 +1,7 @@
 import { Uri, Disposable, Webview, window, WebviewPanel, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import { getAllBuild } from "../utilities/getInfoFromJenkins";
 import * as weather from "weather-js";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
@@ -19,7 +20,7 @@ export class JenkinsPanel {
   }
 
   public static render(extensionUri: Uri, settings: JenkinsSettings) {
-    console.log(settings);
+    
     JenkinsPanel.settings = settings;
     if (JenkinsPanel.currentPanel) {
       JenkinsPanel.currentPanel._panel.reveal(ViewColumn.One);
@@ -47,7 +48,7 @@ export class JenkinsPanel {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
     <link rel="stylesheet" href="${stylesUri}">
-    <title>Weather Checker</title>
+    <title>Jenkins Log Analysis</title>
   </head>
     <body>
       <div class="container align-center mx-auto px-16">
@@ -92,9 +93,8 @@ export class JenkinsPanel {
         <br/>
         <h2 class="text-xl text-center font-bold text-yellow-600">Jobs - Builds</h2>
         <br />
-        <section id="results-container">
-          
-          
+        <section id="results-container"> 
+          <vscode-data-grid id="basic-grid" grid-template-columns="75% 5% 10% 5% %5" aria-label="Custom Column Titles"></vscode-data-grid>   
           <p id="summary"></p>
         </section>
         
@@ -107,29 +107,35 @@ export class JenkinsPanel {
 
   private _setWebviewMessageListener(webView: Webview) {
     webView.onDidReceiveMessage((message) => {
-      console.log(message);
       const command = message.command;
-      const location = message.location;
-      const unit = message.unit;
 
       switch (command) {
         case "refresh":
-          console.log("refresh button clicked in Jenkins");
-          weather.find({ search: location, degreeType: unit }, (err: any, result: any) => {
-            if (err) {
+          const server_url = message.server_url;
+          const auth = message.auth;
+          // weather.find({ search: location, degreeType: unit }, (err: any, result: any) => {
+          //   if (err) {
+          //     webView.postMessage({
+          //       command: "error",
+          //       message: "Sorry couldn't get info at this time...",
+          //     });
+          //     return;
+          //   }
+          //   // Get the weather forecast results
+          //   const weatherForecast = result[0];
+          //   // Pass the weather forecast object to the webview
+          //   webView.postMessage({
+          //     command: "dataGrid",
+          //     payload: JSON.stringify(weatherForecast),
+          //   });
+          // });
+          getAllBuild(server_url, auth).then(data => {
+            webView.postMessage({command: "dataGrid", payload: JSON.stringify(data)});
+          }).catch(err => {           
               webView.postMessage({
                 command: "error",
-                message: "Sorry couldn't get weather at this time...",
-              });
-              return;
-            }
-            // Get the weather forecast results
-            const weatherForecast = result[0];
-            // Pass the weather forecast object to the webview
-            webView.postMessage({
-              command: "weather",
-              payload: JSON.stringify(weatherForecast),
-            });
+                message: "Sorry couldn't get info at this time, due to " + err
+              });        
           });
           break;
       }
@@ -151,3 +157,7 @@ export class JenkinsPanel {
     }
   }
 }
+function err(reason: any): PromiseLike<never> {
+  throw new Error("Function not implemented.");
+}
+
