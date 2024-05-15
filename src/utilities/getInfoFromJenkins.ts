@@ -1,6 +1,6 @@
 import axios from "axios";
 import OpenAI from "openai";
-import {createHash} from "crypto";
+import { createHash } from "crypto";
 
 type Build = {
   url: string;
@@ -10,12 +10,12 @@ type Build = {
 };
 
 type SortedBuild = {
-    url: string;
-    timestamp: string; // ISO format
-    result: string;
-    duration?: string; // ISO format (optional)
-    hash?: string;
-  };
+  url: string;
+  timestamp: string; // ISO format
+  result: string;
+  duration?: string; // ISO format (optional)
+  hash?: string;
+};
 
 type Job = {
   name: string;
@@ -39,7 +39,6 @@ function formatDurationToIso(duration: number): string {
   ); // Placeholder for seconds
 }
 
-
 function getSortedBuilds(data: JenkinsData): SortedBuild[] {
   // Check if the data has the expected structure
   if (data._class !== "hudson.model.Hudson" || !Array.isArray(data.jobs)) {
@@ -47,22 +46,28 @@ function getSortedBuilds(data: JenkinsData): SortedBuild[] {
   }
 
   // Extract all builds from all jobs
-  
+
   const allBuilds: Build[] = [];
   for (const job of data.jobs) {
-    
-    if (!job) {continue;}
-    if (!job.builds) {continue;}
+    if (!job) {
+      continue;
+    }
+    if (!job.builds) {
+      continue;
+    }
     allBuilds.push(...job.builds);
   }
 
-  const builds = allBuilds.sort((a,b) => b.timestamp - a.timestamp);
+  const builds = allBuilds.sort((a, b) => b.timestamp - a.timestamp);
 
-  const validBuilds = builds.filter(el => {return el.result==="FAILURE" && el.duration && el.url && el.timestamp; } );
+  const validBuilds = builds.filter((el) => {
+    return el.result === "FAILURE" && el.duration && el.url && el.timestamp;
+  });
 
   // Sort the builds by timestamp in descending order
   return validBuilds.map((build) => ({
-    url: build.url, result: build.result,
+    url: build.url,
+    result: build.result,
     hash: digest(build.url),
     duration: build.duration ? formatDurationToIso(build.duration) : undefined,
     timestamp: new Date(build.timestamp).toISOString(),
@@ -102,8 +107,8 @@ export function getAnalysis(localAiUrl: string, model: string) {
 }
 
 export function digest(message: string) {
-    return createHash('sha1')
-      .update(message.replace(/\s/g, '').replace('　', ''), 'utf8')
-      .digest('hex')
-      .substring(0, 8);
-  }
+  return createHash("sha1")
+    .update(message.replace(/\s/g, "").replace("　", ""), "utf8")
+    .digest("hex")
+    .substring(0, 8);
+}

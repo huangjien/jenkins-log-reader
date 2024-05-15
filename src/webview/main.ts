@@ -63,7 +63,6 @@ function refresh() {
     server_url: server_url.value,
     auth: response,
   });
-
   displayLoadingState();
 }
 
@@ -109,7 +108,7 @@ function displayGridData(response) {
     { columnDataKey: "result", title: "result" },
     { columnDataKey: "timestamp", title: "time stamp" },
     { columnDataKey: "hash", title: "hash" },
-    { columnDataKey: "duration", title: "duration" }
+    { columnDataKey: "duration", title: "duration" },
   ];
 
   if (summary) {
@@ -118,7 +117,7 @@ function displayGridData(response) {
 
   if (basicGrid) {
     // Populate grid with data
-    basicGrid.rowsData = JSON.parse(JSON.stringify(response));    
+    basicGrid.rowsData = JSON.parse(JSON.stringify(response));
   }
 }
 

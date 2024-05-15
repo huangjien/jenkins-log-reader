@@ -20,7 +20,6 @@ export class JenkinsPanel {
   }
 
   public static render(extensionUri: Uri, settings: JenkinsSettings) {
-    
     JenkinsPanel.settings = settings;
     if (JenkinsPanel.currentPanel) {
       JenkinsPanel.currentPanel._panel.reveal(ViewColumn.One);
@@ -129,14 +128,16 @@ export class JenkinsPanel {
           //     payload: JSON.stringify(weatherForecast),
           //   });
           // });
-          getAllBuild(server_url, auth).then(data => {
-            webView.postMessage({command: "dataGrid", payload: JSON.stringify(data)});
-          }).catch(err => {           
+          getAllBuild(server_url, auth)
+            .then((data) => {
+              webView.postMessage({ command: "dataGrid", payload: JSON.stringify(data) });
+            })
+            .catch((err) => {
               webView.postMessage({
                 command: "error",
-                message: "Sorry couldn't get info at this time, due to " + err
-              });        
-          });
+                message: "Sorry couldn't get info at this time, due to " + err,
+              });
+            });
           break;
       }
     });
@@ -160,4 +161,3 @@ export class JenkinsPanel {
 function err(reason: any): PromiseLike<never> {
   throw new Error("Function not implemented.");
 }
-
