@@ -103,8 +103,8 @@ export class JenkinsPanel {
           <vscode-checkbox class="p-2 m-2" id="aborted_check" checked>ABORTED</vscode-checkbox>
           <vscode-radio-group class="p-2 m-2"  orientation="horizontal" >
             <!-- label class="text-xl" >Recent:</label -->
-            <vscode-radio type="radio" class="p-2 m-2" id="1h_radio" value="3600">1 hour</vscode-radio>
-            <vscode-radio class="p-2 m-2" id="3h_radio" value="28800">8 hours</vscode-radio>
+            <vscode-radio class="p-2 m-2" id="1h_radio" value="3600">1 hour</vscode-radio>
+            <vscode-radio class="p-2 m-2" id="8h_radio" value="28800">8 hours</vscode-radio>
             <vscode-radio class="p-2 m-2" id="1d_radio" checked value="86400">1 day</vscode-radio>
             <vscode-radio class="p-2 m-2" id="3d_radio" value="259200">3 days</vscode-radio>
           </vscode-radio-group>

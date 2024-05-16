@@ -12,6 +12,7 @@ type Build = {
 type SortedBuild = {
   url: string;
   timestamp: string; // ISO format
+  _timestamp: number;
   result: string;
   duration?: string; // ISO format (optional)
   hash?: string;
@@ -85,6 +86,7 @@ function getSortedBuilds(data: JenkinsData): SortedBuild[] {
     hash: digest(build.url),
     duration: build.duration ? formatDurationToIso(build.duration) : undefined,
     timestamp: new Date(build.timestamp).toISOString().replace('T', ' ').substring(0, 19),
+    _timestamp: build.timestamp,
   }));
 }
 

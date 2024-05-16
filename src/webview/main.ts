@@ -48,8 +48,8 @@ provideVSCodeDesignSystem().register(
   vsCodeTextField()
 );
 
-var gridData = [];
-var displayData = [];
+var gridData: any[] = [];
+var displayData: any[] = [];
 
 // Get access to the VS Code API from within the webview context
 const vscode = acquireVsCodeApi();
@@ -71,8 +71,8 @@ function main() {
   aborted_checkbox.addEventListener("change", filterConditionChanged);
   const radio_1h = document.getElementById("1h_radio") as Radio;
   radio_1h.addEventListener("change", filterConditionChanged);
-  const radio_3h = document.getElementById("3h_radio") as Radio;
-  radio_3h.addEventListener("change", filterConditionChanged);
+  const radio_8h = document.getElementById("8h_radio") as Radio;
+  radio_8h.addEventListener("change", filterConditionChanged);
   const radio_1d = document.getElementById("1d_radio") as Radio;
   radio_1d.addEventListener("change", filterConditionChanged);
   const radio_3d = document.getElementById("3d_radio") as Radio;
@@ -81,7 +81,41 @@ function main() {
 }
 
 function filterConditionChanged() {
-  console.log("debug");
+  if(gridData.length === 0) {
+    return;
+  }
+  displayData = gridData;
+  const success_checkbox = document.getElementById("success_check") as Checkbox;
+  const failure_checkbox = document.getElementById("failure_check") as Checkbox;
+  const aborted_checkbox = document.getElementById("aborted_check") as Checkbox;
+  const radio_1h = document.getElementById("1h_radio") as Radio;
+  const radio_8h = document.getElementById("8h_radio") as Radio;
+  const radio_1d = document.getElementById("1d_radio") as Radio;
+  const radio_3d = document.getElementById("3d_radio") as Radio;
+  
+  if (!success_checkbox.checked.valueOf()){
+    displayData = displayData.filter((el) => {return el.result!=="SUCCESS";})
+  }
+  if (!failure_checkbox.checked.valueOf()){
+    displayData = displayData.filter((el) => {return el.result!=="FAILURE";})
+  }
+  if (!aborted_checkbox.checked.valueOf()){
+    displayData = displayData.filter((el) => {return el.result!=="ABORTED";})
+  }
+  var recent = 86400;
+  var now = Date.now();
+  if (radio_1h.checked.valueOf()) { recent = 3600;}
+  if (radio_1d.checked.valueOf()) { recent = 86400;}
+  if (radio_8h.checked.valueOf()) { recent = 28800;}
+  if (radio_3d.checked.valueOf()) { recent = 259200;}
+  recent = now - recent*1000;
+  displayData = displayData.filter((el) => {return el._timestamp > recent;});
+  // const summary = document.getElementById("summary");
+  // if (summary) {
+
+  //   summary.textContent = JSON.stringify(displayData);
+  // }
+  displayGridData();
 }
 
 function refresh() {
@@ -108,7 +142,8 @@ function setVSCodeMessageListener() {
       case "dataGrid":
         // const response = JSON.parse(event.data.payload);
         gridData = JSON.parse((event.data.payload));
-        displayGridData();
+        filterConditionChanged();
+        
         break;
       case "error":
         displayError(event.data.message);
@@ -152,7 +187,7 @@ function displayGridData() {
 
   if (basicGrid) {
     // Populate grid with data
-    basicGrid.rowsData = gridData;
+    basicGrid.rowsData = displayData;
   }
 }
 
