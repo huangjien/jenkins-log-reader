@@ -98,11 +98,12 @@ export async function getLog(buildUrl: string, auth: string) {
   }
 }
 
-export function getAnalysis(localAiUrl: string, model: string) {
+export async function getAnalysis(localAiUrl: string, model: string, data: string) {
   const localAi = new OpenAI.OpenAI({
     baseURL: localAiUrl,
     apiKey: model,
   });
+  // TODO add more completion here
   return { ai: "result" };
 }
 

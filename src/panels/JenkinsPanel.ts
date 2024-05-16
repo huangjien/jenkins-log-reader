@@ -1,10 +1,11 @@
 import { Uri, Disposable, Webview, window, WebviewPanel, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { getAllBuild } from "../utilities/getInfoFromJenkins";
+import { getAllBuild, getAnalysis, getLog } from "../utilities/getInfoFromJenkins";
 import * as weather from "weather-js";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
+import Settings from "./JenkinsSettings";
 
 export class JenkinsPanel {
   public static currentPanel: JenkinsPanel | undefined;
@@ -112,22 +113,7 @@ export class JenkinsPanel {
         case "refresh":
           const server_url = message.server_url;
           const auth = message.auth;
-          // weather.find({ search: location, degreeType: unit }, (err: any, result: any) => {
-          //   if (err) {
-          //     webView.postMessage({
-          //       command: "error",
-          //       message: "Sorry couldn't get info at this time...",
-          //     });
-          //     return;
-          //   }
-          //   // Get the weather forecast results
-          //   const weatherForecast = result[0];
-          //   // Pass the weather forecast object to the webview
-          //   webView.postMessage({
-          //     command: "dataGrid",
-          //     payload: JSON.stringify(weatherForecast),
-          //   });
-          // });
+
           getAllBuild(server_url, auth)
             .then((data) => {
               webView.postMessage({ command: "dataGrid", payload: JSON.stringify(data) });
@@ -139,6 +125,26 @@ export class JenkinsPanel {
               });
             });
           break;
+        case "analyse":
+            const build_url = message.build_url;
+            const token = message.auth;
+
+            getLog(build_url, token).then((data) => {
+              webView.postMessage({command: "log", payload: JSON.stringify(data)});
+              return data;
+            }).then(data => {
+              getAnalysis(JenkinsPanel.settings!.localAiUrl, JenkinsPanel.settings!.apiToken, data).then(data => {
+                webView.postMessage({command: "analysis", payload: JSON.stringify(data)});
+              });
+            })
+            .catch((err) => {
+              webView.postMessage({
+                command: "error",
+                message: "Sorry couldn't get build's log at this time, due to " + err,
+              });
+            });
+
+        break;
       }
     });
   }
