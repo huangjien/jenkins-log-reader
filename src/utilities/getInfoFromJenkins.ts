@@ -28,6 +28,20 @@ type JenkinsData = {
   jobs: Job[];
 };
 
+function formatResult(result: string): string {
+    if(result.toLowerCase() === "success") {
+        return "🌤";
+    }
+    if(result.toLowerCase() === "failure") {
+        return "🌦";
+    }
+    if(result.toLowerCase() === "failure") {
+        return "✨";
+    }
+
+    return "☁️";
+}
+
 function formatDurationToIso(duration: number): string {
   // Implement logic to convert duration (milliseconds) to ISO 8601 format (e.g., PT2H3M10S)
   // You can use libraries like `moment.js` or implement your own logic
@@ -61,7 +75,7 @@ function getSortedBuilds(data: JenkinsData): SortedBuild[] {
   const builds = allBuilds.sort((a, b) => b.timestamp - a.timestamp);
 
   const validBuilds = builds.filter((el) => {
-    return el.result === "FAILURE" && el.duration && el.url && el.timestamp;
+    return el.result && el.duration && el.url && el.timestamp;
   });
 
   // Sort the builds by timestamp in descending order
@@ -70,7 +84,7 @@ function getSortedBuilds(data: JenkinsData): SortedBuild[] {
     result: build.result,
     hash: digest(build.url),
     duration: build.duration ? formatDurationToIso(build.duration) : undefined,
-    timestamp: new Date(build.timestamp).toISOString(),
+    timestamp: new Date(build.timestamp).toISOString().replace('T', ' ').substring(0, 19),
   }));
 }
 

@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    background-color: #1e1e1e;
+    color: grey;
+    font-weight: 400;
+    font-family: system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  
+  p {
+    font-size: 1rem;
+    margin: 10px 0 10px 0;
+  }

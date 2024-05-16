@@ -46,7 +46,7 @@ export class JenkinsPanel {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; style-src-elem ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}">
     <link rel="stylesheet" href="${stylesUri}">
     <title>Jenkins Log Analysis</title>
   </head>
@@ -84,18 +84,43 @@ export class JenkinsPanel {
           </vscode-text-field>
           <vscode-text-field
             id="temperature"
-            placeholder="Local AI Model"
+            placeholder="Local AI Temperature"
             value="${JenkinsPanel.settings?.temperature}">Local AI Temperature
           </vscode-text-field>
+          <vscode-text-area
+            id="prompt"
+            placeholder="Local AI Prompt"
+            value="${JenkinsPanel.settings?.prompt}">
+          </vscode-text-area>
           <vscode-progress-ring id="loading" class="place-self-center hidden"></vscode-progress-ring>
         </section>
         <vscode-divider ></vscode-divider>
-        <br/>
+        
         <h2 class="text-xl text-center font-bold text-yellow-600">Jobs - Builds</h2>
+        <div class="flex flex-wrap" >
+          <vscode-checkbox type="checkbox" class="p-2 m-2" id="success_check" checked="false">SUCCESS</vscode-checkbox>
+          <vscode-checkbox class="p-2 m-2" id="failure_check" checked>FAILURE</vscode-checkbox>
+          <vscode-checkbox class="p-2 m-2" id="aborted_check" checked>ABORTED</vscode-checkbox>
+          <vscode-radio-group class="p-2 m-2"  orientation="horizontal" >
+            <!-- label class="text-xl" >Recent:</label -->
+            <vscode-radio type="radio" class="p-2 m-2" id="1h_radio" value="3600">1 hour</vscode-radio>
+            <vscode-radio class="p-2 m-2" id="3h_radio" value="28800">8 hours</vscode-radio>
+            <vscode-radio class="p-2 m-2" id="1d_radio" checked value="86400">1 day</vscode-radio>
+            <vscode-radio class="p-2 m-2" id="3d_radio" value="259200">3 days</vscode-radio>
+          </vscode-radio-group>
+        </div>
         <br />
         <section id="results-container"> 
-          <vscode-data-grid id="basic-grid" grid-template-columns="75% 5% 10% 5% %5" aria-label="Custom Column Titles"></vscode-data-grid>   
+          <vscode-data-grid id="basic-grid" grid-template-columns="70% 7vw 10vw 7vw 6vw" aria-label="Custom Column Titles">
+          
+          </vscode-data-grid>   
           <p id="summary"></p>
+        </section>
+        <section id="analysis-container" class="hidden" >
+        <p id="instruct" ></p>
+        <p id="input" ></p>
+        <p id="output" ></p>
+
         </section>
         
         <script type="module" nonce="${nonce}" src="${webviewUri}"></script>

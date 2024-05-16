@@ -3,6 +3,9 @@ import {
   Button,
   Dropdown,
   DataGrid,
+  Checkbox,
+  Radio,
+  RadioGroup,
   DataGridCell,
   DataGridRow,
   ProgressRing,
@@ -17,11 +20,14 @@ import {
   vsCodeDataGridRow,
   vsCodeDataGridCell,
   vsCodeLink,
+  vsCodeCheckbox,
+  vsCodeRadioGroup,
+  vsCodeRadio,
   vsCodePanelTab,
   vsCodeTextField,
   vsCodeProgressRing,
 } from "@vscode/webview-ui-toolkit";
-import { GridValue } from "autoprefixer";
+
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -29,13 +35,21 @@ import { GridValue } from "autoprefixer";
 provideVSCodeDesignSystem().register(
   vsCodeButton(),
   vsCodeDropdown(),
+  vsCodeDivider(),
+  vsCodeTextArea(),
   vsCodeOption(),
+  vsCodeCheckbox(),
+  vsCodeRadio(),
+  vsCodeRadioGroup(),
   vsCodeDataGridRow(),
   vsCodeDataGridCell(),
   vsCodeDataGrid(),
   vsCodeProgressRing(),
   vsCodeTextField()
 );
+
+var gridData = [];
+var displayData = [];
 
 // Get access to the VS Code API from within the webview context
 const vscode = acquireVsCodeApi();
@@ -49,7 +63,25 @@ window.addEventListener("load", main);
 function main() {
   const refreshButton = document.getElementById("refresh") as Button;
   refreshButton.addEventListener("click", refresh);
+  const success_checkbox = document.getElementById("success_check") as Checkbox;
+  success_checkbox.addEventListener("change", filterConditionChanged);
+  const failure_checkbox = document.getElementById("failure_check") as Checkbox;
+  failure_checkbox.addEventListener("change", filterConditionChanged);
+  const aborted_checkbox = document.getElementById("aborted_check") as Checkbox;
+  aborted_checkbox.addEventListener("change", filterConditionChanged);
+  const radio_1h = document.getElementById("1h_radio") as Radio;
+  radio_1h.addEventListener("change", filterConditionChanged);
+  const radio_3h = document.getElementById("3h_radio") as Radio;
+  radio_3h.addEventListener("change", filterConditionChanged);
+  const radio_1d = document.getElementById("1d_radio") as Radio;
+  radio_1d.addEventListener("change", filterConditionChanged);
+  const radio_3d = document.getElementById("3d_radio") as Radio;
+  radio_3d.addEventListener("change", filterConditionChanged);
   setVSCodeMessageListener();
+}
+
+function filterConditionChanged() {
+  console.log("debug");
 }
 
 function refresh() {
@@ -74,8 +106,9 @@ function setVSCodeMessageListener() {
 
     switch (command) {
       case "dataGrid":
-        const response = JSON.parse(event.data.payload);
-        displayGridData(response);
+        // const response = JSON.parse(event.data.payload);
+        gridData = JSON.parse((event.data.payload));
+        displayGridData();
         break;
       case "error":
         displayError(event.data.message);
@@ -95,12 +128,14 @@ function displayLoadingState() {
   }
 }
 
-function displayGridData(response) {
+function displayGridData() {
   const loading = document.getElementById("loading") as ProgressRing;
   loading.classList.add("hidden");
   const summary = document.getElementById("summary");
 
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
+  
+
 
   // Add custom column titles to grid
   basicGrid.columnDefinitions = [
@@ -117,7 +152,7 @@ function displayGridData(response) {
 
   if (basicGrid) {
     // Populate grid with data
-    basicGrid.rowsData = JSON.parse(JSON.stringify(response));
+    basicGrid.rowsData = gridData;
   }
 }
 
