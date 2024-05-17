@@ -27,7 +27,7 @@ import {
   vsCodeTextField,
   vsCodeProgressRing,
 } from "@vscode/webview-ui-toolkit";
-
+import * as fs from "fs";
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -77,45 +77,12 @@ function main() {
   radio_1d.addEventListener("change", filterConditionChanged);
   const radio_3d = document.getElementById("3d_radio") as Radio;
   radio_3d.addEventListener("change", filterConditionChanged);
+  const data_grid = document.getElementById("basic-grid") as DataGridRow;
+  data_grid.addEventListener("row-focused", (e: Event) => handleRowFocused(e));
+  const batch_button = document.getElementById("batch") as Button;
+  batch_button.addEventListener("click", batch);
+
   setVSCodeMessageListener();
-}
-
-function filterConditionChanged() {
-  if(gridData.length === 0) {
-    return;
-  }
-  displayData = gridData;
-  const success_checkbox = document.getElementById("success_check") as Checkbox;
-  const failure_checkbox = document.getElementById("failure_check") as Checkbox;
-  const aborted_checkbox = document.getElementById("aborted_check") as Checkbox;
-  const radio_1h = document.getElementById("1h_radio") as Radio;
-  const radio_8h = document.getElementById("8h_radio") as Radio;
-  const radio_1d = document.getElementById("1d_radio") as Radio;
-  const radio_3d = document.getElementById("3d_radio") as Radio;
-  
-  if (!success_checkbox.checked.valueOf()){
-    displayData = displayData.filter((el) => {return el.result!=="SUCCESS";})
-  }
-  if (!failure_checkbox.checked.valueOf()){
-    displayData = displayData.filter((el) => {return el.result!=="FAILURE";})
-  }
-  if (!aborted_checkbox.checked.valueOf()){
-    displayData = displayData.filter((el) => {return el.result!=="ABORTED";})
-  }
-  var recent = 86400;
-  var now = Date.now();
-  if (radio_1h.checked.valueOf()) { recent = 3600;}
-  if (radio_1d.checked.valueOf()) { recent = 86400;}
-  if (radio_8h.checked.valueOf()) { recent = 28800;}
-  if (radio_3d.checked.valueOf()) { recent = 259200;}
-  recent = now - recent*1000;
-  displayData = displayData.filter((el) => {return el._timestamp > recent;});
-  // const summary = document.getElementById("summary");
-  // if (summary) {
-
-  //   summary.textContent = JSON.stringify(displayData);
-  // }
-  displayGridData();
 }
 
 function refresh() {
@@ -132,6 +99,96 @@ function refresh() {
   displayLoadingState();
 }
 
+function batch() {
+  // TODO: batch handle all failed builds
+}
+
+function analyse() {
+  // TODO: analyse one url
+  const instruct = document.getElementById("instruct");
+  const url = instruct?.innerText;
+
+  // Download build log
+
+  // Analyse with AI
+}
+
+function resolve() {
+  // TODO: save the resolution for AI training data
+}
+
+function save(build_url: string) {}
+
+function handleRowFocused(e: Event) {
+  const row = e.target as DataGridRow;
+  const ai_section = document.getElementById("analysis-container");
+  if (!row || !row.rowData) {
+    // clear and hide again
+    ai_section?.classList.add("hidden");
+    return;
+  }
+  ai_section?.classList.remove("hidden");
+  const instruct = document.getElementById("instruct");
+  if (instruct) {
+    instruct.textContent = row.rowData["url"].replace('"', "");
+  }
+  const analyse_button = document.getElementById("analyse");
+  analyse_button?.addEventListener("click", analyse);
+  const build_log = document.getElementById("build_log");
+  if (build_log) {
+    build_log.textContent = "Not Analysed Yet.";
+  }
+}
+
+function filterConditionChanged() {
+  if (gridData.length === 0) {
+    return;
+  }
+  displayData = gridData;
+  const success_checkbox = document.getElementById("success_check") as Checkbox;
+  const failure_checkbox = document.getElementById("failure_check") as Checkbox;
+  const aborted_checkbox = document.getElementById("aborted_check") as Checkbox;
+  const radio_1h = document.getElementById("1h_radio") as Radio;
+  const radio_8h = document.getElementById("8h_radio") as Radio;
+  const radio_1d = document.getElementById("1d_radio") as Radio;
+  const radio_3d = document.getElementById("3d_radio") as Radio;
+
+  if (!success_checkbox.checked.valueOf()) {
+    displayData = displayData.filter((el) => {
+      return el.result !== "SUCCESS";
+    });
+  }
+  if (!failure_checkbox.checked.valueOf()) {
+    displayData = displayData.filter((el) => {
+      return el.result !== "FAILURE";
+    });
+  }
+  if (!aborted_checkbox.checked.valueOf()) {
+    displayData = displayData.filter((el) => {
+      return el.result !== "ABORTED";
+    });
+  }
+  var recent = 28800;
+  var now = Date.now();
+  if (radio_1h.checked.valueOf()) {
+    recent = 3600;
+  }
+  if (radio_1d.checked.valueOf()) {
+    recent = 86400;
+  }
+  if (radio_8h.checked.valueOf()) {
+    recent = 28800;
+  }
+  if (radio_3d.checked.valueOf()) {
+    recent = 259200;
+  }
+  recent = now - recent * 1000;
+  displayData = displayData.filter((el) => {
+    return el._timestamp > recent;
+  });
+  displayGridData();
+}
+
 // Sets up an event listener to listen for messages passed from the extension context
 // and executes code based on the message that is recieved
 function setVSCodeMessageListener() {
@@ -141,9 +198,9 @@ function setVSCodeMessageListener() {
     switch (command) {
       case "dataGrid":
         // const response = JSON.parse(event.data.payload);
-        gridData = JSON.parse((event.data.payload));
+        gridData = JSON.parse(event.data.payload);
         filterConditionChanged();
-        
+
         break;
       case "error":
         displayError(event.data.message);
@@ -154,25 +211,21 @@ function setVSCodeMessageListener() {
 
 function displayLoadingState() {
   const loading = document.getElementById("loading") as ProgressRing;
-  // const icon = document.getElementById("icon");
-  const summary = document.getElementById("summary");
-  if (summary) {
+  const notification = document.getElementById("notification");
+  if (notification) {
     loading.classList.remove("hidden");
-    // icon.classList.add("hidden");
-    summary.textContent = "Getting Information...";
+    notification.textContent = "Getting Information...";
   }
 }
 
 function displayGridData() {
   const loading = document.getElementById("loading") as ProgressRing;
   loading.classList.add("hidden");
-  const summary = document.getElementById("summary");
+  const notification = document.getElementById("notification");
 
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
-  
 
-
-  // Add custom column titles to grid
+  // Add column titles to grid
   basicGrid.columnDefinitions = [
     { columnDataKey: "url", title: "build url" },
     { columnDataKey: "result", title: "result" },
@@ -181,8 +234,8 @@ function displayGridData() {
     { columnDataKey: "duration", title: "duration" },
   ];
 
-  if (summary) {
-    summary.textContent = "";
+  if (notification) {
+    notification.textContent = "";
   }
 
   if (basicGrid) {
@@ -193,18 +246,10 @@ function displayGridData() {
 
 function displayError(errorMsg) {
   const loading = document.getElementById("loading") as ProgressRing;
-  const summary = document.getElementById("summary");
-  if (loading && summary) {
-    loading.classList.add("hidden");
+  const notification = document.getElementById("notification");
+  if (loading && notification) {
+    loading.classList.remove("hidden");
     // icon.classList.add("hidden");
-    summary.textContent = errorMsg;
+    notification.textContent = errorMsg;
   }
-}
-
-function getWeatherSummary(weatherData) {
-  const skyText = weatherData.current.skytext;
-  const temperature = weatherData.current.temperature;
-  const degreeType = weatherData.location.degreetype;
-
-  return `${skyText}, ${temperature}${degreeType}`;
 }

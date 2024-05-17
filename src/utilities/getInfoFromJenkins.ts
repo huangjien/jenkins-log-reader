@@ -30,17 +30,17 @@ type JenkinsData = {
 };
 
 function formatResult(result: string): string {
-    if(result.toLowerCase() === "success") {
-        return "🌤";
-    }
-    if(result.toLowerCase() === "failure") {
-        return "🌦";
-    }
-    if(result.toLowerCase() === "failure") {
-        return "✨";
-    }
+  if (result.toLowerCase() === "success") {
+    return "🌤";
+  }
+  if (result.toLowerCase() === "failure") {
+    return "🌦";
+  }
+  if (result.toLowerCase() === "failure") {
+    return "✨";
+  }
 
-    return "☁️";
+  return "☁️";
 }
 
 function formatDurationToIso(duration: number): string {
@@ -85,7 +85,7 @@ function getSortedBuilds(data: JenkinsData): SortedBuild[] {
     result: build.result,
     hash: digest(build.url),
     duration: build.duration ? formatDurationToIso(build.duration) : undefined,
-    timestamp: new Date(build.timestamp).toISOString().replace('T', ' ').substring(0, 19),
+    timestamp: new Date(build.timestamp).toISOString().replace("T", " ").substring(0, 19),
     _timestamp: build.timestamp,
   }));
 }

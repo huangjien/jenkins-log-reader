@@ -2,10 +2,9 @@ import { Uri, Disposable, Webview, window, WebviewPanel, ViewColumn } from "vsco
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { getAllBuild, getAnalysis, getLog } from "../utilities/getInfoFromJenkins";
-import * as weather from "weather-js";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
-import Settings from "./JenkinsSettings";
+// import Settings from "./JenkinsSettings";
 
 export class JenkinsPanel {
   public static currentPanel: JenkinsPanel | undefined;
@@ -54,7 +53,7 @@ export class JenkinsPanel {
       <div class="container align-center mx-auto px-16">
         <h1 class="text-xl text-center font-bold text-red-600">Jenkins Instance</h1>
         <br/>
-        <section class="grid grid-flow-row grid-rows-3 grid-cols-4 gap-4 content-start" id="search-container">
+        <section class="grid grid-flow-row grid-rows-3 grid-cols-4 gap-2 content-start" id="search-container">
           <vscode-text-field
             id="server_url"
             placeholder="Jenkins Server URL"
@@ -71,7 +70,7 @@ export class JenkinsPanel {
             type="password"
             value="${JenkinsPanel.settings?.apiToken}">Jenkins API Token
           </vscode-text-field>
-          <vscode-button class="rounded text h-8 px-4 m-2" id="refresh">Refresh</vscode-button>
+          <vscode-button class="text-xs text-center h-6 w-20 self-center " id="refresh">Refresh</vscode-button>
           <vscode-text-field
             id="localAiUrl"
             placeholder="Local AI Endpoint"
@@ -94,30 +93,41 @@ export class JenkinsPanel {
           </vscode-text-area>
           <vscode-progress-ring id="loading" class="place-self-center hidden"></vscode-progress-ring>
         </section>
-        <vscode-divider ></vscode-divider>
         
         <h2 class="text-xl text-center font-bold text-yellow-600">Jobs - Builds</h2>
-        <div class="flex flex-wrap" >
-          <vscode-checkbox type="checkbox" class="p-2 m-2" id="success_check" checked="false">SUCCESS</vscode-checkbox>
+        
+        <div class="flex flex-wrap gap-1" >
+          <vscode-checkbox class="p-2 m-2" id="success_check" checked="false">SUCCESS</vscode-checkbox>
           <vscode-checkbox class="p-2 m-2" id="failure_check" checked>FAILURE</vscode-checkbox>
           <vscode-checkbox class="p-2 m-2" id="aborted_check" checked>ABORTED</vscode-checkbox>
+          <vscode-checkbox class="p-2 m-2" id="ignored_check" checked>IGNORED</vscode-checkbox>
+          <vscode-checkbox class="p-2 m-2" id="resolve_check" checked>RESOLVE</vscode-checkbox>
           <vscode-radio-group class="p-2 m-2"  orientation="horizontal" >
             <!-- label class="text-xl" >Recent:</label -->
             <vscode-radio class="p-2 m-2" id="1h_radio" value="3600">1 hour</vscode-radio>
-            <vscode-radio class="p-2 m-2" id="8h_radio" value="28800">8 hours</vscode-radio>
-            <vscode-radio class="p-2 m-2" id="1d_radio" checked value="86400">1 day</vscode-radio>
+            <vscode-radio class="p-2 m-2" id="8h_radio" checked value="28800">8 hours</vscode-radio>
+            <vscode-radio class="p-2 m-2" id="1d_radio" value="86400">1 day</vscode-radio>
             <vscode-radio class="p-2 m-2" id="3d_radio" value="259200">3 days</vscode-radio>
           </vscode-radio-group>
+          <vscode-button class="text-xs text-center h-6 w-20 self-center " id="batch">Batch</vscode-button>
         </div>
         <br />
         <section id="results-container"> 
-          <vscode-data-grid id="basic-grid" grid-template-columns="70% 7vw 10vw 7vw 6vw" aria-label="Custom Column Titles">
+          <p id="notification"></p>
+          <vscode-data-grid id="basic-grid" grid-template-columns="70% 7vw 10vw 7vw 6vw" aria-label="Jenkins Build Data Grid">
           
           </vscode-data-grid>   
-          <p id="summary"></p>
+          
         </section>
         <section id="analysis-container" class="hidden" >
-        <p id="instruct" ></p>
+        <details >
+          <summary class="flex flex-wrap m-2 p-2">
+            <p id="instruct" class="m2 p-2" ></p> 
+            <vscode-button class="text-xs text-center h-6 w-20 self-center " id="analyse">Analyse</vscode-button>
+          </summary>
+          <p id="build_log" ></p>
+        </details>
+        
         <p id="input" ></p>
         <p id="output" ></p>
 
@@ -151,15 +161,21 @@ export class JenkinsPanel {
             });
           break;
         case "analyse":
-            const build_url = message.build_url;
-            const token = message.auth;
+          const build_url = message.build_url;
+          const token = message.auth;
 
-            getLog(build_url, token).then((data) => {
-              webView.postMessage({command: "log", payload: JSON.stringify(data)});
+          getLog(build_url, token)
+            .then((data) => {
+              webView.postMessage({ command: "log", payload: JSON.stringify(data) });
               return data;
-            }).then(data => {
-              getAnalysis(JenkinsPanel.settings!.localAiUrl, JenkinsPanel.settings!.apiToken, data).then(data => {
-                webView.postMessage({command: "analysis", payload: JSON.stringify(data)});
+            })
+            .then((data) => {
+              getAnalysis(
+                JenkinsPanel.settings!.localAiUrl,
+                JenkinsPanel.settings!.apiToken,
+                data
+              ).then((data) => {
+                webView.postMessage({ command: "analysis", payload: JSON.stringify(data) });
               });
             })
             .catch((err) => {
@@ -169,7 +185,14 @@ export class JenkinsPanel {
               });
             });
 
-        break;
+          break;
+        case "batch":
+          console.log("handle all display grid data");
+
+          break;
+        case "resolve":
+          console.log("save results");
+          break;
       }
     });
   }
