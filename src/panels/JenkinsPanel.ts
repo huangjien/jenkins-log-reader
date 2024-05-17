@@ -170,10 +170,12 @@ export class JenkinsPanel {
               return data;
             })
             .then((data) => {
-              getAnalysis(
+              return getAnalysis(
                 JenkinsPanel.settings!.localAiUrl,
                 JenkinsPanel.settings!.apiToken,
-                data
+                JenkinsPanel.settings!.prompt.replace("$PROMPT$", data),
+                JenkinsPanel.settings?.temperature!,
+                JenkinsPanel.settings?.maxToken!
               ).then((data) => {
                 webView.postMessage({ command: "analysis", payload: JSON.stringify(data) });
               });

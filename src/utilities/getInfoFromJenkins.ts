@@ -1,6 +1,7 @@
 import axios from "axios";
 import OpenAI from "openai";
 import { createHash } from "crypto";
+import { marked } from "marked";
 
 type Build = {
   url: string;
@@ -114,13 +115,49 @@ export async function getLog(buildUrl: string, auth: string) {
   }
 }
 
-export async function getAnalysis(localAiUrl: string, model: string, data: string) {
+export async function getAnalysis(
+  localAiUrl: string,
+  model: string,
+  data: string,
+  temperature: number,
+  maxToken: number
+) {
   const localAi = new OpenAI.OpenAI({
     baseURL: localAiUrl,
     apiKey: model,
   });
-  // TODO add more completion here
-  return { ai: "result" };
+  await localAi.chat.completions
+    .create({
+      model: model,
+      messages: [{ role: "assistant", content: data }],
+      temperature: temperature,
+      max_tokens: maxToken,
+    })
+    .then((data) => {
+      return JSON.stringify(data);
+    })
+    .then((data) => {
+      const evalContent = JSON.parse(data);
+      console.log(evalContent);
+      const information = evalContent.choices[0]["message"]["content"];
+      console.log(information);
+      const html = marked.parse(removePrefixUsingRegex(information, "```"));
+
+      return html;
+    })
+    .catch((err) => {
+      throw err;
+    });
+}
+
+function removePrefixUsingRegex(text: string, prefix: string) {
+  // Create a dynamic regex based on the prefix
+  let regex = new RegExp("^" + escapeRegex(prefix));
+  return text.replace(regex, "");
+}
+
+function escapeRegex(data: string) {
+  return data.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escapes regex special characters
 }
 
 export function digest(message: string) {
