@@ -1,6 +1,7 @@
 import axios from "axios";
 import OpenAI from "openai";
 import { createHash } from "crypto";
+import { marked } from "marked";
 
 type Build = {
   url: string;
