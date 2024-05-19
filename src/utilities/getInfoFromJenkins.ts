@@ -114,13 +114,32 @@ export async function getLog(buildUrl: string, auth: string) {
   }
 }
 
-export async function getAnalysis(localAiUrl: string, model: string, data: string) {
+export async function getAnalysis(
+  localAiUrl: string,
+  model: string,
+  temperature: number,
+  maxToken: number,
+  prompt: string,
+  data: string
+) {
   const localAi = new OpenAI.OpenAI({
     baseURL: localAiUrl,
     apiKey: model,
   });
-  // TODO add more completion here
-  return { ai: "result" };
+  return await localAi.chat.completions
+    .create({
+      model: model,
+      messages: [{ role: "assistant", content: prompt.replace("$PROMPT$", data) }],
+      temperature: temperature,
+      max_tokens: maxToken,
+    })
+    .then((data) => {
+      const information = data.choices[0]["message"]["content"];
+      return information;
+    })
+    .catch((err) => {
+      throw err;
+    });
 }
 
 export function digest(message: string) {

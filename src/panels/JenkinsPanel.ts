@@ -4,6 +4,8 @@ import { getNonce } from "../utilities/getNonce";
 import { getAllBuild, getAnalysis, getLog } from "../utilities/getInfoFromJenkins";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
+import * as fs from "fs";
+import * as path from "path";
 // import Settings from "./JenkinsSettings";
 
 export class JenkinsPanel {
@@ -11,6 +13,7 @@ export class JenkinsPanel {
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
   public static settings: JenkinsSettings | undefined;
+  public static storagePath: string;
 
   private constructor(panel: WebviewPanel, extensionUri: Uri) {
     this._panel = panel;
@@ -19,8 +22,9 @@ export class JenkinsPanel {
     this._setWebviewMessageListener(this._panel.webview);
   }
 
-  public static render(extensionUri: Uri, settings: JenkinsSettings) {
+  public static render(extensionUri: Uri, settings: JenkinsSettings, storagePath: string) {
     JenkinsPanel.settings = settings;
+    this.storagePath = storagePath;
     if (JenkinsPanel.currentPanel) {
       JenkinsPanel.currentPanel._panel.reveal(ViewColumn.One);
     } else {
@@ -53,7 +57,7 @@ export class JenkinsPanel {
       <div class="container align-center mx-auto px-16">
         <h1 class="text-xl text-center font-bold text-red-600">Jenkins Instance</h1>
         <br/>
-        <section class="grid grid-flow-row grid-rows-3 grid-cols-4 gap-2 content-start" id="search-container">
+        <section class="grid grid-flow-row grid-rows-3 grid-cols-4 gap-1 content-start" id="search-container">
           <vscode-text-field
             id="server_url"
             placeholder="Jenkins Server URL"
@@ -70,7 +74,7 @@ export class JenkinsPanel {
             type="password"
             value="${JenkinsPanel.settings?.apiToken}">Jenkins API Token
           </vscode-text-field>
-          <vscode-button class="text-xs text-center h-6 w-20 self-center " id="refresh">Refresh</vscode-button>
+          <vscode-button class="text-xs text-center h-6 w-20 self-center ml-4" id="refresh">Refresh</vscode-button>
           <vscode-text-field
             id="localAiUrl"
             placeholder="Local AI Endpoint"
@@ -96,23 +100,23 @@ export class JenkinsPanel {
         
         <h2 class="text-xl text-center font-bold text-yellow-600">Jobs - Builds</h2>
         
-        <div class="flex flex-wrap gap-1" >
-          <vscode-checkbox class="p-2 m-2" id="success_check" checked="false">SUCCESS</vscode-checkbox>
-          <vscode-checkbox class="p-2 m-2" id="failure_check" checked>FAILURE</vscode-checkbox>
-          <vscode-checkbox class="p-2 m-2" id="aborted_check" checked>ABORTED</vscode-checkbox>
-          <vscode-checkbox class="p-2 m-2" id="ignored_check" checked>IGNORED</vscode-checkbox>
-          <vscode-checkbox class="p-2 m-2" id="resolve_check" checked>RESOLVE</vscode-checkbox>
-          <vscode-radio-group class="p-2 m-2"  orientation="horizontal" >
+        <div class="flex flex-wrap gap-1 h-full" >
+          <vscode-checkbox class="p-1 m-1" id="success_check" checked="false">SUCCESS</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-1" id="failure_check" checked>FAILURE</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-1" id="aborted_check" checked>ABORTED</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-1" id="ignored_check" checked>IGNORED</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-1" id="resolve_check" checked>RESOLVE</vscode-checkbox>
+          <vscode-radio-group class="p-1 m-1"  orientation="horizontal" >
             <!-- label class="text-xl" >Recent:</label -->
-            <vscode-radio class="p-2 m-2" id="1h_radio" value="3600">1 hour</vscode-radio>
-            <vscode-radio class="p-2 m-2" id="8h_radio" checked value="28800">8 hours</vscode-radio>
-            <vscode-radio class="p-2 m-2" id="1d_radio" value="86400">1 day</vscode-radio>
-            <vscode-radio class="p-2 m-2" id="3d_radio" value="259200">3 days</vscode-radio>
+            <vscode-radio class="p-1 m-1" id="1h_radio" value="3600">1 hour</vscode-radio>
+            <vscode-radio class="p-1 m-1" id="8h_radio" checked value="28800">8 hours</vscode-radio>
+            <vscode-radio class="p-1 m-1" id="1d_radio" value="86400">1 day</vscode-radio>
+            <vscode-radio class="p-1 m-1" id="3d_radio" value="259200">3 days</vscode-radio>
           </vscode-radio-group>
           <vscode-button class="text-xs text-center h-6 w-20 self-center " id="batch">Batch</vscode-button>
         </div>
         <br />
-        <section id="results-container"> 
+        <section id="results-container" class="h-full" > 
           <p id="notification"></p>
           <vscode-data-grid id="basic-grid" grid-template-columns="70% 7vw 10vw 7vw 6vw" aria-label="Jenkins Build Data Grid">
           
@@ -120,16 +124,24 @@ export class JenkinsPanel {
           
         </section>
         <section id="analysis-container" class="hidden" >
-        <details >
-          <summary class="flex flex-wrap m-2 p-2">
+        <details class="h-full" >
+          <summary class="flex flex-wrap m-1 p-1">
             <p id="instruct" class="m2 p-2" ></p> 
-            <vscode-button class="text-xs text-center h-6 w-20 self-center " id="analyse">Analyse</vscode-button>
+            <vscode-button class="text-xs text-center h-6 w-20 self-center ml-4 " id="analyse">Analyse</vscode-button>
           </summary>
-          <p id="build_log" ></p>
+          <details>
+            <summary class="text-xl font-bold text-white-600">Jenkins Build Log</summary>
+            <pre id="build_log" class=" whitespace-pre-wrap  break-words" ></pre>
+          </details>
+          <details>
+            <summary class="text-xl font-bold text-white-600">AI Analysis</summary>
+            <div class="flex flex-wrap m-1 p-1 h-full">
+              <vscode-text-area class="basis-10/12 max-w-5xl" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
+              <vscode-button class=" basis-1/12 text-xs text-center h-6 w-20 self-center ml-4 " id="resolve">Resolve</vscode-button>
+            </div>
+          </details>
+          
         </details>
-        
-        <p id="input" ></p>
-        <p id="output" ></p>
 
         </section>
         
@@ -140,14 +152,37 @@ export class JenkinsPanel {
           `;
   }
 
+  private keepLongTail(inputString: string, size: number) {
+    if (inputString.length > size) {
+      return inputString.slice(-size);
+    }
+    return inputString;
+  }
+
+  private escapeHtml(html: string) {
+    return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  private removePrefixUsingRegex(text: string, prefix: string) {
+    // Create a dynamic regex based on the prefix
+    let regex = new RegExp("^" + this.escapeRegex(prefix));
+    return text.replace(regex, "");
+  }
+
+  private escapeRegex(data: string) {
+    return data.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escapes regex special characters
+  }
+
   private _setWebviewMessageListener(webView: Webview) {
     webView.onDidReceiveMessage((message) => {
       const command = message.command;
 
       switch (command) {
         case "refresh":
-          const server_url = message.server_url;
-          const auth = message.auth;
+          const server_url = JenkinsPanel.settings?.jenkinsServerUrl!;
+          const auth = btoa(
+            JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken
+          );
 
           getAllBuild(server_url, auth)
             .then((data) => {
@@ -162,20 +197,30 @@ export class JenkinsPanel {
           break;
         case "analyse":
           const build_url = message.build_url;
-          const token = message.auth;
+          const token = btoa(
+            JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken
+          );
 
           getLog(build_url, token)
             .then((data) => {
-              webView.postMessage({ command: "log", payload: JSON.stringify(data) });
-              return data;
+              const info = this.keepLongTail(data, JenkinsPanel.settings?.maxToken!);
+              webView.postMessage({ command: "log", payload: info });
+              return info;
             })
             .then((data) => {
-              getAnalysis(
+              return getAnalysis(
                 JenkinsPanel.settings!.localAiUrl,
-                JenkinsPanel.settings!.apiToken,
+                JenkinsPanel.settings!.model,
+                JenkinsPanel.settings!.temperature,
+                JenkinsPanel.settings!.maxToken,
+                JenkinsPanel.settings!.prompt,
                 data
-              ).then((data) => {
-                webView.postMessage({ command: "analysis", payload: JSON.stringify(data) });
+              );
+            })
+            .then((ret) => {
+              webView.postMessage({
+                command: "analysis",
+                payload: this.removePrefixUsingRegex(ret!, "```"),
               });
             })
             .catch((err) => {
@@ -191,7 +236,13 @@ export class JenkinsPanel {
 
           break;
         case "resolve":
-          console.log("save results");
+          webView.postMessage({
+            command: "resolve",
+            instruction: "",
+            input: "",
+            output: "",
+          });
+
           break;
       }
     });

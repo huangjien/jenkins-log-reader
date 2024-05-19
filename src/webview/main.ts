@@ -26,6 +26,7 @@ import {
   vsCodePanelTab,
   vsCodeTextField,
   vsCodeProgressRing,
+  TextArea,
 } from "@vscode/webview-ui-toolkit";
 import * as fs from "fs";
 
@@ -86,15 +87,8 @@ function main() {
 }
 
 function refresh() {
-  const username = document.getElementById("username") as TextField;
-  const token = document.getElementById("token") as TextField;
-  const server_url = document.getElementById("server_url") as TextField;
-  // const unit = document.getElementById("unit") as Dropdown;
-  const response = btoa(username.value + ":" + token.value);
   vscode.postMessage({
     command: "refresh",
-    server_url: server_url.value,
-    auth: response,
   });
   displayLoadingState();
 }
@@ -104,9 +98,13 @@ function batch() {
 }
 
 function analyse() {
-  // TODO: analyse one url
+  // if status is SUCCESS or RESOVLE, then do nothing
   const instruct = document.getElementById("instruct");
   const url = instruct?.innerText;
+  vscode.postMessage({
+    command: "analyse",
+    build_url: url,
+  });
 
   // Download build log
 
@@ -115,6 +113,12 @@ function analyse() {
 
 function resolve() {
   // TODO: save the resolution for AI training data
+  const instruct = document.getElementById("instruct");
+  const url = instruct?.innerText;
+  vscode.postMessage({
+    command: "analyse",
+    build_url: url,
+  });
 }
 
 function save(build_url: string) {}
@@ -200,7 +204,20 @@ function setVSCodeMessageListener() {
         // const response = JSON.parse(event.data.payload);
         gridData = JSON.parse(event.data.payload);
         filterConditionChanged();
-
+        break;
+      case "log":
+        const log = event.data.payload;
+        const build_log = document.getElementById("build_log");
+        if (build_log) {
+          build_log.textContent = log;
+        }
+        break;
+      case "analysis":
+        const analysis_result = event.data.payload;
+        const analysis = document.getElementById("analysis") as TextArea;
+        if (analysis) {
+          analysis.value = analysis_result;
+        }
         break;
       case "error":
         displayError(event.data.message);

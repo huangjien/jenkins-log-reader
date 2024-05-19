@@ -1,8 +1,13 @@
 import { ExtensionContext, window, commands, ViewColumn, workspace } from "vscode";
 import { JenkinsPanel } from "./panels/JenkinsPanel";
 import JenkinsSettings from "./panels/JenkinsSettings";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 
 export function activate(context: ExtensionContext) {
+  const storagePath = context.globalStorageUri.fsPath;
+  if (!existsSync(storagePath)) {
+    mkdirSync(storagePath, { recursive: true });
+  }
   let disposal = commands.registerCommand("jenkins-log-reader.webView", () => {
     const jenkinsServerUrl = getConfig("jenkins-log-reader.jenkinsServerUrl");
 
@@ -44,7 +49,8 @@ export function activate(context: ExtensionContext) {
         prompt,
         temperature,
         maxToken
-      )
+      ),
+      storagePath
     );
   });
 
