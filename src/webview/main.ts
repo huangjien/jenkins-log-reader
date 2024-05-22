@@ -94,7 +94,10 @@ function refresh() {
 }
 
 function batch() {
-  // TODO: batch handle all failed builds
+  vscode.postMessage({
+    command: "batch",
+    build_url: "nothing",
+  });
 }
 
 function analyse() {
@@ -112,12 +115,17 @@ function analyse() {
 }
 
 function resolve() {
-  // TODO: save the resolution for AI training data
   const instruct = document.getElementById("instruct");
-  const url = instruct?.innerText;
+  const url = instruct?.textContent;
+  const analysis_content = document.getElementById("analysis") as TextArea;
+  const analysis = analysis_content.value;
+  const log_content = document.getElementById("build_log");
+  const log = log_content?.textContent;
   vscode.postMessage({
-    command: "analyse",
-    build_url: url,
+    command: "resolve",
+    url: url,
+    log: log,
+    analysis: analysis,
   });
 }
 
@@ -142,6 +150,8 @@ function handleRowFocused(e: Event) {
   if (build_log) {
     build_log.textContent = "Not Analysed Yet.";
   }
+  const resolve_button = document.getElementById("resolve");
+  resolve_button?.addEventListener("click", resolve);
 }
 
 function filterConditionChanged() {

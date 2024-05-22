@@ -1,11 +1,12 @@
 import { Uri, Disposable, Webview, window, WebviewPanel, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { getAllBuild, getAnalysis, getLog } from "../utilities/getInfoFromJenkins";
+import { digest, getAllBuild, getAnalysis, getLog } from "../utilities/getInfoFromJenkins";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
 import * as fs from "fs";
 import * as path from "path";
+import { hash } from "crypto";
 // import Settings from "./JenkinsSettings";
 
 export class JenkinsPanel {
@@ -136,7 +137,7 @@ export class JenkinsPanel {
           <details>
             <summary class="text-xl font-bold text-white-600">AI Analysis</summary>
             <div class="flex flex-wrap m-1 p-1 h-full">
-              <vscode-text-area class="basis-10/12 max-w-5xl" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
+              <vscode-text-area rows="10" class="basis-10/12 max-w-5xl" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
               <vscode-button class=" basis-1/12 text-xs text-center h-6 w-20 self-center ml-4 " id="resolve">Resolve</vscode-button>
             </div>
           </details>
@@ -236,13 +237,18 @@ export class JenkinsPanel {
 
           break;
         case "resolve":
-          webView.postMessage({
-            command: "resolve",
-            instruction: "",
-            input: "",
-            output: "",
-          });
-
+          const hash = digest(message.url);
+          const analysis = message.analysis;
+          const log = message.log;
+          console.log(JenkinsPanel.storagePath + hash);
+          fs.writeFileSync(
+            JenkinsPanel.storagePath + "/" + hash,
+            JSON.stringify({
+              instrct: JenkinsPanel.settings?.prompt.replace("$PROMPT$", log),
+              input: "",
+              output: analysis,
+            })
+          );
           break;
       }
     });
