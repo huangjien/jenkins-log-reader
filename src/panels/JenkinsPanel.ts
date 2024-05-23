@@ -56,9 +56,12 @@ export class JenkinsPanel {
   </head>
     <body>
       <div class="container align-center mx-auto px-16">
-        <h1 class="text-xl text-center font-bold text-red-600">Jenkins Instance</h1>
-        <br/>
+        <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
+          <h1 class="text-xl text-center font-bold mx-8 text-red-600">Jenkins Instance</h1>
+          <vscode-button class="text-xs text-center rounded h-6 w-20 self-center ml-4" id="refresh">Refresh</vscode-button>
+        </div>
         <section class="grid grid-flow-row grid-rows-3 grid-cols-4 gap-1 content-start" id="search-container">
+        
           <vscode-text-field
             id="server_url"
             placeholder="Jenkins Server URL"
@@ -75,7 +78,7 @@ export class JenkinsPanel {
             type="password"
             value="${JenkinsPanel.settings?.apiToken}">Jenkins API Token
           </vscode-text-field>
-          <vscode-button class="text-xs text-center h-6 w-20 self-center ml-4" id="refresh">Refresh</vscode-button>
+          
           <vscode-text-field
             id="localAiUrl"
             placeholder="Local AI Endpoint"
@@ -98,9 +101,10 @@ export class JenkinsPanel {
           </vscode-text-area>
           <vscode-progress-ring id="loading" class="place-self-center hidden"></vscode-progress-ring>
         </section>
-        
-        <h2 class="text-xl text-center font-bold text-yellow-600">Jobs - Builds</h2>
-        
+        <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
+          <h2 class="text-xl text-center font-bold mx-8 text-yellow-600">Jobs - Builds</h2>
+          <vscode-button class="text-xs text-center h-6 w-20 self-center rounded" id="batch">Batch</vscode-button>
+        </div>
         <div class="flex flex-wrap gap-1 h-full" >
           <vscode-checkbox class="p-1 m-1" id="success_check" checked="false">SUCCESS</vscode-checkbox>
           <vscode-checkbox class="p-1 m-1" id="failure_check" checked>FAILURE</vscode-checkbox>
@@ -114,7 +118,7 @@ export class JenkinsPanel {
             <vscode-radio class="p-1 m-1" id="1d_radio" value="86400">1 day</vscode-radio>
             <vscode-radio class="p-1 m-1" id="3d_radio" value="259200">3 days</vscode-radio>
           </vscode-radio-group>
-          <vscode-button class="text-xs text-center h-6 w-20 self-center " id="batch">Batch</vscode-button>
+          <p id="count"></p>
         </div>
         <br />
         <section id="results-container" class="h-full" > 
@@ -187,7 +191,25 @@ export class JenkinsPanel {
 
           getAllBuild(server_url, auth)
             .then((data) => {
-              webView.postMessage({ command: "dataGrid", payload: JSON.stringify(data) });
+              // check the local resolve file
+              fs.readdir(JenkinsPanel.storagePath, (err, files)=> {
+                if(err) {
+                  console.error("Error reading folder:", err);
+                  return;
+                }
+                const fileSet = new Set(files)
+                console.log(fileSet)
+                data.forEach(record=>{
+                  if (!record.hash) {
+                    return;
+                  }
+                  if(fileSet.has(record.hash)){
+                    record.result= "RESOLVE"
+                  }
+                })
+                webView.postMessage({ command: "dataGrid", payload: JSON.stringify(data) });
+              })
+              
             })
             .catch((err) => {
               webView.postMessage({
@@ -240,7 +262,6 @@ export class JenkinsPanel {
           const hash = digest(message.url);
           const analysis = message.analysis;
           const log = message.log;
-          console.log(JenkinsPanel.storagePath + hash);
           fs.writeFileSync(
             JenkinsPanel.storagePath + "/" + hash,
             JSON.stringify({

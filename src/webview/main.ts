@@ -108,10 +108,6 @@ function analyse() {
     command: "analyse",
     build_url: url,
   });
-
-  // Download build log
-
-  // Analyse with AI
 }
 
 function resolve() {
@@ -128,8 +124,6 @@ function resolve() {
     analysis: analysis,
   });
 }
-
-function save(build_url: string) {}
 
 function handleRowFocused(e: Event) {
   const row = e.target as DataGridRow;
@@ -152,6 +146,10 @@ function handleRowFocused(e: Event) {
   }
   const resolve_button = document.getElementById("resolve");
   resolve_button?.addEventListener("click", resolve);
+  const analysis_content = document.getElementById("analysis") as TextArea;
+  if (analysis_content) {
+    analysis_content.value = "";
+  }
 }
 
 function filterConditionChanged() {
@@ -248,6 +246,10 @@ function displayLoadingState() {
 function displayGridData() {
   const loading = document.getElementById("loading") as ProgressRing;
   loading.classList.add("hidden");
+  // const batch_button = document.getElementById("batch") as Button;
+  // batch_button.classList.remove("hidden");
+  const count = document.getElementById("count")!;
+  count.textContent = displayData.length.toString();
   const notification = document.getElementById("notification");
 
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
