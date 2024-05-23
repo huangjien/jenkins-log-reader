@@ -56,56 +56,61 @@ export class JenkinsPanel {
   </head>
     <body>
       <div class="container align-center mx-auto px-16">
-        <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
-          <h1 class="text-xl text-center font-bold mx-8 text-red-600">Jenkins Instance</h1>
-          <vscode-button class="text-xs text-center rounded h-6 w-20 self-center ml-4" id="refresh">Refresh</vscode-button>
-        </div>
-        <section class="grid grid-flow-row grid-rows-3 grid-cols-4 gap-1 content-start" id="search-container">
+      <details>
+        <summary>
+          <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
+            <h1 class="text-xl text-center font-bold mx-8 text-red-600">Jenkins Instance</h1>
+            <vscode-button class="text-xs text-center rounded h-6 w-20 self-center ml-4" id="refresh">Refresh</vscode-button>
+          </div>
+        </summary>
+        <section class="grid grid-flow-row grid-rows-2 grid-cols-4 gap-1 content-start">
         
           <vscode-text-field
-            id="server_url"
+            id="server_url" readonly
             placeholder="Jenkins Server URL"
-            value="${JenkinsPanel.settings?.jenkinsServerUrl}">Jenkins Server URL
+            value="${JenkinsPanel.settings?.jenkinsServerUrl}" readonly>Jenkins Server URL
           </vscode-text-field>
           <vscode-text-field
             id="username"
             placeholder="Jenkins User Name"
-            value="${JenkinsPanel.settings?.username}">Jenkins User Name
+            value="${JenkinsPanel.settings?.username}" readonly>Jenkins User Name
           </vscode-text-field>
           <vscode-text-field
             id="token"
             placeholder="Jenkins API Token"
             type="password"
-            value="${JenkinsPanel.settings?.apiToken}">Jenkins API Token
+            value="${JenkinsPanel.settings?.apiToken}" readonly>Jenkins API Token
           </vscode-text-field>
           
           <vscode-text-field
             id="localAiUrl"
             placeholder="Local AI Endpoint"
-            value="${JenkinsPanel.settings?.localAiUrl}">Local AI Endpoint
+            value="${JenkinsPanel.settings?.localAiUrl}" readonly>Local AI Endpoint
           </vscode-text-field>
           <vscode-text-field
-            id="model"
+            id="model" 
             placeholder="Local AI Model"
-            value="${JenkinsPanel.settings?.model}">Local AI Model
+            value="${JenkinsPanel.settings?.model}" readonly>Local AI Model
           </vscode-text-field>
           <vscode-text-field
             id="temperature"
             placeholder="Local AI Temperature"
-            value="${JenkinsPanel.settings?.temperature}">Local AI Temperature
+            value="${JenkinsPanel.settings?.temperature}" readonly>Local AI Temperature
           </vscode-text-field>
           <vscode-text-area
-            id="prompt"
+            id="prompt" 
             placeholder="Local AI Prompt"
-            value="${JenkinsPanel.settings?.prompt}">
+            value="${JenkinsPanel.settings?.prompt}" readonly>
           </vscode-text-area>
           <vscode-progress-ring id="loading" class="place-self-center hidden"></vscode-progress-ring>
         </section>
+      </details>
+          
         <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
           <h2 class="text-xl text-center font-bold mx-8 text-yellow-600">Jobs - Builds</h2>
           <vscode-button class="text-xs text-center h-6 w-20 self-center rounded" id="batch">Batch</vscode-button>
         </div>
-        <div class="flex flex-wrap gap-1 h-full" >
+        <div class="inline-flex flex-wrap gap-1 w-full" >
           <vscode-checkbox class="p-1 m-1" id="success_check" checked="false">SUCCESS</vscode-checkbox>
           <vscode-checkbox class="p-1 m-1" id="failure_check" checked>FAILURE</vscode-checkbox>
           <vscode-checkbox class="p-1 m-1" id="aborted_check" checked>ABORTED</vscode-checkbox>
@@ -120,15 +125,15 @@ export class JenkinsPanel {
           </vscode-radio-group>
           <p id="count"></p>
         </div>
-        <br />
-        <section id="results-container" class="h-full" > 
+
+        <section id="results-container" class="flex flex-wrap gap-1 h-full" > 
           <p id="notification"></p>
           <vscode-data-grid id="basic-grid" grid-template-columns="70% 7vw 10vw 7vw 6vw" aria-label="Jenkins Build Data Grid">
           
           </vscode-data-grid>   
           
         </section>
-        <section id="analysis-container" class="hidden" >
+        <section id="analysis-container" class="flex flex-wrap gap-1 h-full hidden" >
         <details class="h-full" >
           <summary class="flex flex-wrap m-1 p-1">
             <p id="instruct" class="m2 p-2" ></p> 
