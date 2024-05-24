@@ -134,27 +134,24 @@ export class JenkinsPanel {
           
         </section>
         <section id="analysis-container" class="flex flex-wrap gap-1 h-full hidden" >
-        <details class="h-full" >
+        <details class="w-full" >
           <summary class="flex flex-wrap m-1 p-1">
             <p id="instruct" class="m2 p-2" ></p> 
-            <vscode-button class="text-xs text-center h-6 w-20 self-center ml-4 " id="analyse">Analyse</vscode-button>
+            <vscode-button class="text-xs text-center h-6 w-20 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
           </summary>
-          <details>
+          <details class="w-full">
             <summary class="text-xl font-bold text-white-600">Jenkins Build Log</summary>
             <pre id="build_log" class=" whitespace-pre-wrap  break-words" ></pre>
           </details>
-          <details>
+          <details class="w-full">
             <summary class="text-xl font-bold text-white-600">AI Analysis</summary>
             <div class="flex flex-wrap m-1 p-1 h-full">
               <vscode-text-area rows="10" class="basis-10/12 max-w-5xl" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
-              <vscode-button class=" basis-1/12 text-xs text-center h-6 w-20 self-center ml-4 " id="resolve">Resolve</vscode-button>
+              <vscode-button class=" basis-1/12 text-xs text-center h-6 w-20 self-center ml-4 rounded" id="resolve">Resolve</vscode-button>
             </div>
           </details>
-          
         </details>
-
         </section>
-        
         <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
       </div>
     </body>
@@ -163,6 +160,8 @@ export class JenkinsPanel {
   }
 
   private keepLongTail(inputString: string, size: number) {
+    // keep 1st 1k and tail(size)? This is a bad idea, AI got confused!
+    
     if (inputString.length > size) {
       return inputString.slice(-size);
     }
@@ -203,12 +202,12 @@ export class JenkinsPanel {
                   return;
                 }
                 const fileSet = new Set(files)
-                console.log(fileSet)
                 data.forEach(record=>{
                   if (!record.hash) {
                     return;
                   }
                   if(fileSet.has(record.hash)){
+                    // need to check inside
                     record.result= "RESOLVE"
                   }
                 })
