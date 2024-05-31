@@ -1,7 +1,7 @@
 import { Uri, Disposable, Webview, window, WebviewPanel, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { digest, getAllBuild, getAnalysis, getLog } from "../utilities/getInfoFromJenkins";
+import { digest, getAllBuild, getAnalysis, getLog, storedData } from "../utilities/getInfoFromJenkins";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
 import * as fs from "fs";
@@ -161,7 +161,7 @@ export class JenkinsPanel {
 
   private keepLongTail(inputString: string, size: number) {
     // keep 1st 1k and tail(size)? This is a bad idea, AI got confused!
-    
+
     if (inputString.length > size) {
       return inputString.slice(-size);
     }
@@ -196,24 +196,23 @@ export class JenkinsPanel {
           getAllBuild(server_url, auth)
             .then((data) => {
               // check the local resolve file
-              fs.readdir(JenkinsPanel.storagePath, (err, files)=> {
-                if(err) {
+              fs.readdir(JenkinsPanel.storagePath, (err, files) => {
+                if (err) {
                   console.error("Error reading folder:", err);
                   return;
                 }
-                const fileSet = new Set(files)
-                data.forEach(record=>{
+                const fileSet = new Set(files);
+                data.forEach((record) => {
                   if (!record.hash) {
                     return;
                   }
-                  if(fileSet.has(record.hash)){
+                  if (fileSet.has(record.hash)) {
                     // need to check inside
-                    record.result= "RESOLVE"
+                    record.result = "RESOLVE";
                   }
-                })
+                });
                 webView.postMessage({ command: "dataGrid", payload: JSON.stringify(data) });
-              })
-              
+              });
             })
             .catch((err) => {
               webView.postMessage({
@@ -227,10 +226,13 @@ export class JenkinsPanel {
           const token = btoa(
             JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken
           );
-
+          const fileName = digest(build_url);
+          // const json: storedData = {};
+          
           getLog(build_url, token)
             .then((data) => {
               const info = this.keepLongTail(data, JenkinsPanel.settings?.maxToken!);
+              // json.push({log:info})
               webView.postMessage({ command: "log", payload: info });
               return info;
             })

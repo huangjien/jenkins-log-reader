@@ -1,7 +1,6 @@
 import axios from "axios";
 import OpenAI from "openai";
 import { createHash } from "crypto";
-import { marked } from "marked";
 
 type Build = {
   url: string;
@@ -29,6 +28,15 @@ type JenkinsData = {
   _class: string;
   jobs: Job[];
 };
+
+export type storedData = {
+  build_url: string;
+  build_status: string;
+  ai_status: string;
+  log: string;
+  prompt: string;
+  analysis: string;
+}
 
 function formatResult(result: string): string {
   if (result.toLowerCase() === "success") {

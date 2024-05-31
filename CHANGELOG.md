@@ -1,9 +1,8 @@
-# Change Log
+# Changelog
 
-All notable changes to the "jenkins-log-reader" extension will be documented in this file.
+## [v0.2.11]
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+### Bug Fix
 
-## [Unreleased]
-
-- Initial release
+- fix: 🐛 tweak the UI [20293af](https://github.com/huangjien/jenkins-log-reader/commit/20293aff619a31f7f01c08af48dc874a79234d4c)
+## [v0.1.5]

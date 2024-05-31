@@ -19,7 +19,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 21
+          node-version: 20
 
       - run: npm install --legacy-peer-deps
       - run: npm install -g @vscode/vsce
