@@ -36,7 +36,7 @@ export type storedData = {
   log: string;
   prompt: string;
   analysis: string;
-}
+};
 
 function formatResult(result: string): string {
   if (result.toLowerCase() === "success") {
