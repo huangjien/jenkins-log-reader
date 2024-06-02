@@ -1,7 +1,13 @@
 import { Uri, Disposable, Webview, window, WebviewPanel, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { digest, getAllBuild, getAnalysis, getLog } from "../utilities/getInfoFromJenkins";
+import {
+  digest,
+  getAllBuild,
+  getAnalysis,
+  getLog,
+  storedData,
+} from "../utilities/getInfoFromJenkins";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
 import * as fs from "fs";
@@ -63,45 +69,48 @@ export class JenkinsPanel {
             <vscode-button class="text-xs text-center rounded h-6 w-20 self-center ml-4" id="refresh">Refresh</vscode-button>
           </div>
         </summary>
-        <section class="grid grid-flow-row grid-rows-2 grid-cols-4 gap-1 content-start">
-        
-          <vscode-text-field
-            id="server_url" readonly
-            placeholder="Jenkins Server URL"
-            value="${JenkinsPanel.settings?.jenkinsServerUrl}" readonly>Jenkins Server URL
-          </vscode-text-field>
-          <vscode-text-field
-            id="username"
-            placeholder="Jenkins User Name"
-            value="${JenkinsPanel.settings?.username}" readonly>Jenkins User Name
-          </vscode-text-field>
-          <vscode-text-field
-            id="token"
-            placeholder="Jenkins API Token"
-            type="password"
-            value="${JenkinsPanel.settings?.apiToken}" readonly>Jenkins API Token
-          </vscode-text-field>
-          
-          <vscode-text-field
-            id="localAiUrl"
-            placeholder="Local AI Endpoint"
-            value="${JenkinsPanel.settings?.localAiUrl}" readonly>Local AI Endpoint
-          </vscode-text-field>
-          <vscode-text-field
-            id="model" 
-            placeholder="Local AI Model"
-            value="${JenkinsPanel.settings?.model}" readonly>Local AI Model
-          </vscode-text-field>
-          <vscode-text-field
-            id="temperature"
-            placeholder="Local AI Temperature"
-            value="${JenkinsPanel.settings?.temperature}" readonly>Local AI Temperature
-          </vscode-text-field>
-          <vscode-text-area
-            id="prompt" 
-            placeholder="Local AI Prompt"
-            value="${JenkinsPanel.settings?.prompt}" readonly>
-          </vscode-text-area>
+        <section class="grid grid-cols-4 grid-rows-2 gap-1 w-full align-middle">
+          <div class="col-span-3 m-2 p-2 row-span-2 grid grid-cols-3 gap-1" >
+            <vscode-text-field class="col-span-1"
+              id="server_url" readonly
+              placeholder="Jenkins Server URL"
+              value="${JenkinsPanel.settings?.jenkinsServerUrl}" readonly>Jenkins Server URL
+            </vscode-text-field>
+            <vscode-text-field class="col-span-1"
+              id="username"
+              placeholder="Jenkins User Name"
+              value="${JenkinsPanel.settings?.username}" readonly>Jenkins User Name
+            </vscode-text-field>
+            <vscode-text-field class="col-span-1"
+              id="token"
+              placeholder="Jenkins API Token"
+              type="password"
+              value="${JenkinsPanel.settings?.apiToken}" readonly>Jenkins API Token
+            </vscode-text-field>
+            
+            <vscode-text-field class="col-span-1"
+              id="localAiUrl"
+              placeholder="Local AI Endpoint"
+              value="${JenkinsPanel.settings?.localAiUrl}" readonly>Local AI Endpoint
+            </vscode-text-field>
+            <vscode-text-field class="col-span-1"
+              id="model" 
+              placeholder="Local AI Model"
+              value="${JenkinsPanel.settings?.model}" readonly>Local AI Model
+            </vscode-text-field>
+            <vscode-text-field class="col-span-1"
+              id="temperature"
+              placeholder="Local AI Temperature"
+              value="${JenkinsPanel.settings?.temperature}" readonly>Local AI Temperature
+            </vscode-text-field>
+          </div>
+          <div class="col-span-1 row-span-2">
+            <vscode-text-area class="col-span-1 w-full"
+              id="prompt" rows="4"
+              placeholder="Local AI Prompt"
+              value="${JenkinsPanel.settings?.prompt}" readonly>Prompt
+            </vscode-text-area>
+          </div>
           <vscode-progress-ring id="loading" class="place-self-center hidden"></vscode-progress-ring>
         </section>
       </details>
@@ -111,6 +120,7 @@ export class JenkinsPanel {
           <vscode-button class="text-xs text-center h-6 w-20 self-center rounded" id="batch">Batch</vscode-button>
         </div>
         <div class="inline-flex flex-wrap gap-1 w-full" >
+          
           <vscode-checkbox class="p-1 m-1" id="success_check" checked="false">SUCCESS</vscode-checkbox>
           <vscode-checkbox class="p-1 m-1" id="failure_check" checked>FAILURE</vscode-checkbox>
           <vscode-checkbox class="p-1 m-1" id="aborted_check" checked>ABORTED</vscode-checkbox>
@@ -133,28 +143,25 @@ export class JenkinsPanel {
           </vscode-data-grid>   
           
         </section>
-        <section id="analysis-container" class="flex flex-wrap gap-1 h-full hidden" >
-        <details class="h-full" >
+        <section id="analysis-container" class="flex-wrap gap-1 h-full hidden" >
+        <details class="w-full" >
           <summary class="flex flex-wrap m-1 p-1">
             <p id="instruct" class="m2 p-2" ></p> 
-            <vscode-button class="text-xs text-center h-6 w-20 self-center ml-4 " id="analyse">Analyse</vscode-button>
+            <vscode-button class="text-xs text-center h-6 w-20 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
           </summary>
-          <details>
+          <details class="w-full">
             <summary class="text-xl font-bold text-white-600">Jenkins Build Log</summary>
             <pre id="build_log" class=" whitespace-pre-wrap  break-words" ></pre>
           </details>
-          <details>
+          <details class="w-full">
             <summary class="text-xl font-bold text-white-600">AI Analysis</summary>
             <div class="flex flex-wrap m-1 p-1 h-full">
               <vscode-text-area rows="10" class="basis-10/12 max-w-5xl" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
-              <vscode-button class=" basis-1/12 text-xs text-center h-6 w-20 self-center ml-4 " id="resolve">Resolve</vscode-button>
+              <vscode-button class=" basis-1/12 text-xs text-center h-6 w-20 self-center ml-4 rounded" id="resolve">Resolve</vscode-button>
             </div>
           </details>
-          
         </details>
-
         </section>
-        
         <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
       </div>
     </body>
@@ -163,6 +170,8 @@ export class JenkinsPanel {
   }
 
   private keepLongTail(inputString: string, size: number) {
+    // keep 1st 1k and tail(size)? This is a bad idea, AI got confused!
+
     if (inputString.length > size) {
       return inputString.slice(-size);
     }
@@ -197,24 +206,23 @@ export class JenkinsPanel {
           getAllBuild(server_url, auth)
             .then((data) => {
               // check the local resolve file
-              fs.readdir(JenkinsPanel.storagePath, (err, files)=> {
-                if(err) {
+              fs.readdir(JenkinsPanel.storagePath, (err, files) => {
+                if (err) {
                   console.error("Error reading folder:", err);
                   return;
                 }
-                const fileSet = new Set(files)
-                console.log(fileSet)
-                data.forEach(record=>{
+                const fileSet = new Set(files);
+                data.forEach((record) => {
                   if (!record.hash) {
                     return;
                   }
-                  if(fileSet.has(record.hash)){
-                    record.result= "RESOLVE"
+                  if (fileSet.has(record.hash)) {
+                    // need to check inside
+                    record.result = "RESOLVE";
                   }
-                })
+                });
                 webView.postMessage({ command: "dataGrid", payload: JSON.stringify(data) });
-              })
-              
+              });
             })
             .catch((err) => {
               webView.postMessage({
@@ -228,10 +236,13 @@ export class JenkinsPanel {
           const token = btoa(
             JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken
           );
+          const fileName = digest(build_url);
+          // const json: storedData = {};
 
           getLog(build_url, token)
             .then((data) => {
               const info = this.keepLongTail(data, JenkinsPanel.settings?.maxToken!);
+              // json.push({log:info})
               webView.postMessage({ command: "log", payload: info });
               return info;
             })
