@@ -1,18 +1,26 @@
-import { Uri, Disposable, Webview, window, WebviewPanel, ViewColumn } from "vscode";
+import {
+  Uri,
+  Disposable,
+  Webview,
+  window,
+  WebviewPanel,
+  ViewColumn,
+  ProgressLocation,
+} from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import {
   digest,
   getAllBuild,
-  getAnalysis,
   getLog,
-  storedData,
+  getAnalysis,
+  readExistedResult,
 } from "../utilities/getInfoFromJenkins";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
 import * as fs from "fs";
-import * as path from "path";
-import { hash } from "crypto";
+// import * as path from "path";
+// import { hash } from "crypto";
 // import Settings from "./JenkinsSettings";
 
 export class JenkinsPanel {
@@ -111,7 +119,7 @@ export class JenkinsPanel {
               value="${JenkinsPanel.settings?.prompt}" readonly>Prompt
             </vscode-text-area>
           </div>
-          <vscode-progress-ring id="loading" class="place-self-center hidden"></vscode-progress-ring>
+          
         </section>
       </details>
           
@@ -124,7 +132,7 @@ export class JenkinsPanel {
           <vscode-checkbox class="p-1 m-1" id="success_check" checked="false">SUCCESS</vscode-checkbox>
           <vscode-checkbox class="p-1 m-1" id="failure_check" checked>FAILURE</vscode-checkbox>
           <vscode-checkbox class="p-1 m-1" id="aborted_check" checked>ABORTED</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-1" id="ignored_check" checked>IGNORED</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-1" id="analysed_check" checked>ANALYSED</vscode-checkbox>
           <vscode-checkbox class="p-1 m-1" id="resolve_check" checked>RESOLVE</vscode-checkbox>
           <vscode-radio-group class="p-1 m-1"  orientation="horizontal" >
             <!-- label class="text-xl" >Recent:</label -->
@@ -195,100 +203,153 @@ export class JenkinsPanel {
   private _setWebviewMessageListener(webView: Webview) {
     webView.onDidReceiveMessage((message) => {
       const command = message.command;
-
+      const token = btoa(JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken);
       switch (command) {
         case "refresh":
           const server_url = JenkinsPanel.settings?.jenkinsServerUrl!;
-          const auth = btoa(
-            JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken
-          );
-
-          getAllBuild(server_url, auth)
-            .then((data) => {
-              // check the local resolve file
-              fs.readdir(JenkinsPanel.storagePath, (err, files) => {
-                if (err) {
-                  console.error("Error reading folder:", err);
-                  return;
-                }
-                const fileSet = new Set(files);
-                data.forEach((record) => {
-                  if (!record.hash) {
-                    return;
-                  }
-                  if (fileSet.has(record.hash)) {
-                    // need to check inside
-                    record.result = "RESOLVE";
-                  }
-                });
-                webView.postMessage({ command: "dataGrid", payload: JSON.stringify(data) });
-              });
-            })
-            .catch((err) => {
-              webView.postMessage({
-                command: "error",
-                message: "Sorry couldn't get info at this time, due to " + err,
-              });
-            });
+          const longRunTask_refresh = this.retriveBuilds(server_url, token, webView);
+          showStatusBarProgress(longRunTask_refresh, "Retriving build logs...");
           break;
         case "analyse":
           const build_url = message.build_url;
-          const token = btoa(
-            JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken
-          );
-          const fileName = digest(build_url);
-          // const json: storedData = {};
-
-          getLog(build_url, token)
-            .then((data) => {
-              const info = this.keepLongTail(data, JenkinsPanel.settings?.maxToken!);
-              // json.push({log:info})
-              webView.postMessage({ command: "log", payload: info });
-              return info;
-            })
-            .then((data) => {
-              return getAnalysis(
-                JenkinsPanel.settings!.localAiUrl,
-                JenkinsPanel.settings!.model,
-                JenkinsPanel.settings!.temperature,
-                JenkinsPanel.settings!.maxToken,
-                JenkinsPanel.settings!.prompt,
-                data
-              );
-            })
-            .then((ret) => {
-              webView.postMessage({
-                command: "analysis",
-                payload: this.removePrefixUsingRegex(ret!, "```"),
-              });
-            })
-            .catch((err) => {
-              webView.postMessage({
-                command: "error",
-                message: "Sorry couldn't get build's log at this time, due to " + err,
-              });
-            });
-
+          const longRunTask_analysis = this.handleAnalysis(build_url, webView, token);
+          showStatusBarProgress(longRunTask_analysis, "analysing the log...");
           break;
         case "batch":
-          console.log("handle all display grid data");
-
+          message.url.forEach((build_url: string) => {
+            const longRunTask_analysis = this.handleAnalysis(build_url, webView, token);
+            showStatusBarProgress(longRunTask_analysis, "analysing the build...\n " + build_url);
+          });
           break;
         case "resolve":
           const hash = digest(message.url);
           const analysis = message.analysis;
           const log = message.log;
-          fs.writeFileSync(
-            JenkinsPanel.storagePath + "/" + hash,
-            JSON.stringify({
-              instrct: JenkinsPanel.settings?.prompt.replace("$PROMPT$", log),
-              input: "",
-              output: analysis,
-            })
-          );
+          const longRunTask_resolve = this.writeResolveFile(hash, log, analysis);
+          showStatusBarProgress(longRunTask_resolve, "writing resolve file...");
           break;
       }
     });
+  }
+
+  private async retriveBuilds(server_url: string, auth: string, webView: Webview) {
+    getAllBuild(server_url, auth)
+      .then((data) => {
+        // check the local resolve file
+        var ret: any[] = [];
+
+        data.forEach((record) => {
+          if (!record.hash) {
+            return;
+          }
+
+          if (fs.existsSync(JenkinsPanel.storagePath + "/analysed/" + record.hash)) {
+            record.result = "ANALYSED";
+            const fileContent = readExistedResult(
+              JenkinsPanel.storagePath + "/analysed/" + record.hash
+            );
+            const result = JSON.parse(fileContent);
+            record.input = result["input"];
+            record.output = result["output"];
+          }
+
+          if (fs.existsSync(JenkinsPanel.storagePath + "/" + record.hash)) {
+            // need to check inside
+            record.result = "RESOLVE";
+            const fileContent = readExistedResult(JenkinsPanel.storagePath + "/" + record.hash);
+            const result = JSON.parse(fileContent);
+            record.input = result["input"];
+            record.output = result["output"];
+          }
+
+          ret.push(record);
+        });
+        return ret;
+      })
+      .then((ret) => {
+        webView.postMessage({ command: "dataGrid", payload: JSON.stringify(ret) });
+      })
+      .catch((err) => {
+        window.showErrorMessage("Sorry couldn't retrive builds info at this time, due to " + err);
+      });
+  }
+
+  private async handleAnalysis(build_url: any, webView: Webview, token: string) {
+    const fileName = digest(build_url);
+    // if (fs.existsSync(JenkinsPanel.storagePath + "/" + fileName)) {
+    //   await this.readExistedResult(JenkinsPanel.storagePath + "/" + fileName, webView);
+    // } else if (fs.existsSync(JenkinsPanel.storagePath + "/analysed/" + fileName)) {
+    //   await this.readExistedResult(JenkinsPanel.storagePath + "/analysed/" + fileName, webView);
+    // } else {
+    await getLog(build_url, token)
+      .then((data) => {
+        const info = this.keepLongTail(data, JenkinsPanel.settings?.maxToken!);
+        // json.push({log:info})
+        webView.postMessage({ command: "log", payload: info });
+        return info;
+      })
+      .then((data) => {
+        return getAnalysis(
+          JenkinsPanel.settings!.localAiUrl,
+          JenkinsPanel.settings!.model,
+          JenkinsPanel.settings!.temperature,
+          JenkinsPanel.settings!.maxToken,
+          JenkinsPanel.settings!.prompt,
+          data
+        );
+      })
+      .then(([data, ret]) => {
+        const content = this.removePrefixUsingRegex(ret!, "```");
+        const hash = digest(build_url);
+        if (!fs.existsSync(JenkinsPanel.storagePath + "/analysed/")) {
+          fs.mkdirSync(JenkinsPanel.storagePath + "/analysed/");
+        }
+        fs.writeFileSync(
+          JenkinsPanel.storagePath + "/analysed/" + hash,
+          JSON.stringify(
+            {
+              instrct: JenkinsPanel.settings?.prompt,
+              input: data,
+              output: content,
+            },
+            null,
+            2
+          )
+        );
+        webView.postMessage({
+          command: "analysis",
+          payload: content,
+        });
+      })
+      .catch((err) => {
+        window.showErrorMessage("Sorry couldn't get build's log at this time, due to " + err);
+      });
+    // }
+  }
+
+  private async readExistedResult(fileName: string, webView: Webview) {
+    const jsonContent = fs.readFileSync(fileName).toString();
+    const jsonObject = JSON.parse(jsonContent);
+    await webView.postMessage({ command: "log", payload: jsonObject["input"] });
+    await webView.postMessage({ command: "analysis", payload: jsonObject["output"] });
+  }
+
+  private async writeResolveFile(hash: string, log: any, analysis: any) {
+    if (fs.existsSync(JenkinsPanel.storagePath + "/analysed/" + hash)) {
+      fs.truncateSync(JenkinsPanel.storagePath + "/analysed/" + hash);
+    }
+    fs.writeFileSync(
+      JenkinsPanel.storagePath + "/" + hash,
+      JSON.stringify(
+        {
+          instrct: JenkinsPanel.settings?.prompt,
+          input: log,
+          output: analysis,
+        },
+        null,
+        2
+      )
+    );
   }
 
   public dispose() {
@@ -306,6 +367,20 @@ export class JenkinsPanel {
     }
   }
 }
+
 function err(reason: any): PromiseLike<never> {
   throw new Error("Function not implemented.");
+}
+
+function showStatusBarProgress(task: Promise<any>, title = "Processing...") {
+  window.withProgress(
+    {
+      location: ProgressLocation.Notification,
+      title: title,
+      cancellable: true, // Set to true if you want to allow cancelling the task
+    },
+    () => {
+      return task; // The progress UI will show until this Promise resolves
+    }
+  );
 }

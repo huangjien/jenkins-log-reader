@@ -1,6 +1,8 @@
 import axios from "axios";
 import OpenAI from "openai";
+import * as fs from "fs";
 import { createHash } from "crypto";
+import { JenkinsPanel } from "../panels/JenkinsPanel";
 
 type Build = {
   url: string;
@@ -16,6 +18,8 @@ type SortedBuild = {
   result: string;
   duration?: string; // ISO format (optional)
   hash?: string;
+  input: string;
+  output: string;
 };
 
 type Job = {
@@ -96,6 +100,8 @@ function getSortedBuilds(data: JenkinsData): SortedBuild[] {
     duration: build.duration ? formatDurationToIso(build.duration) : undefined,
     timestamp: new Date(build.timestamp).toISOString().replace("T", " ").substring(0, 19),
     _timestamp: build.timestamp,
+    input: "",
+    output: "",
   }));
 }
 
@@ -111,7 +117,31 @@ export async function getAllBuild(jenkinsServerUrl: string, auth: string) {
   }
 }
 
+export function readExistedResult(fileName: string): any {
+  const jsonContent = fs.readFileSync(fileName).toString();
+  const jsonObject = JSON.parse(JSON.stringify(jsonContent));
+  return jsonObject;
+}
+
+export function readExistedLog(fileName: string): any {
+  const jsonContent = fs.readFileSync(fileName).toString();
+  const jsonObject = JSON.parse(jsonContent);
+  return jsonObject.input;
+}
+
+export function readExistedFile(fileName: string) {
+  return readExistedResult(fileName)["input"];
+}
+
 export async function getLog(buildUrl: string, auth: string) {
+  // if file already exist, then get it from disk
+  const fileName = digest(buildUrl);
+  if (fs.existsSync(JenkinsPanel.storagePath + "/" + fileName)) {
+    return await readExistedLog(JenkinsPanel.storagePath + "/" + fileName);
+  }
+  if (fs.existsSync(JenkinsPanel.storagePath + "/analysed/" + fileName)) {
+    return await readExistedLog(JenkinsPanel.storagePath + "/analysed/" + fileName);
+  }
   try {
     const response = await axios.get(`${buildUrl}consoleText`, {
       headers: { Authorization: `Basic ${auth}` },
@@ -142,9 +172,9 @@ export async function getAnalysis(
       temperature: temperature,
       max_tokens: maxToken,
     })
-    .then((data) => {
-      const information = data.choices[0]["message"]["content"];
-      return information;
+    .then((ret) => {
+      const information = ret.choices[0]["message"]["content"];
+      return [data, information];
     })
     .catch((err) => {
       throw err;

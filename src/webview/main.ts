@@ -70,6 +70,10 @@ function main() {
   failure_checkbox.addEventListener("change", filterConditionChanged);
   const aborted_checkbox = document.getElementById("aborted_check") as Checkbox;
   aborted_checkbox.addEventListener("change", filterConditionChanged);
+  const analysed_checkbox = document.getElementById("analysed_check") as Checkbox;
+  analysed_checkbox.addEventListener("change", filterConditionChanged);
+  const resolve_checkbox = document.getElementById("resolve_check") as Checkbox;
+  resolve_checkbox.addEventListener("change", filterConditionChanged);
   const radio_1h = document.getElementById("1h_radio") as Radio;
   radio_1h.addEventListener("change", filterConditionChanged);
   const radio_8h = document.getElementById("8h_radio") as Radio;
@@ -90,13 +94,18 @@ function refresh() {
   vscode.postMessage({
     command: "refresh",
   });
-  displayLoadingState();
 }
 
 function batch() {
+  var urls: string[] = [];
+  displayData.forEach((record) => {
+    if (record.result === "FAILURE") {
+      urls.push(record.url);
+    }
+  });
   vscode.postMessage({
     command: "batch",
-    build_url: "nothing",
+    url: urls,
   });
 }
 
@@ -135,6 +144,11 @@ function handleRowFocused(e: Event) {
   }
   ai_section?.classList.remove("hidden");
   const instruct = document.getElementById("instruct");
+  //get data by url
+  const focused_data = displayData.filter((obj) => {
+    return obj.url === row.rowData!["url"];
+  });
+
   if (instruct) {
     instruct.textContent = row.rowData["url"].replace('"', "");
   }
@@ -142,13 +156,13 @@ function handleRowFocused(e: Event) {
   analyse_button?.addEventListener("click", analyse);
   const build_log = document.getElementById("build_log");
   if (build_log) {
-    build_log.textContent = "Not Analysed Yet.";
+    build_log.textContent = focused_data[0]["input"];
   }
   const resolve_button = document.getElementById("resolve");
   resolve_button?.addEventListener("click", resolve);
   const analysis_content = document.getElementById("analysis") as TextArea;
   if (analysis_content) {
-    analysis_content.value = "";
+    analysis_content.value = focused_data[0]["output"];
   }
 }
 
@@ -160,6 +174,8 @@ function filterConditionChanged() {
   const success_checkbox = document.getElementById("success_check") as Checkbox;
   const failure_checkbox = document.getElementById("failure_check") as Checkbox;
   const aborted_checkbox = document.getElementById("aborted_check") as Checkbox;
+  const resolve_checkbox = document.getElementById("resolve_check") as Checkbox;
+  const analysed_checkbox = document.getElementById("analysed_check") as Checkbox;
   const radio_1h = document.getElementById("1h_radio") as Radio;
   const radio_8h = document.getElementById("8h_radio") as Radio;
   const radio_1d = document.getElementById("1d_radio") as Radio;
@@ -178,6 +194,16 @@ function filterConditionChanged() {
   if (!aborted_checkbox.checked.valueOf()) {
     displayData = displayData.filter((el) => {
       return el.result !== "ABORTED";
+    });
+  }
+  if (!analysed_checkbox.checked.valueOf()) {
+    displayData = displayData.filter((el) => {
+      return el.result !== "ANALYSED";
+    });
+  }
+  if (!resolve_checkbox.checked.valueOf()) {
+    displayData = displayData.filter((el) => {
+      return el.result !== "RESOLVE";
     });
   }
   var recent = 28800;
@@ -227,25 +253,11 @@ function setVSCodeMessageListener() {
           analysis.value = analysis_result;
         }
         break;
-      case "error":
-        displayError(event.data.message);
-        break;
     }
   });
 }
 
-function displayLoadingState() {
-  const loading = document.getElementById("loading") as ProgressRing;
-  const notification = document.getElementById("notification");
-  if (notification) {
-    loading.classList.remove("hidden");
-    notification.textContent = "Getting Information...";
-  }
-}
-
 function displayGridData() {
-  const loading = document.getElementById("loading") as ProgressRing;
-  loading.classList.add("hidden");
   // const batch_button = document.getElementById("batch") as Button;
   // batch_button.classList.remove("hidden");
   const count = document.getElementById("count")!;
@@ -270,15 +282,5 @@ function displayGridData() {
   if (basicGrid) {
     // Populate grid with data
     basicGrid.rowsData = displayData;
-  }
-}
-
-function displayError(errorMsg) {
-  const loading = document.getElementById("loading") as ProgressRing;
-  const notification = document.getElementById("notification");
-  if (loading && notification) {
-    loading.classList.remove("hidden");
-    // icon.classList.add("hidden");
-    notification.textContent = errorMsg;
   }
 }

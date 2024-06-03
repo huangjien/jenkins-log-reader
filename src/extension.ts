@@ -8,6 +8,9 @@ export function activate(context: ExtensionContext) {
   if (!existsSync(storagePath)) {
     mkdirSync(storagePath, { recursive: true });
   }
+  if (!existsSync(storagePath + "/analysed/")) {
+    mkdirSync(storagePath, { recursive: true });
+  }
   let disposal = commands.registerCommand("jenkins-log-reader.webView", () => {
     const jenkinsServerUrl = getConfig("jenkins-log-reader.jenkinsServerUrl");
 
