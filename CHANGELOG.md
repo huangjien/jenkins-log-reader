@@ -1,6 +1,10 @@
 # Changelog
 
-## [v0.2.17]
+## [v0.2.18]
+
+### New Feature
+
+- feat: 🎸 batch handle [1b8bbd8](https://github.com/huangjien/jenkins-log-reader/commit/1b8bbd80069a2f07a5462d8336b89468854879cf)
 
 ### Bug Fix
 
