@@ -6,11 +6,11 @@ This Visual Studio Code extension allows you to use local AI model to analyse th
 
 You need to install a local AI with model. I will recommend [ollama](https://ollama.com/) and llama3
 
-* Install ollama from [here](https://ollama.com/download)
+- Install ollama from [here](https://ollama.com/download)
 
-* Get llama3
+- Get llama3
 
-```ollama run llama3 ``` or ```ollama pull llama3```
+`ollama run llama3 ` or `ollama pull llama3`
 
 ## How to use it
 
@@ -18,7 +18,7 @@ You need to install a local AI with model. I will recommend [ollama](https://oll
 
 2. press **Command + Shift + p** (For windows: **Ctrl + Shift + p**), choose **Read Jenkins Log** to activate this extension.
 
-    or press shortcut **Command + r** (For windows: **Ctrl + r**)
+   or press shortcut **Command + r** (For windows: **Ctrl + r**)
 
 <img src="resources/activate.png" alt="Settings" />
 
