@@ -73,7 +73,7 @@ export class JenkinsPanel {
       <details>
         <summary>
           <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
-            <h1 class="text-xl text-center font-bold mx-8 text-red-600">Jenkins Instance</h1>
+            <h1 class="text-xl text-center font-bold mx-8 text-inherit">Jenkins Instance</h1>
             <vscode-button class="text-xs text-center rounded h-6 w-20 self-center ml-4" id="refresh">Refresh</vscode-button>
           </div>
         </summary>
@@ -124,7 +124,7 @@ export class JenkinsPanel {
       </details>
           
         <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
-          <h2 class="text-xl text-center font-bold mx-8 text-yellow-600">Jobs - Builds</h2>
+          <h2 class="text-xl text-center font-bold mx-8 text-inherit">Jobs - Builds</h2>
           <vscode-button class="text-xs text-center h-6 w-20 self-center rounded" id="batch">Batch</vscode-button>
         </div>
         <div class="inline-flex flex-wrap gap-1 w-full" >
@@ -336,7 +336,7 @@ export class JenkinsPanel {
 
   private async writeResolveFile(hash: string, log: any, analysis: any) {
     if (fs.existsSync(JenkinsPanel.storagePath + "/analysed/" + hash)) {
-      fs.truncateSync(JenkinsPanel.storagePath + "/analysed/" + hash);
+      fs.rmSync(JenkinsPanel.storagePath + "/analysed/" + hash);
     }
     fs.writeFileSync(
       JenkinsPanel.storagePath + "/" + hash,
