@@ -168,7 +168,7 @@ export async function getAnalysis(
   return await localAi.chat.completions
     .create({
       model: model,
-      messages: [{ role: "assistant", content: prompt.replace("$PROMPT$", data) }],
+      messages: [{ role: "user", content: prompt.replace("$PROMPT$", "\n" + data + "\n") }],
       temperature: temperature,
       max_tokens: maxToken,
     })
