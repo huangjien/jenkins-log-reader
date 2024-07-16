@@ -69,52 +69,56 @@ export class JenkinsPanel {
     <title>Jenkins Log Analysis</title>
   </head>
     <body>
-      <div class="container align-center mx-auto px-16">
+      
       <details>
         <summary>
-          <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
-            <h1 class="text-xl text-center font-bold mx-8 text-inherit">Jenkins Instance</h1>
-            <vscode-button class="text-xs text-center rounded h-6 w-20 self-center ml-4" id="refresh">Refresh</vscode-button>
+          <div class="grid grid-cols-4 gap-1  " >
+            <h1 class="col-span-3 text-xl text-center font-bold  text-inherit">Jenkins Server</h1>
+            <vscode-button class="col-span-1 w-20 place-self-end text-xs text-center rounded h-6 " id="refresh">Refresh</vscode-button>
           </div>
         </summary>
-        <section class="grid grid-cols-4 grid-rows-2 gap-1 w-full align-middle">
-          <div class="col-span-3 m-2 p-2 row-span-2 grid grid-cols-3 gap-1" >
-            <vscode-text-field class="col-span-1"
-              id="server_url" readonly
-              placeholder="Jenkins Server URL"
-              value="${JenkinsPanel.settings?.jenkinsServerUrl}" readonly>Jenkins Server URL
-            </vscode-text-field>
-            <vscode-text-field class="col-span-1"
-              id="username"
-              placeholder="Jenkins User Name"
-              value="${JenkinsPanel.settings?.username}" readonly>Jenkins User Name
-            </vscode-text-field>
-            <vscode-text-field class="col-span-1"
-              id="token"
-              placeholder="Jenkins API Token"
-              type="password"
-              value="${JenkinsPanel.settings?.apiToken}" readonly>Jenkins API Token
-            </vscode-text-field>
+        <section class="grid grid-cols-4  gap-1 align-middle">
+
+          <div class="col-span-3 w-full justify-between gap-1 " >
             
-            <vscode-text-field class="col-span-1"
-              id="localAiUrl"
-              placeholder="Local AI Endpoint"
-              value="${JenkinsPanel.settings?.localAiUrl}" readonly>Local AI Endpoint
-            </vscode-text-field>
-            <vscode-text-field class="col-span-1"
-              id="model" 
-              placeholder="Local AI Model"
-              value="${JenkinsPanel.settings?.model}" readonly>Local AI Model
-            </vscode-text-field>
-            <vscode-text-field class="col-span-1"
-              id="temperature"
-              placeholder="Local AI Temperature"
-              value="${JenkinsPanel.settings?.temperature}" readonly>Local AI Temperature
-            </vscode-text-field>
+              <vscode-text-field class="w-1/4 m-2"
+                id="server_url" readonly
+                placeholder="Jenkins Server URL"
+                value="${JenkinsPanel.settings?.jenkinsServerUrl}" readonly>Jenkins Server URL
+              </vscode-text-field>
+              <vscode-text-field class="w-1/4 m-2"
+                id="username"
+                placeholder="Jenkins User Name"
+                value="${JenkinsPanel.settings?.username}" readonly>Jenkins User Name
+              </vscode-text-field>
+              <vscode-text-field class="w-1/4 m-2"
+                id="token"
+                placeholder="Jenkins API Token"
+                type="password"
+                value="${JenkinsPanel.settings?.apiToken}" readonly>Jenkins API Token
+              </vscode-text-field>
+              
+              <vscode-text-field class="w-1/4 m-2"
+                id="localAiUrl"
+                placeholder="Local AI Endpoint"
+                value="${JenkinsPanel.settings?.localAiUrl}" readonly>Local AI Endpoint
+              </vscode-text-field>
+              <vscode-text-field class="w-1/4 m-2"
+                id="model" 
+                placeholder="Local AI Model"
+                value="${JenkinsPanel.settings?.model}" readonly>Local AI Model
+              </vscode-text-field>
+              <vscode-text-field class="w-1/4 m-2"
+                id="temperature"
+                placeholder="Local AI Temperature"
+                value="${JenkinsPanel.settings?.temperature}" readonly>Local AI Temperature
+              </vscode-text-field>
+            
           </div>
-          <div class="col-span-1 row-span-2">
-            <vscode-text-area class="col-span-1 w-full"
-              id="prompt" rows="4"
+
+          <div class="col-span-1">
+            <vscode-text-area class=" w-full"
+              id="prompt" rows="5"
               placeholder="Local AI Prompt"
               value="${JenkinsPanel.settings?.prompt}" readonly>Prompt
             </vscode-text-area>
@@ -123,23 +127,23 @@ export class JenkinsPanel {
         </section>
       </details>
           
-        <div class="inline-flex items-center justify-between mx-auto m-4 p-4 gap-2 w-full " >
-          <h2 class="text-xl text-center font-bold mx-8 text-inherit">Jobs - Builds</h2>
-          <vscode-button class="text-xs text-center h-6 w-20 self-center rounded" id="batch">Batch</vscode-button>
+        <div class="grid grid-cols-4 gap-1  " >
+          <h2 class="col-span-3 text-xl text-center font-bold mx-8 text-inherit">Jobs - Builds</h2>
+          <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="batch">Batch</vscode-button>
         </div>
         <div class="inline-flex flex-wrap gap-1 w-full" >
           
-          <vscode-checkbox class="p-1 m-1" id="success_check" checked="false">SUCCESS</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-1" id="failure_check" checked>FAILURE</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-1" id="aborted_check" checked>ABORTED</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-1" id="analysed_check" checked>ANALYSED</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-1" id="resolve_check" checked>RESOLVE</vscode-checkbox>
-          <vscode-radio-group class="p-1 m-1"  orientation="horizontal" >
+          <vscode-checkbox class="p-1 m-0.5" id="success_check" checked="false">SUCCESS</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-0.5" id="failure_check" checked>FAILURE</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-0.5" id="aborted_check" checked>ABORTED</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-0.5" id="analysed_check" checked>ANALYSED</vscode-checkbox>
+          <vscode-checkbox class="p-1 m-0.5" id="resolve_check" checked>RESOLVE</vscode-checkbox>
+          <vscode-radio-group class="p-1 m-0.5"  orientation="horizontal" >
             <!-- label class="text-xl" >Recent:</label -->
-            <vscode-radio class="p-1 m-1" id="1h_radio" value="3600">1 hour</vscode-radio>
-            <vscode-radio class="p-1 m-1" id="8h_radio" checked value="28800">8 hours</vscode-radio>
-            <vscode-radio class="p-1 m-1" id="1d_radio" value="86400">1 day</vscode-radio>
-            <vscode-radio class="p-1 m-1" id="3d_radio" value="259200">3 days</vscode-radio>
+            <vscode-radio class="p-1 m-0.5" id="1h_radio" value="3600">1 hour</vscode-radio>
+            <vscode-radio class="p-1 m-0.5" id="8h_radio" checked value="28800">8 hours</vscode-radio>
+            <vscode-radio class="p-1 m-0.5" id="1d_radio" value="86400">1 day</vscode-radio>
+            <vscode-radio class="p-1 m-0.5" id="3d_radio" value="259200">3 days</vscode-radio>
           </vscode-radio-group>
           <p id="count"></p>
         </div>
@@ -171,7 +175,7 @@ export class JenkinsPanel {
         </details>
         </section>
         <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
-      </div>
+      
     </body>
 </html>
           `;
