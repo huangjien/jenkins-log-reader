@@ -158,8 +158,8 @@ export class JenkinsPanel {
         <section id="analysis-container" class="flex-wrap gap-1 h-full hidden" >
         <details class="w-full" >
           <summary class="flex flex-wrap m-1 p-1">
-            <p id="instruct" class="m2 p-2" ></p> 
-            <vscode-button class="text-xs text-center h-6 w-20 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
+            <p id="instruct" class="m2 w-10/12 p-2" ></p> 
+            <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
           </summary>
           <details class="w-full">
             <summary class="text-xl font-bold text-white-600">Jenkins Build Log</summary>
@@ -168,8 +168,8 @@ export class JenkinsPanel {
           <details class="w-full">
             <summary class="text-xl font-bold text-white-600">AI Analysis</summary>
             <div class="flex flex-wrap m-1 p-1 h-full">
-              <vscode-text-area rows="10" class="basis-10/12 max-w-5xl" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
-              <vscode-button class=" basis-1/12 text-xs text-center h-6 w-20 self-center ml-4 rounded" id="resolve">Resolve</vscode-button>
+              <vscode-text-area rows="10" class=" w-10/12" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
+              <vscode-button class=" w-1/12 text-xs text-center h-6 self-center ml-4 rounded" id="resolve">Resolve</vscode-button>
             </div>
           </details>
         </details>
