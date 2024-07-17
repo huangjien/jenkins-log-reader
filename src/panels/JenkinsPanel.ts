@@ -131,7 +131,7 @@ export class JenkinsPanel {
           <h2 class="col-span-3 text-xl text-center font-bold mx-8 text-inherit">Jobs - Builds</h2>
           <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="batch">Batch</vscode-button>
         </div>
-        <div class="inline-flex flex-wrap gap-1 w-full" >
+        <div class="flex flex-auto flex-row gap-1" >
           
           <vscode-checkbox class="p-1 m-0.5" id="success_check" checked="false">SUCCESS</vscode-checkbox>
           <vscode-checkbox class="p-1 m-0.5" id="failure_check" checked>FAILURE</vscode-checkbox>
