@@ -21,8 +21,7 @@ jobs:
         with:
           node-version: 22
 
-      - run: npm install
-      - run: npm audit fix --force
+      - run: npm install && npm audit fix --force
       - run: npm install -g @vscode/vsce
       - run: npm run compile
       - run: npm run prepublish
