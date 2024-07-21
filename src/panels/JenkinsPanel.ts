@@ -43,7 +43,7 @@ export class JenkinsPanel {
     if (JenkinsPanel.currentPanel) {
       JenkinsPanel.currentPanel._panel.reveal(ViewColumn.One);
     } else {
-      const panel = window.createWebviewPanel("webView", "Jenkins Log Analysis", ViewColumn.One, {
+      const panel = window.createWebviewPanel("webview", "Jenkins Log Analysis", ViewColumn.One, {
         enableScripts: true,
         localResourceRoots: [Uri.joinPath(extensionUri, "out")],
       });
@@ -66,7 +66,7 @@ export class JenkinsPanel {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; style-src-elem ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}">
     <link rel="stylesheet" href="${stylesUri}">
-    <title>Jenkins Log Analysis</title>
+    <title>Jenkins Logs Analysis</title>
   </head>
     <body>
       
