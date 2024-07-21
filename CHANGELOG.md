@@ -1,6 +1,6 @@
 # Changelog
 
-## [v0.3.3]
+## [v0.3.4]
 
 ### New Feature
 
