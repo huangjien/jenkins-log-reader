@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "engines": {
     "vscode": "^1.91.0"
   },
@@ -121,7 +121,7 @@
     "vscode:prepublish": "npm run package",
     "compile:esbuild": "node ./esbuild.js ",
     "compile:css": "npx tailwindcss -i ./src/extension.css -o ./out/extension.css --minify",
-    "compile": "npm-run-all --parallel compile:*",
+    "compile": "npm run compile:esbuild && npm run compile:css",
     "package": "NODE_ENV=production node ./esbuild.js",
     "watch": "node ./esbuild.js && npx tailwindcss -i ./src/extension.css -o ./out/extension.css --minify",
     "test": "vscode-test",
@@ -143,7 +143,6 @@
     "glob": "^11.0.0",
     "husky": "^9.1.1",
     "normalize.css": "^8.0.1",
-    "npm-run-all": "^4.1.5",
     "postcss": "^8.4.39",
     "prettier": "^3.3.3",
     "react": "18.3.1",
