@@ -21,8 +21,8 @@ jobs:
         with:
           node-version: 22
 
-      - run: npm install 
       - run: npm install npm-run-all -D
+      - run: npm install --legacy-peer-deps
       - run: npm audit fix --force
       - run: npm install -g @vscode/vsce
       - run: npm run compile
