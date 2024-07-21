@@ -24,7 +24,7 @@ jobs:
       - run: npm install npm-run-all -D --force
       - run: npm install --legacy-peer-deps
       - run: npm audit fix --force
-      - run: npm install -g @vscode/vsce
+      - run: npm install -g @vscode/vsce --force
       - run: npm run compile
       - run: npm run prepublish
       - run: vsce package
