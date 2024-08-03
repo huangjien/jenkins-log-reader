@@ -69,13 +69,13 @@ export class JenkinsPanel {
     <title>Jenkins Logs Analysis</title>
   </head>
     <body>
-      
+      <div class="container mx-auto">
       <details>
         <summary>
-          <div class="grid grid-cols-4 gap-1  " >
-            <h1 class="col-span-3 text-xl text-center font-bold  text-inherit">Jenkins Server</h1>
-            <vscode-button class="col-span-1 w-20 place-self-end text-xs text-center rounded h-6 " id="refresh">Refresh</vscode-button>
-          </div>
+          <p class="grid grid-cols-4 gap-1  " >
+            <h1 class="col-span-2 text-xl text-center font-bold  text-inherit">Jenkins Server</h1>
+            <vscode-button class="col-span-1 w-auto place-self-end text-xs text-center rounded h-6 " id="refresh">Refresh</vscode-button>
+          </p>
         </summary>
         <section class="grid grid-cols-4  gap-1 align-middle">
 
@@ -175,7 +175,7 @@ export class JenkinsPanel {
         </details>
         </section>
         <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
-      
+      </div>
     </body>
 </html>
           `;
