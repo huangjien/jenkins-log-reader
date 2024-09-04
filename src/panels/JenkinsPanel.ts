@@ -18,6 +18,9 @@ import {
 } from "../utilities/getInfoFromJenkins";
 import "../extension.css";
 import JenkinsSettings from "./JenkinsSettings";
+import Markdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import * as fs from "fs";
 // import * as path from "path";
 // import { hash } from "crypto";
@@ -168,7 +171,10 @@ export class JenkinsPanel {
           <details class="w-full">
             <summary class="text-xl font-bold text-white-600">AI Analysis</summary>
             <div class="flex flex-wrap m-1 p-1 h-full">
-              <vscode-text-area rows="10" class=" w-10/12" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
+              <Markdown id="analysis" remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                
+              </Markdown>
+              <!-- vscode-text-area rows="10" class=" w-10/12" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area -->
               <vscode-button class=" w-1/12 text-xs text-center h-6 self-center ml-4 rounded" id="resolve">Resolve</vscode-button>
             </div>
           </details>
