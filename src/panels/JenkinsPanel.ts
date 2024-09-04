@@ -5,6 +5,7 @@ import {
   window,
   WebviewPanel,
   ViewColumn,
+  commands,
   ProgressLocation,
 } from "vscode";
 import { getUri } from "../utilities/getUri";
@@ -320,6 +321,11 @@ export class JenkinsPanel {
             2
           )
         );
+        fs.writeFileSync(JenkinsPanel.storagePath + "/analysed/" + hash+".md", 
+          "<details>\n<summary>Jenkins Log</summary>\n"+data+"</details>\n\n"
+          +content )
+        const uri = Uri.file(JenkinsPanel.storagePath + "/analysed/" + hash+".md");
+        commands.executeCommand('markdown.showPreview', uri);
         webView.postMessage({
           command: "analysis",
           payload: content,
