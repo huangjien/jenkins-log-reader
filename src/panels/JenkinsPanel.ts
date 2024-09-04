@@ -72,10 +72,10 @@ export class JenkinsPanel {
       <div class="container mx-auto">
       <details>
         <summary>
-          <p class="grid grid-cols-4 gap-1  " >
-            <h1 class="col-span-2 text-xl text-center font-bold  text-inherit">Jenkins Server</h1>
-            <vscode-button class="col-span-1 w-auto place-self-end text-xs text-center rounded h-6 " id="refresh">Refresh</vscode-button>
-          </p>
+          <div style="display: flex" >
+            <h1 >Jenkins Server</h1>
+            <vscode-button  id="refresh">Refresh</vscode-button>
+          </div>
         </summary>
         <section class="grid grid-cols-4  gap-1 align-middle">
 
