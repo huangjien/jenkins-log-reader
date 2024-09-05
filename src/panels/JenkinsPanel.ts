@@ -322,7 +322,7 @@ export class JenkinsPanel {
           )
         );
         fs.writeFileSync(JenkinsPanel.storagePath + "/analysed/" + hash+".md", 
-          "<details>\n<summary>Jenkins Log</summary>\n"+data+"</details>\n\n"
+          "<details>\n<summary>Jenkins Log</summary>\n<pre>\n"+data+"\n</pre></details>\n\n"
           +content )
         const uri = Uri.file(JenkinsPanel.storagePath + "/analysed/" + hash+".md");
         commands.executeCommand('markdown.showPreview', uri);
