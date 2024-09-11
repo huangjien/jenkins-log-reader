@@ -2,6 +2,7 @@ import { ExtensionContext, window, commands, ViewColumn, workspace } from "vscod
 import { JenkinsPanel } from "./panels/JenkinsPanel";
 import JenkinsSettings from "./panels/JenkinsSettings";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { LogReaderResultWebViewProvider } from "./providers/LogReaderResultWebViewProvider";
 
 export function activate(context: ExtensionContext) {
   const storagePath = context.globalStorageUri.fsPath;
@@ -58,6 +59,19 @@ export function activate(context: ExtensionContext) {
   });
 
   context.subscriptions.push(disposal);
+
+  setupSidebarWebviewProvider(context);
+}
+
+function setupSidebarWebviewProvider(context: ExtensionContext) {
+  const provider = new LogReaderResultWebViewProvider(context);
+  context.subscriptions.push(
+    window.registerWebviewViewProvider(
+      'jenkins-log-reader_result-view',
+      provider
+    )
+  );
+  return provider;
 }
 
 function getConfig(config_key: string): any {
