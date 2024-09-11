@@ -322,15 +322,14 @@ export class JenkinsPanel {
             2
           )
         );
-        fs.writeFileSync(
-          JenkinsPanel.storagePath + "/analysed/" + hash + ".md",
+        const fileContent =
           "<details>\n<summary>Jenkins Log</summary>\n<pre>\n" +
-            data?.replace(/(?:\r\n|\r|\n)/g, "\n\n") +
-            "\n</pre></details>\n\n" +
-            content
-        );
+          data?.replace(/(?:\r\n|\r|\n)/g, "\n\n") +
+          "\n</pre></details>\n\n" +
+          content;
+        fs.writeFileSync(JenkinsPanel.storagePath + "/analysed/" + hash + ".md", fileContent);
         const uri = Uri.file(JenkinsPanel.storagePath + "/analysed/" + hash + ".md");
-        commands.executeCommand("markdown.showPreview", uri);
+        commands.executeCommand("jenkins-log-reader.showResult", fileContent);
         webView.postMessage({
           command: "analysis",
           payload: content,

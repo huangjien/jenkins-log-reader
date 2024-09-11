@@ -63,6 +63,23 @@ export function activate(context: ExtensionContext) {
   setupSidebarWebviewProvider(context);
 }
 
+function registerCommandOfShowResult(
+  context: ExtensionContext,
+  provider: LogReaderResultWebViewProvider,
+  storagePath: string
+) {
+  context.subscriptions.push(
+    commands.registerCommand("jenkins-log-reader.showResult", (fileContent: string) => {
+      if (provider._view) {
+        commands.executeCommand("jenkins-log-reader_result-view.focus");
+        if (fileContent) {
+          provider.updateContent(fileContent);
+        }
+      }
+    })
+  );
+}
+
 function setupSidebarWebviewProvider(context: ExtensionContext) {
   const provider = new LogReaderResultWebViewProvider(context);
   context.subscriptions.push(
