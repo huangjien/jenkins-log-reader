@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.3.24",
+  "version": "0.3.25",
   "engines": {
     "vscode": "^1.93.0"
   },

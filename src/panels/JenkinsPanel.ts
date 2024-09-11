@@ -66,6 +66,7 @@ export class JenkinsPanel {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; style-src-elem ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}">
+    <link href="https://unpkg.com/tailwindcss@^3.4.10/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="${stylesUri}">
     <title>Jenkins Logs Analysis</title>
   </head>
