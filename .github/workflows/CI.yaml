@@ -21,8 +21,8 @@ jobs:
         with:
           node-version: 21
 
-      - run: npm install 
-      - run: npm install -g @vscode/vsce 
+      - run: npm install
+      - run: npm install -g @vscode/vsce
       - run: npm run compile
       - run: npm run prepublish
       - run: vsce package

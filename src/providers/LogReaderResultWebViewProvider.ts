@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
-import { marked } from 'marked';
+import * as vscode from "vscode";
+import { marked } from "marked";
 
 export class LogReaderResultWebViewProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = 'markdownView';
+  public static readonly viewType = "markdownView";
   public _view?: vscode.WebviewView;
   constructor(private context: vscode.ExtensionContext) {}
   resolveWebviewView(
@@ -17,15 +17,9 @@ export class LogReaderResultWebViewProvider implements vscode.WebviewViewProvide
     webviewView.webview.html = this.getWebviewContent(webviewView.webview);
   }
   public updateContent(markdownText: string): void {
-    this._view!.webview!.html = this.getWebviewContent(
-      this._view!.webview,
-      markdownText
-    );
+    this._view!.webview!.html = this.getWebviewContent(this._view!.webview, markdownText);
   }
-  getWebviewContent(
-    webview: vscode.Webview,
-    markdownText: string = ''
-  ): string {
+  getWebviewContent(webview: vscode.Webview, markdownText: string = ""): string {
     const htmlContent = marked(markdownText)!;
     return `
   <!DOCTYPE html>

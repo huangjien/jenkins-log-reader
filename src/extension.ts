@@ -66,10 +66,7 @@ export function activate(context: ExtensionContext) {
 function setupSidebarWebviewProvider(context: ExtensionContext) {
   const provider = new LogReaderResultWebViewProvider(context);
   context.subscriptions.push(
-    window.registerWebviewViewProvider(
-      'jenkins-log-reader_result-view',
-      provider
-    )
+    window.registerWebviewViewProvider("jenkins-log-reader_result-view", provider)
   );
   return provider;
 }
