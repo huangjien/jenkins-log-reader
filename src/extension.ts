@@ -1,8 +1,8 @@
 import { ExtensionContext, window, commands, ViewColumn, workspace } from "vscode";
-import { JenkinsPanel } from "./panels/JenkinsPanel";
-import JenkinsSettings from "./panels/JenkinsSettings";
+import { JenkinsPanel } from "./JenkinsPanel";
+import JenkinsSettings from "./JenkinsSettings";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { LogReaderResultWebViewProvider } from "./providers/LogReaderResultWebViewProvider";
+import { LogReaderResultWebViewProvider } from "./LogReaderResultWebViewProvider";
 
 export function activate(context: ExtensionContext) {
   const storagePath = context.globalStorageUri.fsPath;

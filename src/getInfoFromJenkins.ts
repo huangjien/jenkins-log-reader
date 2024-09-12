@@ -2,7 +2,7 @@ import axios from "axios";
 import OpenAI from "openai";
 import * as fs from "fs";
 import { createHash } from "crypto";
-import { JenkinsPanel } from "../panels/JenkinsPanel";
+import { JenkinsPanel } from "./JenkinsPanel";
 
 type Build = {
   url: string;

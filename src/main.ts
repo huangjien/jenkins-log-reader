@@ -1,16 +1,10 @@
 import {
   provideVSCodeDesignSystem,
   Button,
-  Dropdown,
   DataGrid,
   Checkbox,
   Radio,
-  RadioGroup,
-  DataGridCell,
   DataGridRow,
-  ProgressRing,
-  Divider,
-  TextField,
   vsCodeButton,
   vsCodeDropdown,
   vsCodeDivider,
@@ -19,16 +13,13 @@ import {
   vsCodeDataGrid,
   vsCodeDataGridRow,
   vsCodeDataGridCell,
-  vsCodeLink,
   vsCodeCheckbox,
   vsCodeRadioGroup,
   vsCodeRadio,
-  vsCodePanelTab,
   vsCodeTextField,
   vsCodeProgressRing,
   TextArea,
 } from "@vscode/webview-ui-toolkit";
-import * as fs from "fs";
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
