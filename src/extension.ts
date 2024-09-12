@@ -60,13 +60,14 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions.push(disposal);
 
-  setupSidebarWebviewProvider(context);
+  const provider = setupSidebarWebviewProvider(context);
+
+  registerCommandOfShowResult(context, provider);
 }
 
 function registerCommandOfShowResult(
   context: ExtensionContext,
-  provider: LogReaderResultWebViewProvider,
-  storagePath: string
+  provider: LogReaderResultWebViewProvider
 ) {
   context.subscriptions.push(
     commands.registerCommand("jenkins-log-reader.showResult", (fileContent: string) => {

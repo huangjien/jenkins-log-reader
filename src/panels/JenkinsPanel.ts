@@ -73,10 +73,10 @@ export class JenkinsPanel {
     <body>
       <div class="container mx-auto">
       <details>
-        <summary>
-          <div style="display: flex" >
-            <h1 >Jenkins Server</h1>
-            <vscode-button  id="refresh">Refresh</vscode-button>
+        <summary class="list-none">
+          <div class="grid grid-cols-4 gap-1  " >
+            <h2 class="col-span-3 text-xl text-center font-bold mx-8 text-inherit" >Jenkins Server</h2>
+            <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="refresh">Refresh</vscode-button>
           </div>
         </summary>
         <section class="grid grid-cols-4  gap-1 align-middle">
@@ -159,16 +159,16 @@ export class JenkinsPanel {
         </section>
         <section id="analysis-container" class="flex-wrap gap-1 h-full hidden" >
         <details class="w-full" >
-          <summary class="flex flex-wrap m-1 p-1">
+          <summary class="flex flex-wrap m-1 p-1 list-none">
             <p id="instruct" class="m2 w-10/12 p-2" ></p> 
             <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
           </summary>
           <details class="w-full">
-            <summary class="text-xl font-bold text-white-600">Jenkins Build Log</summary>
+            <summary class="text-xl font-bold text-white-600 list-none">Jenkins Build Log</summary>
             <pre id="build_log" class=" whitespace-pre-wrap  break-words" ></pre>
           </details>
           <details class="w-full">
-            <summary class="text-xl font-bold text-white-600">AI Analysis</summary>
+            <summary class="text-xl font-bold text-white-600 list-none">AI Analysis</summary>
             <div class="flex flex-wrap m-1 p-1 h-full">
               <vscode-text-area rows="10" class=" w-10/12" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
               <vscode-button class=" w-1/12 text-xs text-center h-6 self-center ml-4 rounded" id="resolve">Resolve</vscode-button>
@@ -281,16 +281,9 @@ export class JenkinsPanel {
   }
 
   private async handleAnalysis(build_url: any, webView: Webview, token: string) {
-    const fileName = digest(build_url);
-    // if (fs.existsSync(JenkinsPanel.storagePath + "/" + fileName)) {
-    //   await this.readExistedResult(JenkinsPanel.storagePath + "/" + fileName, webView);
-    // } else if (fs.existsSync(JenkinsPanel.storagePath + "/analysed/" + fileName)) {
-    //   await this.readExistedResult(JenkinsPanel.storagePath + "/analysed/" + fileName, webView);
-    // } else {
     await getLog(build_url, token)
       .then((data) => {
         const info = this.keepLongTail(data, JenkinsPanel.settings?.maxToken!);
-        // json.push({log:info})
         webView.postMessage({ command: "log", payload: info });
         return info;
       })
@@ -323,12 +316,15 @@ export class JenkinsPanel {
           )
         );
         const fileContent =
-          "<details>\n<summary>Jenkins Log</summary>\n<pre>\n" +
+          hash +
+          "\n\n### " +
+          build_url +
+          "\n\n <details>\n<summary>Jenkins Log</summary>\n<pre>\n" +
           data?.replace(/(?:\r\n|\r|\n)/g, "\n\n") +
           "\n</pre></details>\n\n" +
           content;
         fs.writeFileSync(JenkinsPanel.storagePath + "/analysed/" + hash + ".md", fileContent);
-        const uri = Uri.file(JenkinsPanel.storagePath + "/analysed/" + hash + ".md");
+
         commands.executeCommand("jenkins-log-reader.showResult", fileContent);
         webView.postMessage({
           command: "analysis",
