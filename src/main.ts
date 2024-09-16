@@ -110,6 +110,15 @@ function analyse() {
   });
 }
 
+function showResult() {
+  const instruct = document.getElementById("instruct");
+  const url = instruct?.innerText;
+  vscode.postMessage({
+    command: "showResult",
+    build_url: url,
+  });
+}
+
 function resolve() {
   const instruct = document.getElementById("instruct");
   const url = instruct?.textContent;
@@ -145,6 +154,8 @@ function handleRowFocused(e: Event) {
   }
   const analyse_button = document.getElementById("analyse");
   analyse_button?.addEventListener("click", analyse);
+  const showResult_button = document.getElementById("showResult");
+  showResult_button?.addEventListener("click", showResult);
   const build_log = document.getElementById("build_log");
   if (build_log) {
     build_log.textContent = focused_data[0]["input"];

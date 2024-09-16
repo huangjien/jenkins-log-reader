@@ -10,13 +10,7 @@ import {
 } from "vscode";
 import { getUri } from "./getUri";
 import { getNonce } from "./getNonce";
-import {
-  digest,
-  getAllBuild,
-  getLog,
-  getAnalysis,
-  readExistedResult,
-} from "./getInfoFromJenkins";
+import { digest, getAllBuild, getLog, getAnalysis, readExistedResult } from "./getInfoFromJenkins";
 import "./extension.css";
 import JenkinsSettings from "./JenkinsSettings";
 import * as fs from "fs";
@@ -160,8 +154,9 @@ export class JenkinsPanel {
         <section id="analysis-container" class="flex-wrap gap-1 h-full hidden" >
         <details class="w-full" >
           <summary class="flex flex-wrap m-1 p-1 list-none">
-            <p id="instruct" class="m2 w-10/12 p-2" ></p> 
+            <p id="instruct" class="m2 w-9/12 p-2" ></p> 
             <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
+            <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="showResult">Show Result</vscode-button>
           </summary>
           <details class="w-full">
             <summary class="text-xl font-bold text-white-600 list-none">Jenkins Build Log</summary>
@@ -220,6 +215,23 @@ export class JenkinsPanel {
           const build_url = message.build_url;
           const longRunTask_analysis = this.handleAnalysis(build_url, webView, token);
           showStatusBarProgress(longRunTask_analysis, "analysing the log...");
+          break;
+        case "showResult":
+          const job_url = message.build_url;
+          const nameHash = digest(build_url);
+          const jsonContent = fs
+            .readFileSync(JenkinsPanel.storagePath + "/analysed/" + nameHash)
+            .toString();
+          const jsonObject = JSON.parse(jsonContent);
+          const fileContent =
+            nameHash +
+            "\n\n### " +
+            job_url +
+            "\n\n <details>\n<summary>Jenkins Log</summary>\n<pre>\n" +
+            jsonObject["input"]?.replace(/(?:\r\n|\r|\n)/g, "\n\n") +
+            "\n</pre></details>\n\n" +
+            jsonObject["output"];
+          commands.executeCommand("jenkins-log-reader.showResult", fileContent);
           break;
         case "batch":
           message.url.forEach((build_url: string) => {
