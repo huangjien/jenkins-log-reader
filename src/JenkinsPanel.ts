@@ -219,6 +219,7 @@ export class JenkinsPanel {
         case "showResult":
           const job_url = message.build_url;
           const nameHash = digest(build_url);
+          console.log(nameHash)
           const jsonContent = fs
             .readFileSync(JenkinsPanel.storagePath + "/analysed/" + nameHash)
             .toString();
@@ -231,7 +232,9 @@ export class JenkinsPanel {
             jsonObject["input"]?.replace(/(?:\r\n|\r|\n)/g, "\n\n") +
             "\n</pre></details>\n\n" +
             jsonObject["output"];
+            console.log(fileContent)
           commands.executeCommand("jenkins-log-reader.showResult", fileContent);
+          commands.executeCommand("jenkins-log-reader_result-view.focus")
           break;
         case "batch":
           message.url.forEach((build_url: string) => {
