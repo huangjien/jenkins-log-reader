@@ -40,7 +40,7 @@ export class JenkinsPanel {
     } else {
       const panel = window.createWebviewPanel("webview", "Jenkins Log Analysis", ViewColumn.One, {
         enableScripts: true,
-        retainContextWhenHidden: true
+        retainContextWhenHidden: true,
         // localResourceRoots: [Uri.joinPath(extensionUri, "out")],
       });
 
@@ -66,66 +66,10 @@ export class JenkinsPanel {
     <title>Jenkins Logs Analysis</title>
   </head>
     <body>
-      <div class="container mx-auto">
-      <details>
-        <summary class="list-none">
-          <div class="grid grid-cols-4 gap-1  " >
-            <h2 class="col-span-3 text-xl text-center font-bold mx-8 text-inherit" >Jenkins Server</h2>
-            <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="refresh">Refresh</vscode-button>
-          </div>
-        </summary>
-        <section class="grid grid-cols-4  gap-1 align-middle">
-
-          <div class="col-span-3 w-full justify-between gap-1 " >
-            
-              <vscode-text-field class="w-1/4 m-2"
-                id="server_url" readonly
-                placeholder="Jenkins Server URL"
-                value="${JenkinsPanel.settings?.jenkinsServerUrl}" readonly>Jenkins Server URL
-              </vscode-text-field>
-              <vscode-text-field class="w-1/4 m-2"
-                id="username"
-                placeholder="Jenkins User Name"
-                value="${JenkinsPanel.settings?.username}" readonly>Jenkins User Name
-              </vscode-text-field>
-              <vscode-text-field class="w-1/4 m-2"
-                id="token"
-                placeholder="Jenkins API Token"
-                type="password"
-                value="${JenkinsPanel.settings?.apiToken}" readonly>Jenkins API Token
-              </vscode-text-field>
-              
-              <vscode-text-field class="w-1/4 m-2"
-                id="localAiUrl"
-                placeholder="Local AI Endpoint"
-                value="${JenkinsPanel.settings?.localAiUrl}" readonly>Local AI Endpoint
-              </vscode-text-field>
-              <vscode-text-field class="w-1/4 m-2"
-                id="model" 
-                placeholder="Local AI Model"
-                value="${JenkinsPanel.settings?.model}" readonly>Local AI Model
-              </vscode-text-field>
-              <vscode-text-field class="w-1/4 m-2"
-                id="temperature"
-                placeholder="Local AI Temperature"
-                value="${JenkinsPanel.settings?.temperature}" readonly>Local AI Temperature
-              </vscode-text-field>
-            
-          </div>
-
-          <div class="col-span-1">
-            <vscode-text-area class=" w-full"
-              id="prompt" rows="5"
-              placeholder="Local AI Prompt"
-              value="${JenkinsPanel.settings?.prompt}" readonly>Prompt
-            </vscode-text-area>
-          </div>
-          
-        </section>
-      </details>
-          
+      <div class="container mx-auto">          
         <div class="grid grid-cols-4 gap-1  " >
-          <h2 class="col-span-3 text-xl text-center font-bold mx-8 text-inherit">Jobs - Builds</h2>
+          <h2 class="col-span-2 text-xl text-center font-bold mx-8 text-inherit">Jobs - Builds</h2>
+          <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="refresh">Refresh</vscode-button>
           <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="batch">Batch</vscode-button>
         </div>
         <div class="flex flex-auto flex-row gap-1" >
@@ -226,7 +170,7 @@ export class JenkinsPanel {
           const jsonContent = fs
             .readFileSync(JenkinsPanel.storagePath + "/analysed/" + nameHash)
             .toString();
-            // console.log(jsonContent)
+          // console.log(jsonContent)
           const jsonObject = JSON.parse(jsonContent);
           const fileContent =
             nameHash +
@@ -237,7 +181,7 @@ export class JenkinsPanel {
             "\n</pre></details>\n\n" +
             jsonObject["output"];
           commands.executeCommand("jenkins-log-reader.showResult", fileContent);
-          commands.executeCommand("jenkins-log-reader_result-view.focus")
+          commands.executeCommand("jenkins-log-reader_result-view.focus");
           break;
         case "batch":
           message.url.forEach((build_url: string) => {
@@ -344,7 +288,7 @@ export class JenkinsPanel {
         fs.writeFileSync(JenkinsPanel.storagePath + "/analysed/" + hash + ".md", fileContent);
 
         commands.executeCommand("jenkins-log-reader.showResult", fileContent);
-        commands.executeCommand("jenkins-log-reader_result-view.focus")
+        commands.executeCommand("jenkins-log-reader_result-view.focus");
         webView.postMessage({
           command: "analysis",
           payload: content,

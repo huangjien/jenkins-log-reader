@@ -103,8 +103,8 @@ function batch() {
 function debug(message: object) {
   vscode.postMessage({
     command: "debug",
-    info: JSON.stringify(message, null, 2)
-  })
+    info: JSON.stringify(message, null, 2),
+  });
 }
 
 function analyse() {
@@ -153,18 +153,18 @@ function handleRowFocused(e: Event) {
   const instruct = document.getElementById("instruct");
   //get data by url
   // debug(row.rowData)
-  const rowDataObject = JSON.parse(JSON.stringify(row.rowData))
+  const rowDataObject = JSON.parse(JSON.stringify(row.rowData));
   const focused_data = displayData.filter((obj) => {
-    return obj.url === rowDataObject['url'] ;
+    return obj.url === rowDataObject["url"];
   });
 
   if (instruct) {
-    instruct.textContent = rowDataObject['url'].replace('"', "");
+    instruct.textContent = rowDataObject["url"].replace('"', "");
   }
   const analyse_button = document.getElementById("analyse");
   analyse_button?.addEventListener("click", analyse);
   const showResult_button = document.getElementById("showResult");
-  
+
   showResult_button?.addEventListener("click", showResult);
   const build_log = document.getElementById("build_log");
   if (build_log) {
@@ -175,7 +175,7 @@ function handleRowFocused(e: Event) {
   if (!focused_data[0]["output"]) {
     showResult_button?.classList.add("hidden");
     resolve_button?.classList.add("hidden");
-  }else {
+  } else {
     showResult_button?.classList.remove("hidden");
     resolve_button?.classList.remove("hidden");
   }
