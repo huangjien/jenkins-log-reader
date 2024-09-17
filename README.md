@@ -35,7 +35,8 @@ This extension contributes the following settings:
 - `jenkins-log-reader.jenkinsToken`: Jenkins user's token, to connect to jenkins instance.
 - `jenkins-log-reader.aiModelUrl`: Local AI's rest API endpoint, default value is: **http://localhost:11434/v1**
 - `jenkins-log-reader.aiModel`: The local AI model used for log analysis, default value is: **llama3**.
-- `jenkins-log-reader.aiPrompt`: Local AI Prompt, \$PROMPT\$ will be replaced by log information, default value is: 
+- `jenkins-log-reader.aiPrompt`: Local AI Prompt, \$PROMPT\$ will be replaced by log information, default value is:
+
 ```
 Analyze the following Jenkins job log to identify the causes of the job failure. The log may contain information about build steps, error messages, stack traces, and other relevant details. Please provide:
 

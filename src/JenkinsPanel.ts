@@ -180,8 +180,9 @@ export class JenkinsPanel {
             jsonObject["input"]?.replace(/(?:\r\n|\r|\n)/g, "\n\n") +
             "\n</pre></details>\n\n" +
             jsonObject["output"];
-          commands.executeCommand("jenkins-log-reader.showResult", fileContent);
           commands.executeCommand("jenkins-log-reader_result-view.focus");
+          commands.executeCommand("jenkins-log-reader.showResult", fileContent);
+
           break;
         case "batch":
           message.url.forEach((build_url: string) => {
@@ -286,9 +287,9 @@ export class JenkinsPanel {
           "\n</pre></details>\n\n" +
           content;
         fs.writeFileSync(JenkinsPanel.storagePath + "/analysed/" + hash + ".md", fileContent);
-
-        commands.executeCommand("jenkins-log-reader.showResult", fileContent);
         commands.executeCommand("jenkins-log-reader_result-view.focus");
+        commands.executeCommand("jenkins-log-reader.showResult", fileContent);
+
         webView.postMessage({
           command: "analysis",
           payload: content,

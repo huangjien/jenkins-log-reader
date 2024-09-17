@@ -23,7 +23,6 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
     webviewView.webview.html = this.getWebviewContent(webviewView.webview);
   }
   getWebviewContent(webview: vscode.Webview): string {
-    console.log("in class", this.settings);
     return `
     <!DOCTYPE html>
     <html lang="en">

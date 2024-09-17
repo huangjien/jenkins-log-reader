@@ -270,6 +270,12 @@ function setVSCodeMessageListener() {
         const analysis = document.getElementById("analysis") as TextArea;
         if (analysis) {
           analysis.value = analysis_result;
+          const showResult_button = document.getElementById("showResult");
+          const resolve_button = document.getElementById("resolve");
+          if (showResult_button && resolve_button) {
+            showResult_button?.classList.remove("hidden");
+            resolve_button?.classList.remove("hidden");
+          }
         }
         break;
     }
