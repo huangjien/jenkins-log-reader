@@ -145,6 +145,7 @@ function handleRowFocused(e: Event) {
   ai_section?.classList.remove("hidden");
   const instruct = document.getElementById("instruct");
   //get data by url
+  console.log(row.rowData)
   const focused_data = displayData.filter((obj) => {
     return obj.url === row.rowData!["url"];
   });
