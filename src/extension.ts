@@ -72,7 +72,7 @@ function registerCommandOfShowResult(
   context.subscriptions.push(
     commands.registerCommand("jenkins-log-reader.showResult", (fileContent: string) => {
       if (provider._view) {
-        commands.executeCommand("jenkins-log-reader_result-view.focus");
+        // commands.executeCommand("jenkins-log-reader_result-view.focus");
         if (fileContent) {
           provider.updateContent(fileContent);
         }

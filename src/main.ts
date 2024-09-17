@@ -100,6 +100,13 @@ function batch() {
   });
 }
 
+function debug(message: object) {
+  vscode.postMessage({
+    command: "debug",
+    info: JSON.stringify(message, null, 2)
+  })
+}
+
 function analyse() {
   // if status is SUCCESS or RESOVLE, then do nothing
   const instruct = document.getElementById("instruct");
@@ -145,17 +152,19 @@ function handleRowFocused(e: Event) {
   ai_section?.classList.remove("hidden");
   const instruct = document.getElementById("instruct");
   //get data by url
-  console.log(row.rowData)
+  // debug(row.rowData)
+  const rowDataObject = JSON.parse(JSON.stringify(row.rowData))
   const focused_data = displayData.filter((obj) => {
-    return obj.url === row.rowData!["url"];
+    return obj.url === rowDataObject['url'] ;
   });
 
   if (instruct) {
-    instruct.textContent = row.rowData["url"].replace('"', "");
+    instruct.textContent = rowDataObject['url'].replace('"', "");
   }
   const analyse_button = document.getElementById("analyse");
   analyse_button?.addEventListener("click", analyse);
   const showResult_button = document.getElementById("showResult");
+  
   showResult_button?.addEventListener("click", showResult);
   const build_log = document.getElementById("build_log");
   if (build_log) {
@@ -163,6 +172,13 @@ function handleRowFocused(e: Event) {
   }
   const resolve_button = document.getElementById("resolve");
   resolve_button?.addEventListener("click", resolve);
+  if (!focused_data[0]["output"]) {
+    showResult_button?.classList.add("hidden");
+    resolve_button?.classList.add("hidden");
+  }else {
+    showResult_button?.classList.remove("hidden");
+    resolve_button?.classList.remove("hidden");
+  }
   const analysis_content = document.getElementById("analysis") as TextArea;
   if (analysis_content) {
     analysis_content.value = focused_data[0]["output"];

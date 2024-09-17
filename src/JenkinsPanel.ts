@@ -157,7 +157,7 @@ export class JenkinsPanel {
           <summary class="flex flex-wrap m-1 p-1 list-none">
             <p id="instruct" class="m2 w-9/12 p-2" ></p> 
             <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
-            <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="showResult">Show Result</vscode-button>
+            <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="showResult">View</vscode-button>
           </summary>
           <details class="w-full">
             <summary class="text-xl font-bold text-white-600 list-none">Jenkins Build Log</summary>
@@ -217,12 +217,16 @@ export class JenkinsPanel {
           const longRunTask_analysis = this.handleAnalysis(build_url, webView, token);
           showStatusBarProgress(longRunTask_analysis, "analysing the log...");
           break;
+        case "debug":
+          console.log(message.info);
+          break;
         case "showResult":
           const job_url = message.build_url;
           const nameHash = digest(job_url);
           const jsonContent = fs
             .readFileSync(JenkinsPanel.storagePath + "/analysed/" + nameHash)
             .toString();
+            // console.log(jsonContent)
           const jsonObject = JSON.parse(jsonContent);
           const fileContent =
             nameHash +
@@ -340,6 +344,7 @@ export class JenkinsPanel {
         fs.writeFileSync(JenkinsPanel.storagePath + "/analysed/" + hash + ".md", fileContent);
 
         commands.executeCommand("jenkins-log-reader.showResult", fileContent);
+        commands.executeCommand("jenkins-log-reader_result-view.focus")
         webView.postMessage({
           command: "analysis",
           payload: content,
