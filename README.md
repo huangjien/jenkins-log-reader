@@ -35,7 +35,9 @@ This extension contributes the following settings:
 - `jenkins-log-reader.jenkinsToken`: Jenkins user's token, to connect to jenkins instance.
 - `jenkins-log-reader.aiModelUrl`: Local AI's rest API endpoint, default value is: **http://localhost:11434/v1**
 - `jenkins-log-reader.aiModel`: The local AI model used for log analysis, default value is: **llama3**.
-- `jenkins-log-reader.aiPrompt`: Local AI Prompt, \$PROMPT\$ will be replaced by log information, default value is: Analyze the following Jenkins job log to identify the causes of the job failure. The log may contain information about build steps, error messages, stack traces, and other relevant details. Please provide:
+- `jenkins-log-reader.aiPrompt`: Local AI Prompt, \$PROMPT\$ will be replaced by log information, default value is: 
+```
+Analyze the following Jenkins job log to identify the causes of the job failure. The log may contain information about build steps, error messages, stack traces, and other relevant details. Please provide:
 
 1. A summary of the main error or issue that caused the job to fail.
 2. Identification of any specific error messages or stack traces that indicate the failure point.
@@ -43,13 +45,14 @@ This extension contributes the following settings:
 4. Any patterns or recurring issues that appear in the log.
 
 Here is the Jenkins job log: \$PROMPT\$
+```
 
 - `jenkins-log-reader.aiTemperature`: The more temperature is, the model will use more \"creativity\", and the less temperature instruct model to be \"less creative\", but following your prompt stronger, default value is: **0.6**.
 - `jenkins-log-reader.aiMaxToken`: Max token response from AI model, default value is: **8192**.
 
 ## Known Issues
 
-- Somtimes, it may not return the meaningful result. Just re-run it again, it will generate different analysis.
+- Somtimes, it may not return the meaningful result. Just re-run **Analyse** again, it will generate different analysis.
 
 - Sometimes, the return show incorrect format. That's caused by the markdown to html converter issue. Will fix it soon.
 
