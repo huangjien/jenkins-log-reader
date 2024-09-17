@@ -40,7 +40,8 @@ export class JenkinsPanel {
     } else {
       const panel = window.createWebviewPanel("webview", "Jenkins Log Analysis", ViewColumn.One, {
         enableScripts: true,
-        localResourceRoots: [Uri.joinPath(extensionUri, "out")],
+        retainContextWhenHidden: true
+        // localResourceRoots: [Uri.joinPath(extensionUri, "out")],
       });
 
       JenkinsPanel.currentPanel = new JenkinsPanel(panel, extensionUri);
