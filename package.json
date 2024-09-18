@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -134,13 +134,13 @@
         {
           "type": "webview",
           "id": "jenkins-log-reader_result-view",
-          "name": "AI Log Reader",
+          "name": "Analysis",
           "contextualTitle": "Result"
         },
         {
           "type": "webview",
           "id": "jenkins-log-reader_settings-view",
-          "name": "AI Log Reader Settings",
+          "name": "Settings",
           "contextualTitle": "Settings"
         }
       ]

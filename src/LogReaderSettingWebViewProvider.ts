@@ -30,16 +30,16 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
         <title>AI Log Reader Settings</title>
     </head>
     <body>
-        <ol class="container mx-auto">       
-            <li class="italic m-2">Jenkins Server URL: \t<b>${settings?.jenkinsServerUrl}</b></li>
-            <li class="italic m-2">Jenkins User Name: \t<b>${settings?.jenkinsUsername}</b></li>
-            <li class="italic m-2">Jenkins Log Size: \t<b>${settings?.jenkinsLogSize}</b></li>
-            <li class="italic m-2">AI Endpoint: \t<b>${settings?.aiModelUrl}</b></li>
-            <li class="italic m-2">AI Model: \t<b>${settings?.aiModel}</b></li>
-            <li class="italic m-2">AI Max Token: \t<b>${settings?.aiMaxToken}</b></li>
-            <li class="italic m-2">AI Temperature: \t<b>${settings?.aiTemperature}</b></li>
-            <li class="italic m-2">Prompt: <br/><br/><b>${settings?.aiPrompt}</b></li>
-        </ol>
+        <ul style="text-align: left;padding-left: 0pt;">       
+            <li >Jenkins Server URL: <br/><b>&emsp;${settings?.jenkinsServerUrl}</b></li>
+            <li >Jenkins User Name: &emsp;<b>${settings?.jenkinsUsername}</b></li>
+            <li >Jenkins Log Size: &emsp;<b>${settings?.jenkinsLogSize}</b></li>
+            <li >AI Endpoint: &emsp;<b>${settings?.aiModelUrl}</b></li>
+            <li >AI Model: &emsp;<b>${settings?.aiModel}</b></li>
+            <li >AI Max Token: &emsp;<b>${settings?.aiMaxToken}</b></li>
+            <li >AI Temperature: &emsp;<b>${settings?.aiTemperature}</b></li>
+            <li >Prompt: <br/><b>&emsp;${settings?.aiPrompt}</b></li>
+        </ul>
     </body>
     </html>
         `;
