@@ -18,6 +18,7 @@ import {
   vsCodeRadio,
   vsCodeTextField,
   vsCodeProgressRing,
+  vsCodeTag,
   TextArea,
 } from "@vscode/webview-ui-toolkit";
 
@@ -37,7 +38,8 @@ provideVSCodeDesignSystem().register(
   vsCodeDataGridCell(),
   vsCodeDataGrid(),
   vsCodeProgressRing(),
-  vsCodeTextField()
+  vsCodeTextField(),
+  vsCodeTag()
 );
 
 var gridData: any[] = [];

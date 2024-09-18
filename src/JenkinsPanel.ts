@@ -85,8 +85,9 @@ export class JenkinsPanel {
             <vscode-radio class="p-1 m-0.5" id="8h_radio" checked value="28800">8 hours</vscode-radio>
             <vscode-radio class="p-1 m-0.5" id="1d_radio" value="86400">1 day</vscode-radio>
             <vscode-radio class="p-1 m-0.5" id="3d_radio" value="259200">3 days</vscode-radio>
+            <vscode-tag  class="p-1 m-0.5" id="count"></vscode-tag>
           </vscode-radio-group>
-          <p id="count"></p>
+          
         </div>
 
         <section id="results-container" class="flex flex-wrap gap-1 h-full" > 

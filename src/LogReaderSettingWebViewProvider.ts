@@ -6,11 +6,8 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
   public _view?: vscode.WebviewView;
   public settings!: JenkinsSettings;
   constructor(
-    private context: vscode.ExtensionContext,
-    settings: JenkinsSettings
-  ) {
-    this.settings = settings;
-  }
+    private context: vscode.ExtensionContext
+  ) {}
   resolveWebviewView(
     webviewView: vscode.WebviewView,
     context: vscode.WebviewViewResolveContext,
@@ -23,6 +20,7 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
     webviewView.webview.html = this.getWebviewContent(webviewView.webview);
   }
   getWebviewContent(webview: vscode.Webview): string {
+    const settings = vscode.workspace.getConfiguration("jenkins-log-reader")
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -30,17 +28,18 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>AI Log Reader Settings</title>
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     </head>
     <body>
-        <div class="container mx-auto">       
-            <p class="w-1/4 m-2">Jenkins Server URL: \t<b>${this.settings?.jenkinsServerUrl}</b></p>
-            <p class="w-1/4 m-2">Jenkins User Name: \t<b>${this.settings?.username}</b></p>
-            <p class="w-1/4 m-2">AI Endpoint: \t<b>${this.settings?.localAiUrl}</b></p>
-            <p class="w-1/4 m-2">AI Model: \t<b>${this.settings?.model}</b></p>
-            <p class="w-1/4 m-2">AI Temperature: \t<b>${this.settings?.temperature}</b></p>
-            <p class="w-1/4 m-2">Prompt: <br/><br/><b>${this.settings?.prompt}</b></p>
-        </div>
+        <ol class="container mx-auto">       
+            <li class="w-1/4 m-2">Jenkins Server URL: \t<b>${settings?.jenkinsServerUrl}</b></li>
+            <li class="w-1/4 m-2">Jenkins User Name: \t<b>${settings?.jenkinsUsername}</b></li>
+            <li class="w-1/4 m-2">Jenkins Log Size: \t<b>${settings?.jenkinsLogSize}</b></li>
+            <li class="w-1/4 m-2">AI Endpoint: \t<b>${settings?.aiModelUrl}</b></li>
+            <li class="w-1/4 m-2">AI Model: \t<b>${settings?.aiModel}</b></li>
+            <li class="w-1/4 m-2">AI Max Token: \t<b>${settings?.aiMaxToken}</b></li>
+            <li class="w-1/4 m-2">AI Temperature: \t<b>${settings?.aiTemperature}</b></li>
+            <li class="w-1/4 m-2">Prompt: <br/><br/><b>${settings?.aiPrompt}</b></li>
+        </ol>
     </body>
     </html>
         `;

@@ -90,7 +90,7 @@ function setupResultWebviewProvider(context: ExtensionContext) {
 }
 
 function setupSettingsViewProvider(context: ExtensionContext, settings: JenkinsSettings) {
-  const provider = new LogReaderSettingWebViewProvider(context, settings);
+  const provider = new LogReaderSettingWebViewProvider(context);
   context.subscriptions.push(
     window.registerWebviewViewProvider("jenkins-log-reader_settings-view", provider)
   );
