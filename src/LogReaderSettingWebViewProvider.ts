@@ -5,9 +5,7 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
   public static readonly viewType = "webView";
   public _view?: vscode.WebviewView;
   public settings!: JenkinsSettings;
-  constructor(
-    private context: vscode.ExtensionContext
-  ) {}
+  constructor(private context: vscode.ExtensionContext) {}
   resolveWebviewView(
     webviewView: vscode.WebviewView,
     context: vscode.WebviewViewResolveContext,
@@ -20,7 +18,7 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
     webviewView.webview.html = this.getWebviewContent(webviewView.webview);
   }
   getWebviewContent(webview: vscode.Webview): string {
-    const settings = vscode.workspace.getConfiguration("jenkins-log-reader")
+    const settings = vscode.workspace.getConfiguration("jenkins-log-reader");
     return `
     <!DOCTYPE html>
     <html lang="en">

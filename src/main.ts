@@ -288,12 +288,12 @@ function displayGridData() {
   // const batch_button = document.getElementById("batch") as Button;
   // batch_button.classList.remove("hidden");
   const count = document.getElementById("count")!;
-  if (displayData.length > 1 ) {
+  if (displayData.length > 1) {
     count.textContent = "Found " + displayData.length.toString() + " builds";
   } else {
     count.textContent = "Found " + displayData.length.toString() + " build";
   }
-  
+
   // const notification = document.getElementById("notification");
 
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
