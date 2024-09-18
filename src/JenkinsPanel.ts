@@ -91,16 +91,14 @@ export class JenkinsPanel {
         </div>
 
         <section id="results-container" class="flex flex-wrap gap-1 h-full" > 
-          <p id="notification"></p>
+          <!--vscode-tag id="notification"></vscode-tag -->
           <vscode-data-grid id="basic-grid" grid-template-columns="70% 7vw 10vw 7vw 6vw" aria-label="Jenkins Build Data Grid">
-          
           </vscode-data-grid>   
-          
         </section>
         <section id="analysis-container" class="flex-wrap gap-1 h-full hidden" >
         <details class="w-full" >
           <summary class="flex flex-wrap m-1 p-1 list-none">
-            <p id="instruct" class="m2 w-9/12 p-2" ></p> 
+            <p id="instruct" class="italic m2 w-9/12 p-2" ></p> 
             <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
             <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="showResult">View</vscode-button>
           </summary>

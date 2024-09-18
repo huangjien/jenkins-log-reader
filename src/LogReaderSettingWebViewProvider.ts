@@ -31,14 +31,14 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
     </head>
     <body>
         <ol class="container mx-auto">       
-            <li class="w-1/4 m-2">Jenkins Server URL: \t<b>${settings?.jenkinsServerUrl}</b></li>
-            <li class="w-1/4 m-2">Jenkins User Name: \t<b>${settings?.jenkinsUsername}</b></li>
-            <li class="w-1/4 m-2">Jenkins Log Size: \t<b>${settings?.jenkinsLogSize}</b></li>
-            <li class="w-1/4 m-2">AI Endpoint: \t<b>${settings?.aiModelUrl}</b></li>
-            <li class="w-1/4 m-2">AI Model: \t<b>${settings?.aiModel}</b></li>
-            <li class="w-1/4 m-2">AI Max Token: \t<b>${settings?.aiMaxToken}</b></li>
-            <li class="w-1/4 m-2">AI Temperature: \t<b>${settings?.aiTemperature}</b></li>
-            <li class="w-1/4 m-2">Prompt: <br/><br/><b>${settings?.aiPrompt}</b></li>
+            <li class="italic m-2">Jenkins Server URL: \t<b>${settings?.jenkinsServerUrl}</b></li>
+            <li class="italic m-2">Jenkins User Name: \t<b>${settings?.jenkinsUsername}</b></li>
+            <li class="italic m-2">Jenkins Log Size: \t<b>${settings?.jenkinsLogSize}</b></li>
+            <li class="italic m-2">AI Endpoint: \t<b>${settings?.aiModelUrl}</b></li>
+            <li class="italic m-2">AI Model: \t<b>${settings?.aiModel}</b></li>
+            <li class="italic m-2">AI Max Token: \t<b>${settings?.aiMaxToken}</b></li>
+            <li class="italic m-2">AI Temperature: \t<b>${settings?.aiTemperature}</b></li>
+            <li class="italic m-2">Prompt: <br/><br/><b>${settings?.aiPrompt}</b></li>
         </ol>
     </body>
     </html>

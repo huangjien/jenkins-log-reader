@@ -288,8 +288,13 @@ function displayGridData() {
   // const batch_button = document.getElementById("batch") as Button;
   // batch_button.classList.remove("hidden");
   const count = document.getElementById("count")!;
-  count.textContent = displayData.length.toString();
-  const notification = document.getElementById("notification");
+  if (displayData.length > 1 ) {
+    count.textContent = "Found " + displayData.length.toString() + " builds";
+  } else {
+    count.textContent = "Found " + displayData.length.toString() + " build";
+  }
+  
+  // const notification = document.getElementById("notification");
 
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
 
@@ -302,9 +307,9 @@ function displayGridData() {
     { columnDataKey: "duration", title: "duration" },
   ];
 
-  if (notification) {
-    notification.textContent = "";
-  }
+  // if (notification) {
+  //   notification.textContent = "";
+  // }
 
   if (basicGrid) {
     // Populate grid with data
