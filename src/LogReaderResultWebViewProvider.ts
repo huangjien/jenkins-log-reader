@@ -5,11 +5,7 @@ export class LogReaderResultWebViewProvider implements vscode.WebviewViewProvide
   public static readonly viewType = "markdownView";
   public _view?: vscode.WebviewView;
   constructor(private context: vscode.ExtensionContext) {}
-  resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    context: vscode.WebviewViewResolveContext,
-    token: vscode.CancellationToken
-  ): Thenable<void> | void {
+  resolveWebviewView(webviewView: vscode.WebviewView): Thenable<void> | void {
     this._view = webviewView;
     webviewView.webview.options = {
       enableScripts: true,

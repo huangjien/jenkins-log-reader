@@ -137,7 +137,7 @@ export class JenkinsPanel {
 
   private removePrefixUsingRegex(text: string, prefix: string) {
     // Create a dynamic regex based on the prefix
-    let regex = new RegExp("^" + this.escapeRegex(prefix));
+    const regex = new RegExp("^" + this.escapeRegex(prefix));
     return text.replace(regex, "");
   }
 
@@ -150,20 +150,23 @@ export class JenkinsPanel {
       const command = message.command;
       const token = btoa(JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken);
       switch (command) {
-        case "refresh":
-          const server_url = JenkinsPanel.settings?.jenkinsServerUrl!;
+        case "refresh": {
+          const server_url = JenkinsPanel.settings!.jenkinsServerUrl!;
           const longRunTask_refresh = this.retriveBuilds(server_url, token, webView);
           showStatusBarProgress(longRunTask_refresh, "Retriving build logs...");
           break;
-        case "analyse":
+        }
+        case "analyse": {
           const build_url = message.build_url;
           const longRunTask_analysis = this.handleAnalysis(build_url, webView, token);
           showStatusBarProgress(longRunTask_analysis, "analysing the log...");
           break;
-        case "debug":
+        }
+        case "debug": {
           console.log(message.info);
           break;
-        case "showResult":
+        }
+        case "showResult": {
           const job_url = message.build_url;
           const nameHash = digest(job_url);
           const jsonContent = fs
@@ -183,19 +186,22 @@ export class JenkinsPanel {
           commands.executeCommand("jenkins-log-reader.showResult", fileContent);
 
           break;
-        case "batch":
+        }
+        case "batch": {
           message.url.forEach((build_url: string) => {
             const longRunTask_analysis = this.handleAnalysis(build_url, webView, token);
             showStatusBarProgress(longRunTask_analysis, "analysing the build...\n " + build_url);
           });
           break;
-        case "resolve":
+        }
+        case "resolve": {
           const hash = digest(message.url);
           const analysis = message.analysis;
           const log = message.log;
           const longRunTask_resolve = this.writeResolveFile(hash, log, analysis);
           showStatusBarProgress(longRunTask_resolve, "writing resolve file...");
           break;
+        }
       }
     });
   }
@@ -204,7 +210,7 @@ export class JenkinsPanel {
     getAllBuild(server_url, auth)
       .then((data) => {
         // check the local resolve file
-        var ret: any[] = [];
+        const ret: any[] = [];
 
         data.forEach((record) => {
           if (!record.hash) {
@@ -245,7 +251,7 @@ export class JenkinsPanel {
   private async handleAnalysis(build_url: any, webView: Webview, token: string) {
     await getLog(build_url, token)
       .then((data) => {
-        const info = this.keepLongTail(data, JenkinsPanel.settings?.maxToken!);
+        const info = this.keepLongTail(data, JenkinsPanel.settings!.maxToken!);
         webView.postMessage({ command: "log", payload: info });
         return info;
       })

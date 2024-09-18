@@ -1,7 +1,7 @@
-import { ExtensionContext, window, commands, ViewColumn, workspace } from "vscode";
+import { ExtensionContext, window, commands, workspace } from "vscode";
 import { JenkinsPanel } from "./JenkinsPanel";
 import JenkinsSettings from "./JenkinsSettings";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import { LogReaderResultWebViewProvider } from "./LogReaderResultWebViewProvider";
 import { LogReaderSettingWebViewProvider } from "./LogReaderSettingWebViewProvider";
 
@@ -60,7 +60,7 @@ export function activate(context: ExtensionContext) {
   );
 
   setupSettingsViewProvider(context, settings);
-  let disposal = commands.registerCommand("jenkins-log-reader.webView", () => {
+  const disposal = commands.registerCommand("jenkins-log-reader.webView", () => {
     JenkinsPanel.render(context.extensionUri, settings, storagePath);
   });
 
