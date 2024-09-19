@@ -142,6 +142,7 @@ export class JenkinsPanel {
   }
 
   private escapeRegex(data: string) {
+    // eslint-disable-next-line no-useless-escape
     return data.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escapes regex special characters
   }
 
@@ -345,10 +346,6 @@ export class JenkinsPanel {
       }
     }
   }
-}
-
-function err(reason: any): PromiseLike<never> {
-  throw new Error("Function not implemented.");
 }
 
 function showStatusBarProgress(task: Promise<any>, title = "Processing...") {

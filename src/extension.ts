@@ -59,7 +59,7 @@ export function activate(context: ExtensionContext) {
     maxToken
   );
 
-  setupSettingsViewProvider(context, settings);
+  setupSettingsViewProvider(context);
   const disposal = commands.registerCommand("jenkins-log-reader.webView", () => {
     JenkinsPanel.render(context.extensionUri, settings, storagePath);
   });
@@ -95,7 +95,7 @@ function setupResultWebviewProvider(context: ExtensionContext) {
   return provider;
 }
 
-function setupSettingsViewProvider(context: ExtensionContext, settings: JenkinsSettings) {
+function setupSettingsViewProvider(context: ExtensionContext) {
   const provider = new LogReaderSettingWebViewProvider(context);
   context.subscriptions.push(
     window.registerWebviewViewProvider("jenkins-log-reader_settings-view", provider)
