@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -67,8 +67,10 @@
             "llama3:latest",
             "qwen2.5:latest",
             "qwen2:7b",
+            "gemma2:latest",
             "gemma:latest",
             "phi3.5:latest",
+            "mistral-small:latest",
             "mistral:7b"
           ],
           "default": "llama3.1:latest",
