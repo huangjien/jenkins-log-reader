@@ -1,78 +1,67 @@
 # Jenkins Log Reader
 
-This Visual Studio Code extension allows you to use local AI model to analyse the jenkins log, figures out the failure reason.
+## Overview
+This Visual Studio Code extension allows you to leverage a local AI model to analyze Jenkins logs and determine the reasons for job failures. The extension enhances the developer experience by providing an intuitive interface for log analysis directly within Visual Studio Code.
+
+## Features
+- **Seamless Integration**: Quick access to Jenkins logs via easy-to-use commands.
+- **AI-Powered Insights**: Leverages local AI models for in-depth log analysis and failure reason identification.
+- **Customizable Settings**: Tailor the extension to suit your Jenkins environment and AI model preferences.
+- **Security**: It supposes to use local AI, then the sensitive data will not be transfer to outside of the company. Although you can also choose AI in the cloud.
 
 ## Requirements
+To use this extension, you must have a local AI model installed. We recommend using [Ollama](https://ollama.com/) with the `llama3` model.
 
-You need to install a local AI with model. I will recommend [ollama](https://ollama.com/) and llama3
+1. Install Ollama from [here](https://ollama.com/download).
+2. Get the `llama3` model:
+   - Run `ollama run llama3` or `ollama pull llama3`.
 
-- Install ollama from [here](https://ollama.com/download)
+## How to Use
 
-- Get llama3
-
-`ollama run llama3 ` or `ollama pull llama3`
-
-## How to use it
-
-1. Copy the URL to the failed jenkins job build.
-
-2. press **Command + Shift + p** (For windows: **Ctrl + Shift + p**), choose **Read Jenkins Log** to activate this extension.
-
-   or press shortcut **Command + r** (For windows: **Ctrl + r**)
-
-<img src="resources/activate.png" alt="Settings" />
-
-3. Paste the copied URL to the input box, then press **Enter**.
-
-4. A new web view will appear at editor column. First, it will load the tail of the build log. Then, it will append the AI analysis to this panel.
+1. Press **Command + Shift + P** (on Windows: **Ctrl + Shift + P**) and select **Read Jenkins Log** to activate the extension, or use the shortcut **Command + R** (Windows: **Ctrl + R**).
+    ![Activate Extension](resources/activate.png)
+2. Press **Refresh** button to retrive the Jenkins build logs from Jenkins Server defined in extension settings.
+3. Then you can click **Batch** button to analyse all builds listed. Or click one of the builds, click the **Analyse** button at the bottom, then local AI will try to figure out the root cause of failure.
+4. A web view will appear at the left side, showing the tail of the build log followed by the AI analysis.
+5. If you are not satisfy with the AI's result, fill your finding or solution into the text area at the bottom, click **Resolve**, then your input will be saved for future AI training or store in the RAG.
 
 ## Extension Settings
+This extension introduces the following configurable settings:
+- **`jenkins-log-reader.jenkinsLogSize`**: Set the maximum size of the log to analyze; default is **5120**.
+- **`jenkins-log-reader.jenkinsUsername`**: Your Jenkins username.
+- **`jenkins-log-reader.jenkinsToken`**: Your Jenkins token for authentication.
+- **`jenkins-log-reader.aiModelUrl`**: Local AI REST API endpoint; default is **http://localhost:11434/v1**.
+- **`jenkins-log-reader.aiModel`**: Specify the AI model for log analysis; default is **llama3**.
+- **`jenkins-log-reader.aiPrompt`**: Custom prompt for the AI model, where `\$PROMPT\$` will be replaced with log information.
 
-This extension contributes the following settings:
-
-- `jenkins-log-reader.jenkinsLogSize`: Sometimes, the jenkins log is too big, we only analyse the last part of it, default value is: **5120**.
-- `jenkins-log-reader.jenkinsUsername`: Jenkins username.
-- `jenkins-log-reader.jenkinsToken`: Jenkins user's token, to connect to jenkins instance.
-- `jenkins-log-reader.aiModelUrl`: Local AI's rest API endpoint, default value is: **http://localhost:11434/v1**
-- `jenkins-log-reader.aiModel`: The local AI model used for log analysis, default value is: **llama3**.
-- `jenkins-log-reader.aiPrompt`: Local AI Prompt, \$PROMPT\$ will be replaced by log information, default value is:
-
+Example Prompt:
 ```
-Analyze the following Jenkins job log to identify the causes of the job failure. The log may contain information about build steps, error messages, stack traces, and other relevant details. Please provide:
-
-1. A summary of the main error or issue that caused the job to fail.
-2. Identification of any specific error messages or stack traces that indicate the failure point.
-3. Suggestions for potential fixes or next steps to resolve the issue.
-4. Any patterns or recurring issues that appear in the log.
-
+Analyze the following Jenkins job log to identify causes of failure. Provide:
+1. A summary of the main error.
+2. Specific error messages.
+3. Suggestions for fixes.
+4. Recurring issues in the log.
 Here is the Jenkins job log: \$PROMPT\$
 ```
-
-- `jenkins-log-reader.aiTemperature`: The more temperature is, the model will use more \"creativity\", and the less temperature instruct model to be \"less creative\", but following your prompt stronger, default value is: **0.6**.
-- `jenkins-log-reader.aiMaxToken`: Max token response from AI model, default value is: **8192**.
+- **`jenkins-log-reader.aiTemperature`**: Controls creativity in AI responses; default is **0.6**.
+- **`jenkins-log-reader.aiMaxToken`**: Maximum tokens for AI response; default is **8192**.
 
 ## Known Issues
+- Results may not always be meaningful; rerun the analysis for different insights.
+- Incorrect formatting may occur due to the markdown to HTML conversion issues; fixes are pending.
 
-- Somtimes, it may not return the meaningful result. Just re-run **Analyse** again, it will generate different analysis.
-
-- Sometimes, the return show incorrect format. That's caused by the markdown to html converter issue. Will fix it soon.
-
-## For more information
-
+## Additional Information
 - [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
 - [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
----
+## Disclaimer
+This extension is a proof of concept and may have limitations or bugs. Your feedback is valuable for future improvements. If you enjoy using this extension, consider [buying me a coffee ☕️ ](https://www.buymeacoffee.com/huangjien) to support my work!
 
-> Please note that this extension is currently a proof of concept and may have some limitations or bugs. We welcome feedback and contributions to improve the extension. If you enjoy this extension, please consider [buying me a coffee ☕️ ](https://www.buymeacoffee.com/huangjien) to support my work!
-
-<div >
-            <a href="https://www.buymeacoffee.com/huangjien" target="_blank" style="display: inline-block;">
-                <img
-                    src="https://img.shields.io/badge/Donate-Buy%20Me%20A%20Coffee-orange.svg?style=flat-square&logo=buymeacoffee" 
-                    align="center"
-                />
-            </a></div>
+<div>
+    <a href="https://www.buymeacoffee.com/huangjien" target="_blank" style="display: inline-block;">
+        <img src="https://img.shields.io/badge/Donate-Buy%20Me%20A%20Coffee-orange.svg?style=flat-square&logo=buymeacoffee" align="center" />
+    </a>
+</div>
 <br />
 
 **Enjoy!**
