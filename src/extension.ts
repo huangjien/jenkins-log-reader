@@ -41,9 +41,7 @@ export function activate(context: ExtensionContext) {
 
   const temperature = getConfig("jenkins-log-reader.aiTemperature");
 
-  const maxToken = getConfig("jenkins-log-reader.aiMaxToken");
-
-  if (!localAiUrl || !model || !model || !prompt || !temperature || !maxToken) {
+  if (!localAiUrl || !model || !model || !prompt || !temperature) {
     window.showInformationMessage("Please configure your Local AI settings.");
   }
 
@@ -55,8 +53,7 @@ export function activate(context: ExtensionContext) {
     localAiUrl,
     model,
     prompt,
-    temperature,
-    maxToken
+    temperature
   );
 
   setupSettingsViewProvider(context);

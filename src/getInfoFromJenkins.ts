@@ -143,7 +143,6 @@ export async function getAnalysis(
   localAiUrl: string,
   model: string,
   temperature: number,
-  maxToken: number,
   prompt: string,
   data: string
 ) {
@@ -156,7 +155,6 @@ export async function getAnalysis(
       model: model,
       messages: [{ role: "user", content: prompt.replace("$PROMPT$", "\n" + data + "\n") }],
       temperature: temperature,
-      max_tokens: maxToken,
     })
     .then((ret) => {
       const information = ret.choices[0]["message"]["content"];

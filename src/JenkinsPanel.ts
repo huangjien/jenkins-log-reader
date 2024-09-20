@@ -122,12 +122,8 @@ export class JenkinsPanel {
           `;
   }
 
-  private keepLongTail(inputString: string, size: number) {
+  private keepLongTail(inputString: string) {
     // keep 1st 1k and tail(size)? This is a bad idea, AI got confused!
-
-    if (inputString.length > size) {
-      return inputString.slice(-size);
-    }
     return inputString;
   }
 
@@ -252,7 +248,7 @@ export class JenkinsPanel {
   private async handleAnalysis(build_url: any, webView: Webview, token: string) {
     await getLog(build_url, token)
       .then((data) => {
-        const info = this.keepLongTail(data, JenkinsPanel.settings!.maxToken!);
+        const info = this.keepLongTail(data);
         webView.postMessage({ command: "log", payload: info });
         return info;
       })
@@ -261,7 +257,6 @@ export class JenkinsPanel {
           JenkinsPanel.settings!.localAiUrl,
           JenkinsPanel.settings!.model,
           JenkinsPanel.settings!.temperature,
-          JenkinsPanel.settings!.maxToken,
           JenkinsPanel.settings!.prompt,
           data
         );

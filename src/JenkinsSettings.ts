@@ -7,7 +7,6 @@ export default class Settings {
   model: string;
   prompt: string;
   temperature: number;
-  maxToken: number;
   constructor(
     jenkinsServerUrl: string,
     logSize: number,
@@ -16,15 +15,13 @@ export default class Settings {
     localAiUrl: string,
     model: string,
     prompt: string,
-    temperature: number,
-    maxToken: number
+    temperature: number
   ) {
     this.jenkinsServerUrl = jenkinsServerUrl;
     this.logSize = logSize;
     this.username = username;
     this.apiToken = apiToken;
     this.localAiUrl = localAiUrl;
-    this.maxToken = maxToken;
     this.model = model;
     this.prompt = prompt;
     this.temperature = temperature;

@@ -30,7 +30,6 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
             <li >Jenkins Log Size: &emsp;<b>${settings?.jenkinsLogSize}</b></li>
             <li >AI Endpoint: &emsp;<b>${settings?.aiModelUrl}</b></li>
             <li >AI Model: &emsp;<b>${settings?.aiModel}</b></li>
-            <li >AI Max Token: &emsp;<b>${settings?.aiMaxToken}</b></li>
             <li >AI Temperature: &emsp;<b>${settings?.aiTemperature}</b></li>
             <li >Prompt: <br/><b>&emsp;${settings?.aiPrompt}</b></li>
         </ul>
