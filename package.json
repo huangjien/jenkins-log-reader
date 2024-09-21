@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.4.7",
+  "version": "0.5.10",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -11,7 +11,8 @@
   "license": "MIT",
   "icon": "resources/jenkins_reader.png",
   "publisher": "huangjien",
-  "homepage": "https://github.com/huangjien/jenkins-log-reader/blob/main/README.md",
+  "homepage": "https://www.huangjien.com",
+  "readme": "https://github.com/huangjien/jenkins-log-reader/blob/main/README.md",
   "bugs": {
     "url": "https://github.com/huangjien/jenkins-log-reader/issues",
     "email": "huangjien@gmail.com"
@@ -65,8 +66,12 @@
           "enum": [
             "llama3.1:latest",
             "llama3:latest",
+            "qwen2.5:latest",
             "qwen2:7b",
+            "gemma2:latest",
             "gemma:latest",
+            "phi3.5:latest",
+            "mistral-small:latest",
             "mistral:7b"
           ],
           "default": "llama3.1:latest",
@@ -87,13 +92,6 @@
           "default": 0.6,
           "order": 6,
           "description": "The more temperature is, the model will use more \"creativity\", and the less temperature instruct model to be \"less creative\", but following your prompt stronger."
-        },
-        "jenkins-log-reader.aiMaxToken": {
-          "type": "number",
-          "title": "AI Max Token",
-          "default": 8192,
-          "order": 7,
-          "description": "Max token response from AI model."
         },
         "jenkins-log-reader.jenkinsLogSize": {
           "type": "number",
@@ -134,13 +132,13 @@
         {
           "type": "webview",
           "id": "jenkins-log-reader_result-view",
-          "name": "AI Log Reader",
+          "name": "Analysis",
           "contextualTitle": "Result"
         },
         {
           "type": "webview",
           "id": "jenkins-log-reader_settings-view",
-          "name": "AI Log Reader Settings",
+          "name": "Settings",
           "contextualTitle": "Settings"
         }
       ]
@@ -155,11 +153,14 @@
     "package": "NODE_ENV=production node ./esbuild.js",
     "watch": "node ./esbuild.js && npx tailwindcss -i ./src/extension.css -o ./out/extension.css --minify",
     "prettier": "prettier --write .",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint --fix ./src",
     "update-package-lock": "npm install --package-lock-only",
     "tsc": "tsc -p ./",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.8",
     "@types/node": "22.5.5",
@@ -168,6 +169,9 @@
     "auto-changelog": "^2.5.0",
     "esbuild": "^0.23.1",
     "esbuild-plugin-copy": "^2.1.1",
+    "eslint": "^9.10.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "glob": "^11.0.0",
     "husky": "^9.1.6",
     "normalize.css": "^8.0.1",
@@ -176,7 +180,8 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "tailwindcss": "^3.4.12",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.6.0"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.15",

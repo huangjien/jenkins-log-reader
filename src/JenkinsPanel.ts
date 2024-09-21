@@ -85,21 +85,20 @@ export class JenkinsPanel {
             <vscode-radio class="p-1 m-0.5" id="8h_radio" checked value="28800">8 hours</vscode-radio>
             <vscode-radio class="p-1 m-0.5" id="1d_radio" value="86400">1 day</vscode-radio>
             <vscode-radio class="p-1 m-0.5" id="3d_radio" value="259200">3 days</vscode-radio>
+            <vscode-tag  class="p-1 m-0.5" id="count"></vscode-tag>
           </vscode-radio-group>
-          <p id="count"></p>
+          
         </div>
 
         <section id="results-container" class="flex flex-wrap gap-1 h-full" > 
-          <p id="notification"></p>
+          <!--vscode-tag id="notification"></vscode-tag -->
           <vscode-data-grid id="basic-grid" grid-template-columns="70% 7vw 10vw 7vw 6vw" aria-label="Jenkins Build Data Grid">
-          
           </vscode-data-grid>   
-          
         </section>
         <section id="analysis-container" class="flex-wrap gap-1 h-full hidden" >
         <details class="w-full" >
           <summary class="flex flex-wrap m-1 p-1 list-none">
-            <p id="instruct" class="m2 w-9/12 p-2" ></p> 
+            <p id="instruct" class="italic m2 w-9/12 p-2" ></p> 
             <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
             <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="showResult">View</vscode-button>
           </summary>
@@ -123,12 +122,8 @@ export class JenkinsPanel {
           `;
   }
 
-  private keepLongTail(inputString: string, size: number) {
+  private keepLongTail(inputString: string) {
     // keep 1st 1k and tail(size)? This is a bad idea, AI got confused!
-
-    if (inputString.length > size) {
-      return inputString.slice(-size);
-    }
     return inputString;
   }
 
@@ -138,11 +133,12 @@ export class JenkinsPanel {
 
   private removePrefixUsingRegex(text: string, prefix: string) {
     // Create a dynamic regex based on the prefix
-    let regex = new RegExp("^" + this.escapeRegex(prefix));
+    const regex = new RegExp("^" + this.escapeRegex(prefix));
     return text.replace(regex, "");
   }
 
   private escapeRegex(data: string) {
+    // eslint-disable-next-line no-useless-escape
     return data.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escapes regex special characters
   }
 
@@ -151,20 +147,23 @@ export class JenkinsPanel {
       const command = message.command;
       const token = btoa(JenkinsPanel.settings?.username + ":" + JenkinsPanel.settings?.apiToken);
       switch (command) {
-        case "refresh":
-          const server_url = JenkinsPanel.settings?.jenkinsServerUrl!;
+        case "refresh": {
+          const server_url = JenkinsPanel.settings!.jenkinsServerUrl!;
           const longRunTask_refresh = this.retriveBuilds(server_url, token, webView);
           showStatusBarProgress(longRunTask_refresh, "Retriving build logs...");
           break;
-        case "analyse":
+        }
+        case "analyse": {
           const build_url = message.build_url;
           const longRunTask_analysis = this.handleAnalysis(build_url, webView, token);
           showStatusBarProgress(longRunTask_analysis, "analysing the log...");
           break;
-        case "debug":
+        }
+        case "debug": {
           console.log(message.info);
           break;
-        case "showResult":
+        }
+        case "showResult": {
           const job_url = message.build_url;
           const nameHash = digest(job_url);
           const jsonContent = fs
@@ -184,19 +183,22 @@ export class JenkinsPanel {
           commands.executeCommand("jenkins-log-reader.showResult", fileContent);
 
           break;
-        case "batch":
+        }
+        case "batch": {
           message.url.forEach((build_url: string) => {
             const longRunTask_analysis = this.handleAnalysis(build_url, webView, token);
             showStatusBarProgress(longRunTask_analysis, "analysing the build...\n " + build_url);
           });
           break;
-        case "resolve":
+        }
+        case "resolve": {
           const hash = digest(message.url);
           const analysis = message.analysis;
           const log = message.log;
           const longRunTask_resolve = this.writeResolveFile(hash, log, analysis);
           showStatusBarProgress(longRunTask_resolve, "writing resolve file...");
           break;
+        }
       }
     });
   }
@@ -205,7 +207,7 @@ export class JenkinsPanel {
     getAllBuild(server_url, auth)
       .then((data) => {
         // check the local resolve file
-        var ret: any[] = [];
+        const ret: any[] = [];
 
         data.forEach((record) => {
           if (!record.hash) {
@@ -246,7 +248,7 @@ export class JenkinsPanel {
   private async handleAnalysis(build_url: any, webView: Webview, token: string) {
     await getLog(build_url, token)
       .then((data) => {
-        const info = this.keepLongTail(data, JenkinsPanel.settings?.maxToken!);
+        const info = this.keepLongTail(data);
         webView.postMessage({ command: "log", payload: info });
         return info;
       })
@@ -255,7 +257,6 @@ export class JenkinsPanel {
           JenkinsPanel.settings!.localAiUrl,
           JenkinsPanel.settings!.model,
           JenkinsPanel.settings!.temperature,
-          JenkinsPanel.settings!.maxToken,
           JenkinsPanel.settings!.prompt,
           data
         );
@@ -340,10 +341,6 @@ export class JenkinsPanel {
       }
     }
   }
-}
-
-function err(reason: any): PromiseLike<never> {
-  throw new Error("Function not implemented.");
 }
 
 function showStatusBarProgress(task: Promise<any>, title = "Processing...") {

@@ -18,6 +18,7 @@ import {
   vsCodeRadio,
   vsCodeTextField,
   vsCodeProgressRing,
+  vsCodeTag,
   TextArea,
 } from "@vscode/webview-ui-toolkit";
 
@@ -37,11 +38,12 @@ provideVSCodeDesignSystem().register(
   vsCodeDataGridCell(),
   vsCodeDataGrid(),
   vsCodeProgressRing(),
-  vsCodeTextField()
+  vsCodeTextField(),
+  vsCodeTag()
 );
 
-var gridData: any[] = [];
-var displayData: any[] = [];
+let gridData: any[] = [];
+let displayData: any[] = [];
 
 // Get access to the VS Code API from within the webview context
 const vscode = acquireVsCodeApi();
@@ -88,7 +90,7 @@ function refresh() {
 }
 
 function batch() {
-  var urls: string[] = [];
+  const urls: string[] = [];
   displayData.forEach((record) => {
     if (record.result === "FAILURE") {
       urls.push(record.url);
@@ -100,6 +102,8 @@ function batch() {
   });
 }
 
+// reserve for debugging
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function debug(message: object) {
   vscode.postMessage({
     command: "debug",
@@ -225,8 +229,8 @@ function filterConditionChanged() {
       return el.result !== "RESOLVE";
     });
   }
-  var recent = 28800;
-  var now = Date.now();
+  let recent = 28800;
+  const now = Date.now();
   if (radio_1h.checked.valueOf()) {
     recent = 3600;
   }
@@ -253,19 +257,21 @@ function setVSCodeMessageListener() {
     const command = event.data.command;
 
     switch (command) {
-      case "dataGrid":
+      case "dataGrid": {
         // const response = JSON.parse(event.data.payload);
         gridData = JSON.parse(event.data.payload);
         filterConditionChanged();
         break;
-      case "log":
+      }
+      case "log": {
         const log = event.data.payload;
         const build_log = document.getElementById("build_log");
         if (build_log) {
           build_log.textContent = log;
         }
         break;
-      case "analysis":
+      }
+      case "analysis": {
         const analysis_result = event.data.payload;
         const analysis = document.getElementById("analysis") as TextArea;
         if (analysis) {
@@ -278,6 +284,7 @@ function setVSCodeMessageListener() {
           }
         }
         break;
+      }
     }
   });
 }
@@ -286,8 +293,13 @@ function displayGridData() {
   // const batch_button = document.getElementById("batch") as Button;
   // batch_button.classList.remove("hidden");
   const count = document.getElementById("count")!;
-  count.textContent = displayData.length.toString();
-  const notification = document.getElementById("notification");
+  if (displayData.length > 1) {
+    count.textContent = "Found " + displayData.length.toString() + " builds";
+  } else {
+    count.textContent = "Found " + displayData.length.toString() + " build";
+  }
+
+  // const notification = document.getElementById("notification");
 
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
 
@@ -300,9 +312,9 @@ function displayGridData() {
     { columnDataKey: "duration", title: "duration" },
   ];
 
-  if (notification) {
-    notification.textContent = "";
-  }
+  // if (notification) {
+  //   notification.textContent = "";
+  // }
 
   if (basicGrid) {
     // Populate grid with data

@@ -1,7 +1,7 @@
-import { ExtensionContext, window, commands, ViewColumn, workspace } from "vscode";
+import { ExtensionContext, window, commands, workspace } from "vscode";
 import { JenkinsPanel } from "./JenkinsPanel";
 import JenkinsSettings from "./JenkinsSettings";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import { LogReaderResultWebViewProvider } from "./LogReaderResultWebViewProvider";
 import { LogReaderSettingWebViewProvider } from "./LogReaderSettingWebViewProvider";
 
@@ -14,16 +14,23 @@ export function activate(context: ExtensionContext) {
     mkdirSync(storagePath, { recursive: true });
   }
   const jenkinsServerUrl = getConfig("jenkins-log-reader.jenkinsServerUrl");
+  if (!jenkinsServerUrl) {
+    window.showErrorMessage("Please set Jenkins Server's URL in extension setting!");
+  }
 
   const logSize = getConfig("jenkins-log-reader.jenkinsLogSize");
+  if (!logSize) {
+    window.showErrorMessage("Please set Log's size you want to retrive, default is 5120!");
+  }
 
   const username = getConfig("jenkins-log-reader.jenkinsUsername");
+  if (!username) {
+    window.showErrorMessage("Please set Jenkins's username in extension setting!");
+  }
 
   const apiToken = getConfig("jenkins-log-reader.jenkinsToken");
-
-  if (!username || !apiToken) {
-    window.showInformationMessage("Please configure your Jenkins settings.");
-    return;
+  if (!apiToken || apiToken.length < 16) {
+    window.showErrorMessage("Please set Jenkins token in extension setting!");
   }
 
   const localAiUrl = getConfig("jenkins-log-reader.aiModelUrl");
@@ -34,11 +41,8 @@ export function activate(context: ExtensionContext) {
 
   const temperature = getConfig("jenkins-log-reader.aiTemperature");
 
-  const maxToken = getConfig("jenkins-log-reader.aiMaxToken");
-
-  if (!localAiUrl || !model) {
+  if (!localAiUrl || !model || !model || !prompt || !temperature) {
     window.showInformationMessage("Please configure your Local AI settings.");
-    return;
   }
 
   const settings = new JenkinsSettings(
@@ -49,12 +53,11 @@ export function activate(context: ExtensionContext) {
     localAiUrl,
     model,
     prompt,
-    temperature,
-    maxToken
+    temperature
   );
 
-  setupSettingsViewProvider(context, settings);
-  let disposal = commands.registerCommand("jenkins-log-reader.webView", () => {
+  setupSettingsViewProvider(context);
+  const disposal = commands.registerCommand("jenkins-log-reader.webView", () => {
     JenkinsPanel.render(context.extensionUri, settings, storagePath);
   });
 
@@ -89,8 +92,8 @@ function setupResultWebviewProvider(context: ExtensionContext) {
   return provider;
 }
 
-function setupSettingsViewProvider(context: ExtensionContext, settings: JenkinsSettings) {
-  const provider = new LogReaderSettingWebViewProvider(context, settings);
+function setupSettingsViewProvider(context: ExtensionContext) {
+  const provider = new LogReaderSettingWebViewProvider(context);
   context.subscriptions.push(
     window.registerWebviewViewProvider("jenkins-log-reader_settings-view", provider)
   );

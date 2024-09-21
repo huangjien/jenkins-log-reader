@@ -5,24 +5,16 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
   public static readonly viewType = "webView";
   public _view?: vscode.WebviewView;
   public settings!: JenkinsSettings;
-  constructor(
-    private context: vscode.ExtensionContext,
-    settings: JenkinsSettings
-  ) {
-    this.settings = settings;
-  }
-  resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    context: vscode.WebviewViewResolveContext,
-    token: vscode.CancellationToken
-  ): Thenable<void> | void {
+  constructor(private context: vscode.ExtensionContext) {}
+  resolveWebviewView(webviewView: vscode.WebviewView): Thenable<void> | void {
     this._view = webviewView;
     webviewView.webview.options = {
       enableScripts: true,
     };
-    webviewView.webview.html = this.getWebviewContent(webviewView.webview);
+    webviewView.webview.html = this.getWebviewContent();
   }
-  getWebviewContent(webview: vscode.Webview): string {
+  getWebviewContent(): string {
+    const settings = vscode.workspace.getConfiguration("jenkins-log-reader");
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -30,17 +22,17 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>AI Log Reader Settings</title>
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     </head>
     <body>
-        <div class="container mx-auto">       
-            <p class="w-1/4 m-2">Jenkins Server URL: \t<b>${this.settings?.jenkinsServerUrl}</b></p>
-            <p class="w-1/4 m-2">Jenkins User Name: \t<b>${this.settings?.username}</b></p>
-            <p class="w-1/4 m-2">AI Endpoint: \t<b>${this.settings?.localAiUrl}</b></p>
-            <p class="w-1/4 m-2">AI Model: \t<b>${this.settings?.model}</b></p>
-            <p class="w-1/4 m-2">AI Temperature: \t<b>${this.settings?.temperature}</b></p>
-            <p class="w-1/4 m-2">Prompt: <br/><br/><b>${this.settings?.prompt}</b></p>
-        </div>
+        <ul style="text-align: left;padding-left: 0pt;">       
+            <li >Jenkins Server URL: <br/><b>&emsp;${settings?.jenkinsServerUrl}</b></li>
+            <li >Jenkins User Name: &emsp;<b>${settings?.jenkinsUsername}</b></li>
+            <li >Jenkins Log Size: &emsp;<b>${settings?.jenkinsLogSize}</b></li>
+            <li >AI Endpoint: &emsp;<b>${settings?.aiModelUrl}</b></li>
+            <li >AI Model: &emsp;<b>${settings?.aiModel}</b></li>
+            <li >AI Temperature: &emsp;<b>${settings?.aiTemperature}</b></li>
+            <li >Prompt: <br/><b>&emsp;${settings?.aiPrompt}</b></li>
+        </ul>
     </body>
     </html>
         `;
