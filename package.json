@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "jenkins-log-reader",
   "description": "read jenkins log, analyse with local AI.",
-  "version": "0.5.10",
+  "version": "0.5.11",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -160,7 +160,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@eslint/js": "^9.10.0",
+    "@eslint/js": "^9.11.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.8",
     "@types/node": "22.5.5",
@@ -169,7 +169,7 @@
     "auto-changelog": "^2.5.0",
     "esbuild": "^0.23.1",
     "esbuild-plugin-copy": "^2.1.1",
-    "eslint": "^9.10.0",
+    "eslint": "^9.11.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "glob": "^11.0.0",
