@@ -1,3 +1,4 @@
+import "./extension.css";
 import {
   provideVSCodeDesignSystem,
   Button,
