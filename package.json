@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "AI Log Reader",
   "description": "Read jenkins log, analyse with local AI.",
-  "version": "0.5.15",
+  "version": "0.6.1",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -102,10 +102,34 @@
         }
       }
     },
+    "languages": [
+      {
+        "id": "groovy",
+        "extensions": [
+          ".jenkinsfile"
+        ],
+        "aliases": [
+          "Jenkins Pipleline Source Code"
+        ]
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorTextFocus && (editorLangId == groovy || editorLangId == jenkinsfile )",
+          "command": "jenkins-log-reader.formatPipeline",
+          "group": "navigation"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "jenkins-log-reader.showResult",
         "title": "Show Analysis Result"
+      },
+      {
+        "command": "jenkins-log-reader.formatPipeline",
+        "title": "Format Jenkins Pipeline"
       },
       {
         "command": "jenkins-log-reader.webView",
@@ -190,6 +214,7 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "crypto": "^1.0.1",
+    "groovy-beautify": "^0.0.17",
     "marked": "^14.1.2",
     "openai": "^4.65.0",
     "react-markdown": "^9.0.1",

@@ -1,11 +1,13 @@
-import { ExtensionContext, window, commands, workspace } from "vscode";
+import { ExtensionContext, window, commands, workspace, Range } from "vscode";
 import { JenkinsPanel } from "./JenkinsPanel";
 import JenkinsSettings from "./JenkinsSettings";
 import { existsSync, mkdirSync } from "fs";
 import { LogReaderResultWebViewProvider } from "./LogReaderResultWebViewProvider";
 import { LogReaderSettingWebViewProvider } from "./LogReaderSettingWebViewProvider";
+import groovyBeautify from "groovy-beautify";
 
 export function activate(context: ExtensionContext) {
+  registerCommandOfFormatGrooby(context);
   const storagePath = context.globalStorageUri.fsPath;
   if (!existsSync(storagePath)) {
     mkdirSync(storagePath, { recursive: true });
@@ -66,6 +68,25 @@ export function activate(context: ExtensionContext) {
   const resultViewProvider = setupResultWebviewProvider(context);
 
   registerCommandOfShowResult(context, resultViewProvider);
+}
+
+function registerCommandOfFormatGrooby(context: ExtensionContext) {
+  context.subscriptions.push(
+    commands.registerCommand("jenkins-log-reader.formatPipeline", () => {
+      const editor = window.activeTextEditor;
+      if (editor) {
+        const formattedText = groovyBeautify(editor.document.getText());
+
+        window.activeTextEditor?.edit((builder) => {
+          const doc = editor.document;
+          builder.replace(
+            new Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end),
+            formattedText
+          );
+        });
+      }
+    })
+  );
 }
 
 function registerCommandOfShowResult(
