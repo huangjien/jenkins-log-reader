@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "AI Log Reader",
   "description": "Read jenkins log, analyse with local AI.",
-  "version": "0.5.14",
+  "version": "0.5.15",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -168,7 +168,6 @@
     "@types/vscode": "^1.93.0",
     "@types/vscode-webview": "^1.57.5",
     "@vscode/l10n": "^0.0.18",
-    "auto-changelog": "^2.5.0",
     "esbuild": "^0.24.0",
     "esbuild-plugin-copy": "^2.1.1",
     "eslint": "^9.11.1",
