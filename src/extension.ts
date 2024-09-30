@@ -4,7 +4,7 @@ import JenkinsSettings from "./JenkinsSettings";
 import { existsSync, mkdirSync } from "fs";
 import { LogReaderResultWebViewProvider } from "./LogReaderResultWebViewProvider";
 import { LogReaderSettingWebViewProvider } from "./LogReaderSettingWebViewProvider";
-import groovyBeautify from "groovy-beautify";
+import { GroovyCodeFormat } from "./GroovyFormat";
 
 export function activate(context: ExtensionContext) {
   registerCommandOfFormatGrooby(context);
@@ -75,7 +75,7 @@ function registerCommandOfFormatGrooby(context: ExtensionContext) {
     commands.registerCommand("jenkins-log-reader.formatPipeline", () => {
       const editor = window.activeTextEditor;
       if (editor) {
-        const formattedText = groovyBeautify(editor.document.getText());
+        const formattedText = GroovyCodeFormat(editor.document.getText());
 
         window.activeTextEditor?.edit((builder) => {
           const doc = editor.document;
@@ -99,6 +99,7 @@ function registerCommandOfShowResult(
         // commands.executeCommand("jenkins-log-reader_result-view.focus");
         if (fileContent) {
           provider.updateContent(fileContent);
+          commands.executeCommand("jenkins-log-reader_result-view.focus");
         }
       }
     })
