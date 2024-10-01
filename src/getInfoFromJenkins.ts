@@ -119,6 +119,40 @@ export function readExistedFile(fileName: string) {
   return readExistedResult(fileName)["input"];
 }
 
+export async function getBuildInfo(buildUrl: string, auth: string) {
+  try {
+    const response = await axios
+      .get(
+        `${buildUrl}api/json?pretty=true&tree=actions[causes[userId,userName,shortDescription],parameters[name,value]]`,
+        {
+          headers: { Authorization: `Basic ${auth}` },
+        }
+      )
+      .then((res) => {
+        const json = res.data;
+        let result = "";
+        json["actions"].forEach((element: any) => {
+          if (element["_class"] == "hudson.model.CauseAction") {
+            element["causes"].forEach((cause: any) => {
+              result += cause["shortDescription"] + "\n\n";
+            });
+          }
+          if (element["_class"] == "hudson.model.ParametersAction") {
+            result += "Build Parameters:\n\n";
+            element["parameters"].forEach((cause: any) => {
+              result += "  " + cause["name"] + " = " + cause["value"] + "\n\n";
+            });
+          }
+        });
+        return result;
+      });
+    return response;
+  } catch (error) {
+    console.error("Failed to fetch Jenkins Build Infomation:", error);
+    throw error;
+  }
+}
+
 export async function getLog(buildUrl: string, auth: string) {
   // if file already exist, then get it from disk
   const fileName = digest(buildUrl);

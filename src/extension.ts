@@ -7,7 +7,6 @@ import { LogReaderSettingWebViewProvider } from "./LogReaderSettingWebViewProvid
 import { GroovyCodeFormat } from "./GroovyFormat";
 
 export function activate(context: ExtensionContext) {
-  registerCommandOfFormatGrooby(context);
   const storagePath = context.globalStorageUri.fsPath;
   if (!existsSync(storagePath)) {
     mkdirSync(storagePath, { recursive: true });
@@ -32,7 +31,7 @@ export function activate(context: ExtensionContext) {
 
   const apiToken = getConfig("jenkins-log-reader.jenkinsToken");
   if (!apiToken || apiToken.length < 16) {
-    window.showErrorMessage("Please set Jenkins token in extension setting!");
+    window.showWarningMessage("Please set Jenkins token in extension setting!");
   }
 
   const localAiUrl = getConfig("jenkins-log-reader.aiModelUrl");
@@ -68,6 +67,7 @@ export function activate(context: ExtensionContext) {
   const resultViewProvider = setupResultWebviewProvider(context);
 
   registerCommandOfShowResult(context, resultViewProvider);
+  registerCommandOfFormatGrooby(context);
 }
 
 function registerCommandOfFormatGrooby(context: ExtensionContext) {

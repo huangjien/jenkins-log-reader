@@ -10,6 +10,7 @@ This Visual Studio Code extension allows you to leverage a local AI model to ana
 - **AI-Powered Insights**: Leverages local AI models for in-depth log analysis and failure reason identification.
 - **Customizable Settings**: Tailor the extension to suit your Jenkins environment and AI model preferences.
 - **Security**: It supposes to use local AI, then the sensitive data will not be transfer to outside of the company. Although you can also choose AI in the cloud.
+- **Format Jenkinsfile**: Format Jenkinsfile and Groovy, the format is hardcode at the moment, will improve it later.
 
 ## Requirements
 

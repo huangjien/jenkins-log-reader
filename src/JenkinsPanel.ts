@@ -10,7 +10,14 @@ import {
 } from "vscode";
 import { getUri } from "./getUri";
 import { getNonce } from "./getNonce";
-import { digest, getAllBuild, getLog, getAnalysis, readExistedResult } from "./getInfoFromJenkins";
+import {
+  digest,
+  getAllBuild,
+  getLog,
+  getAnalysis,
+  readExistedResult,
+  getBuildInfo,
+} from "./getInfoFromJenkins";
 import "./extension.css";
 import JenkinsSettings from "./JenkinsSettings";
 import * as fs from "fs";
@@ -246,6 +253,7 @@ export class JenkinsPanel {
   }
 
   private async handleAnalysis(build_url: any, webView: Webview, token: string) {
+    const result = await getBuildInfo(build_url, token);
     await getLog(build_url, token)
       .then((data) => {
         const info = this.keepLongTail(data);
@@ -258,7 +266,7 @@ export class JenkinsPanel {
           JenkinsPanel.settings!.model,
           JenkinsPanel.settings!.temperature,
           JenkinsPanel.settings!.prompt,
-          data
+          result + "\n" + data
         );
       })
       .then(([data, ret]) => {
@@ -272,7 +280,7 @@ export class JenkinsPanel {
           JSON.stringify(
             {
               instrct: JenkinsPanel.settings?.prompt,
-              input: data,
+              input: result + "\n" + data,
               output: content,
             },
             null,
@@ -283,6 +291,9 @@ export class JenkinsPanel {
           hash +
           "\n\n### " +
           build_url +
+          "\n\n" +
+          result +
+          "\n" +
           "\n\n <details>\n<summary>Jenkins Log</summary>\n<pre>\n" +
           data?.replace(/(?:\r\n|\r|\n)/g, "\n\n") +
           "\n</pre></details>\n\n" +
