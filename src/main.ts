@@ -23,9 +23,6 @@ import {
   TextArea,
 } from "@vscode/webview-ui-toolkit";
 
-// In order to use the Webview UI Toolkit web components they
-// must be registered with the browser (i.e. webview) using the
-// syntax below.
 provideVSCodeDesignSystem().register(
   vsCodeButton(),
   vsCodeDropdown(),
@@ -46,42 +43,35 @@ provideVSCodeDesignSystem().register(
 let gridData: any[] = [];
 let displayData: any[] = [];
 
-// Get access to the VS Code API from within the webview context
 const vscode = acquireVsCodeApi();
 
-// Just like a regular webpage we need to wait for the webview
-// DOM to load before we can reference any of the HTML elements
-// or toolkit components
 window.addEventListener("load", main);
 
-// Main function that gets executed once the webview DOM loads
 function main() {
-  const refreshButton = document.getElementById("refresh") as Button;
-  refreshButton.addEventListener("click", refresh);
-  const success_checkbox = document.getElementById("success_check") as Checkbox;
-  success_checkbox.addEventListener("change", filterConditionChanged);
-  const failure_checkbox = document.getElementById("failure_check") as Checkbox;
-  failure_checkbox.addEventListener("change", filterConditionChanged);
-  const aborted_checkbox = document.getElementById("aborted_check") as Checkbox;
-  aborted_checkbox.addEventListener("change", filterConditionChanged);
-  const analysed_checkbox = document.getElementById("analysed_check") as Checkbox;
-  analysed_checkbox.addEventListener("change", filterConditionChanged);
-  const resolve_checkbox = document.getElementById("resolve_check") as Checkbox;
-  resolve_checkbox.addEventListener("change", filterConditionChanged);
-  const radio_1h = document.getElementById("1h_radio") as Radio;
-  radio_1h.addEventListener("change", filterConditionChanged);
-  const radio_8h = document.getElementById("8h_radio") as Radio;
-  radio_8h.addEventListener("change", filterConditionChanged);
-  const radio_1d = document.getElementById("1d_radio") as Radio;
-  radio_1d.addEventListener("change", filterConditionChanged);
-  const radio_3d = document.getElementById("3d_radio") as Radio;
-  radio_3d.addEventListener("change", filterConditionChanged);
-  const data_grid = document.getElementById("basic-grid") as DataGridRow;
-  data_grid.addEventListener("row-focused", (e: Event) => handleRowFocused(e));
-  const batch_button = document.getElementById("batch") as Button;
-  batch_button.addEventListener("click", batch);
-
+  setupEventListeners();
   setVSCodeMessageListener();
+}
+
+function setupEventListeners() {
+  addEventListenerToElement<Button>("refresh", "click", refresh);
+  addEventListenerToElement<Checkbox>("success_check", "change", filterConditionChanged);
+  addEventListenerToElement<Checkbox>("failure_check", "change", filterConditionChanged);
+  addEventListenerToElement<Checkbox>("aborted_check", "change", filterConditionChanged);
+  addEventListenerToElement<Checkbox>("analysed_check", "change", filterConditionChanged);
+  addEventListenerToElement<Checkbox>("resolve_check", "change", filterConditionChanged);
+  addEventListenerToElement<Radio>("1h_radio", "change", filterConditionChanged);
+  addEventListenerToElement<Radio>("8h_radio", "change", filterConditionChanged);
+  addEventListenerToElement<Radio>("1d_radio", "change", filterConditionChanged);
+  addEventListenerToElement<Radio>("3d_radio", "change", filterConditionChanged);
+  addEventListenerToElement<DataGridRow>("basic-grid", "row-focused", handleRowFocused);
+  addEventListenerToElement<Button>("batch", "click", batch);
+}
+
+function addEventListenerToElement<T extends HTMLElement>(id: string, event: string, handler: (event: Event) => void): void {
+  const element = document.getElementById(id) as T;
+  if (element) {
+    element.addEventListener(event, handler);
+  }
 }
 
 function refresh() {
@@ -103,8 +93,6 @@ function batch() {
   });
 }
 
-// reserve for debugging
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function debug(message: object) {
   vscode.postMessage({
     command: "debug",
@@ -113,7 +101,6 @@ function debug(message: object) {
 }
 
 function analyse() {
-  // if status is SUCCESS or RESOVLE, then do nothing
   const instruct = document.getElementById("instruct");
   const url = instruct?.innerText;
   vscode.postMessage({
@@ -150,26 +137,22 @@ function handleRowFocused(e: Event) {
   const row = e.target as DataGridRow;
   const ai_section = document.getElementById("analysis-container");
   if (!row || !row.rowData) {
-    // clear and hide again
     ai_section?.classList.add("hidden");
     return;
   }
   ai_section?.classList.remove("hidden");
   const instruct = document.getElementById("instruct");
-  //get data by url
-  // debug(row.rowData)
   const rowDataObject = JSON.parse(JSON.stringify(row.rowData));
   const focused_data = displayData.filter((obj) => {
     return obj.url === rowDataObject["url"];
   });
 
   if (instruct) {
-    instruct.textContent = rowDataObject["url"].replace('"', "");
+    instruct.textContent = rowDataObject["url"].replace("\"", "");
   }
   const analyse_button = document.getElementById("analyse");
   analyse_button?.addEventListener("click", analyse);
   const showResult_button = document.getElementById("showResult");
-
   showResult_button?.addEventListener("click", showResult);
   const build_log = document.getElementById("build_log");
   if (build_log) {
@@ -195,53 +178,34 @@ function filterConditionChanged() {
     return;
   }
   displayData = gridData;
-  const success_checkbox = document.getElementById("success_check") as Checkbox;
-  const failure_checkbox = document.getElementById("failure_check") as Checkbox;
-  const aborted_checkbox = document.getElementById("aborted_check") as Checkbox;
-  const resolve_checkbox = document.getElementById("resolve_check") as Checkbox;
-  const analysed_checkbox = document.getElementById("analysed_check") as Checkbox;
-  const radio_1h = document.getElementById("1h_radio") as Radio;
-  const radio_8h = document.getElementById("8h_radio") as Radio;
-  const radio_1d = document.getElementById("1d_radio") as Radio;
-  const radio_3d = document.getElementById("3d_radio") as Radio;
 
-  if (!success_checkbox.checked.valueOf()) {
-    displayData = displayData.filter((el) => {
-      return el.result !== "SUCCESS";
-    });
-  }
-  if (!failure_checkbox.checked.valueOf()) {
-    displayData = displayData.filter((el) => {
-      return el.result !== "FAILURE";
-    });
-  }
-  if (!aborted_checkbox.checked.valueOf()) {
-    displayData = displayData.filter((el) => {
-      return el.result !== "ABORTED";
-    });
-  }
-  if (!analysed_checkbox.checked.valueOf()) {
-    displayData = displayData.filter((el) => {
-      return el.result !== "ANALYSED";
-    });
-  }
-  if (!resolve_checkbox.checked.valueOf()) {
-    displayData = displayData.filter((el) => {
-      return el.result !== "RESOLVE";
-    });
-  }
+  const filterConditions = [
+    { id: "success_check", result: "SUCCESS" },
+    { id: "failure_check", result: "FAILURE" },
+    { id: "aborted_check", result: "ABORTED" },
+    { id: "analysed_check", result: "ANALYSED" },
+    { id: "resolve_check", result: "RESOLVE" },
+  ];
+
+  filterConditions.forEach(condition => {
+    const checkbox = document.getElementById(condition.id) as Checkbox;
+    if (!checkbox.checked) {
+      displayData = displayData.filter(el => el.result !== condition.result);
+    }
+  });
+
   let recent = 28800;
   const now = Date.now();
-  if (radio_1h.checked.valueOf()) {
+  if ((document.getElementById("1h_radio") as Radio)?.checked) {
     recent = 3600;
   }
-  if (radio_1d.checked.valueOf()) {
+  if ((document.getElementById("1d_radio") as Radio)?.checked) {
     recent = 86400;
   }
-  if (radio_8h.checked.valueOf()) {
+  if ((document.getElementById("8h_radio") as Radio)?.checked) {
     recent = 28800;
   }
-  if (radio_3d.checked.valueOf()) {
+  if ((document.getElementById("3d_radio") as Radio)?.checked) {
     recent = 259200;
   }
   recent = now - recent * 1000;
@@ -251,15 +215,12 @@ function filterConditionChanged() {
   displayGridData();
 }
 
-// Sets up an event listener to listen for messages passed from the extension context
-// and executes code based on the message that is recieved
 function setVSCodeMessageListener() {
   window.addEventListener("message", (event) => {
     const command = event.data.command;
 
     switch (command) {
       case "dataGrid": {
-        // const response = JSON.parse(event.data.payload);
         gridData = JSON.parse(event.data.payload);
         filterConditionChanged();
         break;
@@ -291,20 +252,13 @@ function setVSCodeMessageListener() {
 }
 
 function displayGridData() {
-  // const batch_button = document.getElementById("batch") as Button;
-  // batch_button.classList.remove("hidden");
   const count = document.getElementById("count")!;
-  if (displayData.length > 1) {
-    count.textContent = "Found " + displayData.length.toString() + " builds";
-  } else {
-    count.textContent = "Found " + displayData.length.toString() + " build";
-  }
-
-  // const notification = document.getElementById("notification");
+  count.textContent = displayData.length > 1 ?
+    `Found ${displayData.length} builds` :
+    `Found ${displayData.length} build`;
 
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
 
-  // Add column titles to grid
   basicGrid.columnDefinitions = [
     { columnDataKey: "url", title: "build url" },
     { columnDataKey: "result", title: "result" },
@@ -313,12 +267,7 @@ function displayGridData() {
     { columnDataKey: "duration", title: "duration" },
   ];
 
-  // if (notification) {
-  //   notification.textContent = "";
-  // }
-
   if (basicGrid) {
-    // Populate grid with data
     basicGrid.rowsData = displayData;
   }
 }
