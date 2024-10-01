@@ -67,7 +67,11 @@ function setupEventListeners() {
   addEventListenerToElement<Button>("batch", "click", batch);
 }
 
-function addEventListenerToElement<T extends HTMLElement>(id: string, event: string, handler: (event: Event) => void): void {
+function addEventListenerToElement<T extends HTMLElement>(
+  id: string,
+  event: string,
+  handler: (event: Event) => void
+): void {
   const element = document.getElementById(id) as T;
   if (element) {
     element.addEventListener(event, handler);
@@ -148,7 +152,7 @@ function handleRowFocused(e: Event) {
   });
 
   if (instruct) {
-    instruct.textContent = rowDataObject["url"].replace("\"", "");
+    instruct.textContent = rowDataObject["url"].replace('"', "");
   }
   const analyse_button = document.getElementById("analyse");
   analyse_button?.addEventListener("click", analyse);
@@ -187,10 +191,10 @@ function filterConditionChanged() {
     { id: "resolve_check", result: "RESOLVE" },
   ];
 
-  filterConditions.forEach(condition => {
+  filterConditions.forEach((condition) => {
     const checkbox = document.getElementById(condition.id) as Checkbox;
     if (!checkbox.checked) {
-      displayData = displayData.filter(el => el.result !== condition.result);
+      displayData = displayData.filter((el) => el.result !== condition.result);
     }
   });
 
@@ -253,9 +257,10 @@ function setVSCodeMessageListener() {
 
 function displayGridData() {
   const count = document.getElementById("count")!;
-  count.textContent = displayData.length > 1 ?
-    `Found ${displayData.length} builds` :
-    `Found ${displayData.length} build`;
+  count.textContent =
+    displayData.length > 1
+      ? `Found ${displayData.length} builds`
+      : `Found ${displayData.length} build`;
 
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
 
