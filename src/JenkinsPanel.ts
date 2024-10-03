@@ -304,7 +304,7 @@ export class JenkinsPanel {
 
         webView.postMessage({
           command: "analysis",
-          payload: content,
+          payload: fileContent,
         });
       })
       .catch((err) => {
