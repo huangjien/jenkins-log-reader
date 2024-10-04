@@ -2,9 +2,9 @@
   "name": "jenkins-log-reader",
   "displayName": "AI Log Reader",
   "description": "Read jenkins log, analyse with local AI.",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "engines": {
-    "vscode": "^1.93.0"
+    "vscode": "^1.94.0"
   },
   "main": "./out/extension",
   "author": "huangjien <huangjien@gmail.com>",
@@ -189,7 +189,7 @@
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.8",
     "@types/node": "22.7.4",
-    "@types/vscode": "^1.93.0",
+    "@types/vscode": "^1.94.0",
     "@types/vscode-webview": "^1.57.5",
     "@vscode/l10n": "^0.0.18",
     "esbuild": "^0.24.0",

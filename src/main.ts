@@ -97,6 +97,8 @@ function batch() {
   });
 }
 
+// Below function is very useful for debugging, so need to keep it.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function debug(message: object) {
   vscode.postMessage({
     command: "debug",
