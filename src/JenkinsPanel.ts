@@ -68,9 +68,9 @@ export class JenkinsPanel {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline' 'self' ${webview.cspSource}; 
-    img-src ${webview.cspSource} https:;  
-    script-src 'unsafe-inline' 'nonce-${nonce}'; style-src-elem 'unsafe-inline' ${webview.cspSource} ; font-src ${webview.cspSource}">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; 
+    img-src data:;  
+    script-src 'unsafe-inline' 'nonce-${nonce}'; style-src-elem 'unsafe-inline' ; font-src ${webview.cspSource}">
     <link rel="stylesheet" href="${styleResetPath}">
     <link rel="stylesheet" href="${stylesUri}">
     <title>Jenkins Logs Analysis</title>
