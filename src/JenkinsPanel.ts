@@ -56,6 +56,7 @@ export class JenkinsPanel {
   }
 
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
+    const styleResetPath =  getUri(webview, extensionUri, ["out",  "reset.css"]);
     const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
     const stylesUri = getUri(webview, extensionUri, ["out", "extension.css"]);
     const nonce = getNonce();
@@ -67,9 +68,10 @@ export class JenkinsPanel {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' ${webview.cspSource}; 
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline' 'self' ${webview.cspSource}; 
     img-src ${webview.cspSource} https:;  
-    script-src 'nonce-${nonce}'; style-src-elem ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}">
+    script-src 'unsafe-inline' 'nonce-${nonce}'; style-src-elem 'unsafe-inline' ${webview.cspSource} ; font-src ${webview.cspSource}">
+    <link rel="stylesheet" href="${styleResetPath}">
     <link rel="stylesheet" href="${stylesUri}">
     <title>Jenkins Logs Analysis</title>
   </head>
