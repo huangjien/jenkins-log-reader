@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "AI Log Reader",
   "description": "Read jenkins log, analyse with local AI.",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -221,6 +221,8 @@
   "files": [
     "out/**/*",
     "README.md",
+    "LICENSE",
+    "resources",
     "package.json"
   ]
 }
