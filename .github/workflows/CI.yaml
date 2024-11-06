@@ -24,5 +24,6 @@ jobs:
       - run: npm install
       - run: npm install -g @vscode/vsce
       - run: npm run compile
+      - run: cat ./out/extension.css
       - run: vsce package
       - run: vsce publish -p ${{ secrets.VSCE_PAT }}
