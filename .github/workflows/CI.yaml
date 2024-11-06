@@ -24,6 +24,5 @@ jobs:
       - run: npm install
       - run: npm install -g @vscode/vsce
       - run: npm run compile
-      - run: npm run prepublish
       - run: vsce package
       - run: vsce publish -p ${{ secrets.VSCE_PAT }}
