@@ -85,13 +85,13 @@ export class JenkinsPanel {
           <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="batch">Batch</vscode-button>
         </div>
         <div class="flex flex-auto flex-row gap-1" >
-          
-          <vscode-checkbox class="p-1 m-0.5" id="success_check" checked="false">SUCCESS</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-0.5" id="failure_check" checked>FAILURE</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-0.5" id="aborted_check" checked>ABORTED</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-0.5" id="analysed_check" checked>ANALYSED</vscode-checkbox>
-          <vscode-checkbox class="p-1 m-0.5" id="resolve_check" checked>RESOLVE</vscode-checkbox>
           <vscode-radio-group class="p-1 m-0.5"  orientation="horizontal" >
+            <vscode-checkbox class="p-1 m-0.5" id="success_check" checked="false">SUCCESS</vscode-checkbox>
+            <vscode-checkbox class="p-1 m-0.5" id="failure_check" checked>FAILURE</vscode-checkbox>
+            <vscode-checkbox class="p-1 m-0.5" id="aborted_check" checked>ABORTED</vscode-checkbox>
+            <vscode-checkbox class="p-1 m-0.5" id="analysed_check" checked>ANALYSED</vscode-checkbox>
+            <vscode-checkbox class="p-1 m-0.5" id="resolve_check" checked>RESOLVE</vscode-checkbox>
+            
             <!-- label class="text-xl" >Recent:</label -->
             <vscode-radio class="p-1 m-0.5" id="1h_radio" value="3600">1 hour</vscode-radio>
             <vscode-radio class="p-1 m-0.5" id="8h_radio" checked value="28800">8 hours</vscode-radio>
