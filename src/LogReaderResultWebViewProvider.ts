@@ -24,7 +24,6 @@ export class LogReaderResultWebViewProvider implements vscode.WebviewViewProvide
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>AI Log Reader</title>
-      <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
       <div id="content">${htmlContent}</div>
