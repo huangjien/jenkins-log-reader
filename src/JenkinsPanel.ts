@@ -81,8 +81,8 @@ export class JenkinsPanel {
       <div class="container mx-auto">          
         <div class="grid grid-cols-4 gap-1  " >
           <h2 class="col-span-2 text-xl text-center font-bold mx-8 text-inherit">Jobs - Builds</h2>
-          <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="refresh">Refresh</vscode-button>
-          <vscode-button class="col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="batch">Batch</vscode-button>
+          <vscode-button class="hover:animate-tada col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="refresh">Refresh</vscode-button>
+          <vscode-button class="hover:animate-tada col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="batch">Batch</vscode-button>
         </div>
         <div class="flex flex-auto flex-row gap-1" >
           <vscode-radio-group class="p-1 m-0.5"  orientation="horizontal" >
@@ -111,8 +111,8 @@ export class JenkinsPanel {
         <details class="w-full" >
           <summary class="flex flex-wrap m-1 p-1 list-none">
             <p id="instruct" class="italic m2 w-9/12 p-2" ></p> 
-            <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
-            <vscode-button class="text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="showResult">View</vscode-button>
+            <vscode-button class="hover:animate-tada text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="analyse">Analyse</vscode-button>
+            <vscode-button class="hover:animate-tada text-xs text-center h-6 w-1/12 self-center ml-4 rounded" id="showResult">View</vscode-button>
           </summary>
           <details class="w-full">
             <summary class="text-xl font-bold text-white-600 list-none">Jenkins Build Log</summary>
@@ -122,7 +122,7 @@ export class JenkinsPanel {
             <summary class="text-xl font-bold text-white-600 list-none">AI Analysis</summary>
             <div class="flex flex-wrap m-1 p-1 h-full">
               <vscode-text-area rows="10" class=" w-10/12" resize="both" id="analysis" placeholder="Not Analysed Yet."></vscode-text-area>
-              <vscode-button class=" w-1/12 text-xs text-center h-6 self-center ml-4 rounded" id="resolve">Resolve</vscode-button>
+              <vscode-button class="hover:animate-tada  w-1/12 text-xs text-center h-6 self-center ml-4 rounded" id="resolve">Resolve</vscode-button>
             </div>
           </details>
         </details>
