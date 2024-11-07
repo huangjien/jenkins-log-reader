@@ -359,7 +359,7 @@ export class JenkinsPanel {
   }
 }
 
-function showStatusBarProgress(task: Promise<any>, title = "Processing...") {
+export function showStatusBarProgress(task: Promise<any>, title = "Processing...") {
   window.withProgress(
     {
       location: ProgressLocation.Notification,

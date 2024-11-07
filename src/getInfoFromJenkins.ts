@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import * as fs from "fs";
 import { createHash } from "crypto";
 import { JenkinsPanel } from "./JenkinsPanel";
+import ollama from "ollama";
 
 type Build = {
   url: string;
@@ -193,6 +194,26 @@ export async function getAnalysis(
     .then((ret) => {
       const information = ret.choices[0]["message"]["content"];
       return [data, information];
+    })
+    .catch((err) => {
+      throw err;
+    });
+}
+
+export async function getImageAnalysis(
+  model: string,
+  prompt: string,
+  data: string
+) {
+  
+  return await ollama.chat({
+      model: model,
+      messages: [{ role: "user", content: prompt, images: [data] }],
+      stream: false,
+    })
+    .then((ret) => {
+      const information = ret["message"]["content"];
+      return information;
     })
     .catch((err) => {
       throw err;

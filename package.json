@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "AI Log Reader",
   "description": "Read jenkins log, analyse with local AI.",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -115,6 +115,13 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "when": "resourceExtname =~ /\\.(png|jpg|jpeg|gif|bmp|svg)$/i",
+          "command": "jenkins-log-reader.readImage",
+          "group": "navigation"
+        }
+      ],
       "editor/context": [
         {
           "when": "editorTextFocus && (editorLangId == groovy || editorLangId == jenkinsfile )",
@@ -124,6 +131,10 @@
       ]
     },
     "commands": [
+      {
+        "command": "jenkins-log-reader.readImage",
+        "title": "Analyse Image"
+      },
       {
         "command": "jenkins-log-reader.showResult",
         "title": "Show Analysis Result"
@@ -213,6 +224,7 @@
     "axios": "^1.7.7",
     "crypto": "^1.0.1",
     "marked": "^14.1.3",
+    "ollama": "^0.5.9",
     "openai": "^4.71.1",
     "tailwindcss": "^3.4.14"
   },
