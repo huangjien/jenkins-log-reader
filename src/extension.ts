@@ -48,6 +48,12 @@ export function activate(context: ExtensionContext) {
     window.showInformationMessage("Please configure your Local AI settings.");
   }
 
+  const imageAiModel = getConfig("jenkins-log-reader.imageAiModel");
+
+  const imagePrompt = getConfig("jenkins-log-reader.imagePrompt");
+
+  const videoPrompt = getConfig("jenkins-log-reader.videoPrompt");
+
   const settings = new JenkinsSettings(
     jenkinsServerUrl,
     logSize,
@@ -69,7 +75,7 @@ export function activate(context: ExtensionContext) {
   const resultViewProvider = setupResultWebviewProvider(context);
 
   registerCommandOfShowResult(context, resultViewProvider);
-  registerCommandOfReadImage(context, resultViewProvider);
+  registerCommandOfReadImage(context, resultViewProvider, imageAiModel, imagePrompt);
   registerCommandOfFormatGrooby(context);
 }
 
@@ -92,40 +98,43 @@ function registerCommandOfFormatGrooby(context: ExtensionContext) {
   );
 }
 
-function registerCommandOfReadImage(context: ExtensionContext,
-  provider: LogReaderResultWebViewProvider) {
+function registerCommandOfReadImage(
+  context: ExtensionContext,
+  provider: LogReaderResultWebViewProvider,
+  imageAiModel: string,
+  imagePrompt: string
+) {
   context.subscriptions.push(
     commands.registerCommand("jenkins-log-reader.readImage", async (uri: Uri) => {
       // get image file
       // turn it into base64
       // send to AI (llama3.2-vision)
       // show result in result view
-      if (uri){
-
-      
-        const image_uri = uri
-
-        const base64String = fs.readFileSync(image_uri.fsPath).toString('base64')
-        const long_run_task = analyse_image(base64String, provider);
-        showStatusBarProgress(long_run_task, 'Analysing the image...')
-        
+      if (uri) {
+        const image_uri = uri;
+        const base64String = fs.readFileSync(image_uri.fsPath).toString("base64");
+        const long_run_task = analyse_image(base64String, provider, imageAiModel, imagePrompt);
+        showStatusBarProgress(long_run_task, "Analysing the image...");
       }
     })
   );
 }
 
-async function analyse_image(base64String: string, provider: LogReaderResultWebViewProvider) {
-  await getImageAnalysis("llama3.2-vision",
-    'I am a QA, testing a product, which name is Curam. Please help me to check the snapshot, this is a functional testing. Do you see anything wrong or something behave weird in it?',
-    base64String).then((information: string) => {
-      if (provider._view) {
-        // commands.executeCommand("jenkins-log-reader_result-view.focus");
-        if (information) {
-          provider.updateContent(information);
-          commands.executeCommand("jenkins-log-reader_result-view.focus");
-        }
+async function analyse_image(
+  base64String: string,
+  provider: LogReaderResultWebViewProvider,
+  imageAiModel: string,
+  imagePrompt: string
+) {
+  await getImageAnalysis(imageAiModel, imagePrompt, base64String).then((information: string) => {
+    if (provider._view) {
+      // commands.executeCommand("jenkins-log-reader_result-view.focus");
+      if (information) {
+        provider.updateContent(information);
+        commands.executeCommand("jenkins-log-reader_result-view.focus");
       }
-    });
+    }
+  });
 }
 
 function registerCommandOfShowResult(
@@ -164,5 +173,3 @@ function setupSettingsViewProvider(context: ExtensionContext) {
 function getConfig(config_key: string): any {
   return workspace.getConfiguration().get(config_key);
 }
-
-

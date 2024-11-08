@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "AI Log Reader",
   "description": "Read jenkins log, analyse with local AI.",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -97,9 +97,34 @@
         },
         "jenkins-log-reader.jenkinsLogSize": {
           "type": "number",
+          "title": "Retrieve Log Size",
           "default": 5120,
           "order": 8,
           "description": "Jenkins Log Size for Analysis"
+        },
+        "jenkins-log-reader.imageAiModel": {
+          "type": "string",
+          "enum": [
+            "llama3.2-vision"
+          ],
+          "default": "llama3.2-vision",
+          "title": "Image AI Model",
+          "order": 9,
+          "description": "Image AI Model"
+        },
+        "jenkins-log-reader.imagePrompt": {
+          "type": "string",
+          "title": "Image Prompt",
+          "default": "I am a QA, testing a product, which name is Curam. Please help me to check the snapshot, this is a functional testing. Do you see anything wrong or something behave weird in it?",
+          "order": 10,
+          "description": "Prompt for Image Analysis"
+        },
+        "jenkins-log-reader.videoPrompt": {
+          "type": "string",
+          "title": "Video Prompt",
+          "default": "Find a person with a ball",
+          "order": 11,
+          "description": "Prompt for Video Analysis"
         }
       }
     },
@@ -223,7 +248,7 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "crypto": "^1.0.1",
-    "marked": "^14.1.3",
+    "marked": "^14.1.4",
     "ollama": "^0.5.9",
     "openai": "^4.71.1",
     "tailwindcss": "^3.4.14"
