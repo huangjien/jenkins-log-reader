@@ -200,13 +200,9 @@ export async function getAnalysis(
     });
 }
 
-export async function getImageAnalysis(
-  model: string,
-  prompt: string,
-  data: string
-) {
-  
-  return await ollama.chat({
+export async function getImageAnalysis(model: string, prompt: string, data: string) {
+  return await ollama
+    .chat({
       model: model,
       messages: [{ role: "user", content: prompt, images: [data] }],
       stream: false,

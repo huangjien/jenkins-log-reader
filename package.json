@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "AI Log Reader",
   "description": "Read jenkins log, analyse with local AI.",
-  "version": "0.8.9",
+  "version": "0.8.10",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -142,8 +142,23 @@
     "menus": {
       "explorer/context": [
         {
+          "when": "explorerResourceIsFolder",
+          "command": "jenkins-log-reader.readImages",
+          "group": "navigation"
+        },
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "jenkins-log-reader.readVideos",
+          "group": "navigation"
+        },
+        {
           "when": "resourceExtname =~ /\\.(png|jpg|jpeg|gif|bmp|svg)$/i",
           "command": "jenkins-log-reader.readImage",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(mp4|3pg|mov|ogg|avi|mpeg)$/i",
+          "command": "jenkins-log-reader.readVideo",
           "group": "navigation"
         }
       ],
@@ -156,6 +171,18 @@
       ]
     },
     "commands": [
+      {
+        "command": "jenkins-log-reader.readVideos",
+        "title": "Analyse Videos"
+      },
+      {
+        "command": "jenkins-log-reader.readVideo",
+        "title": "Analyse Video"
+      },
+      {
+        "command": "jenkins-log-reader.readImages",
+        "title": "Analyse Images"
+      },
       {
         "command": "jenkins-log-reader.readImage",
         "title": "Analyse Image"
