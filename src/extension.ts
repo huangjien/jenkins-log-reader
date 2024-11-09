@@ -7,6 +7,7 @@ import { LogReaderSettingWebViewProvider } from "./LogReaderSettingWebViewProvid
 import { GroovyCodeFormat } from "./GroovyFormat";
 import * as fs from "fs";
 import { getImageAnalysis } from "./getInfoFromJenkins";
+import { exec } from "child_process";
 
 export function activate(context: ExtensionContext) {
   const storagePath = context.globalStorageUri.fsPath;
@@ -120,22 +121,31 @@ function registerCommandOfReadImages(
         } else {
           files
             .filter((file) => {
-              file.toLowerCase().endsWith(".png") ||
+              return (
+                file.toLowerCase().endsWith(".png") ||
                 file.toLowerCase().endsWith(".jpg") ||
                 file.toLowerCase().endsWith(".jpeg") ||
                 file.toLowerCase().endsWith(".gif") ||
                 file.toLowerCase().endsWith(".bmp") ||
                 file.toLowerCase().endsWith(".webp") ||
                 file.toLowerCase().endsWith(".tiff") ||
-                file.toLowerCase().endsWith(".svg");
+                file.toLowerCase().endsWith(".svg")
+              );
             })
             .map(async (file) => {
               console.log("file: " + file);
+              const base64String = fs.readFileSync(uri.fsPath + "/" + file).toString("base64");
+              const long_run_task = analyse_image(
+                base64String,
+                provider,
+                imageAiModel,
+                imagePrompt
+              );
+              showStatusBarProgress(
+                long_run_task,
+                "Analysing the image..." + uri.fsPath + "/" + file
+              );
             });
-          // const image_uri = uri;
-          // const base64String = fs.readFileSync(image_uri.fsPath).toString("base64");
-          // const long_run_task = analyse_image(base64String, provider, imageAiModel, imagePrompt);
-          // showStatusBarProgress(long_run_task, "Analysing the image...");
         }
       });
     }
@@ -189,16 +199,30 @@ function registerCommandOfReadVideo(
 ) {
   context.subscriptions.push(
     commands.registerCommand("jenkins-log-reader.readVideo", async (uri: Uri) => {
-      // get video file
-      // turn it into base64
-      // send to AI (llama3.2-vision)
-      // show result in result view
+      const output_temp_dir = "/tmp/jenkins-log-reader/video/output/";
+      if (!fs.existsSync(output_temp_dir)) {
+        fs.mkdirSync(output_temp_dir, { recursive: true });
+      } else {
+        fs.rmSync(output_temp_dir, { recursive: true });
+        fs.mkdirSync(output_temp_dir, { recursive: true });
+      }
       if (uri) {
-        console.log(uri.fsPath);
-        // const video_uri = uri;
-        // const base64String = fs.readFileSync(video_uri.fsPath).toString("base64");
-        // const long_run_task = analyse_image(base64String, provider, imageAiModel, imagePrompt);
-        // showStatusBarProgress(long_run_task, "Analysing the image...");
+        const command = `ffmpeg -i ${uri.fsPath} -r 1/1 ${output_temp_dir}frame-%04d.png`;
+        console.log(command);
+        exec(command, (error: any, stdout: any, stderr: any): void => {
+          if (error) {
+            window.showErrorMessage(`Error: ${error.message}`, "error");
+            return;
+          }
+        });
+        // for each file under the output_temp_dir, call analyse_image
+        fs.readdirSync(output_temp_dir).map((file) => {
+          const base64String = fs.readFileSync(output_temp_dir + file).toString("base64");
+          const long_run_task = analyse_image(base64String, provider, imageAiModel, videoPrompt);
+          showStatusBarProgress(long_run_task, "Analysing the image..." + output_temp_dir + file);
+        });
+
+        // after analysing finished, delete the output_temp_dir ???
       }
     })
   );
@@ -216,6 +240,7 @@ function registerCommandOfReadImage(
       // turn it into base64
       // send to AI (llama3.2-vision)
       // show result in result view
+
       if (uri) {
         const image_uri = uri;
         const base64String = fs.readFileSync(image_uri.fsPath).toString("base64");
@@ -236,6 +261,7 @@ async function analyse_image(
     if (provider._view) {
       // commands.executeCommand("jenkins-log-reader_result-view.focus");
       if (information) {
+        console.log(information);
         provider.updateContent(information);
         commands.executeCommand("jenkins-log-reader_result-view.focus");
       }
