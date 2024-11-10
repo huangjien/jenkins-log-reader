@@ -8,6 +8,9 @@ import { GroovyCodeFormat } from "./GroovyFormat";
 import * as fs from "fs";
 import { getImageAnalysis } from "./getInfoFromJenkins";
 import { exec } from "child_process";
+import pLimit from "p-limit";
+
+const limit = pLimit(1); // at most, 3 concurrent tasks can be run at the same time
 
 export function activate(context: ExtensionContext) {
   const storagePath = context.globalStorageUri.fsPath;
@@ -77,9 +80,9 @@ export function activate(context: ExtensionContext) {
 
   registerCommandOfShowResult(context, resultViewProvider);
   registerCommandOfReadImage(context, resultViewProvider, imageAiModel, imagePrompt);
-  registerCommandOfReadImages(context, resultViewProvider, imageAiModel, imagePrompt);
-  registerCommandOfReadVideo(context, resultViewProvider, imageAiModel, videoPrompt);
-  registerCommandOfReadVideos(context, resultViewProvider, imageAiModel, videoPrompt);
+  // registerCommandOfReadImages(context, resultViewProvider, imageAiModel, imagePrompt);
+  // registerCommandOfReadVideo(context, resultViewProvider, imageAiModel, videoPrompt);
+  // registerCommandOfReadVideos(context, resultViewProvider, imageAiModel, videoPrompt);
   registerCommandOfFormatGrooby(context);
 }
 
@@ -206,6 +209,7 @@ function registerCommandOfReadVideo(
         fs.rmSync(output_temp_dir, { recursive: true });
         fs.mkdirSync(output_temp_dir, { recursive: true });
       }
+      let tasks: any[]= [];
       if (uri) {
         const command = `ffmpeg -i ${uri.fsPath} -r 1/1 ${output_temp_dir}frame-%04d.png`;
         console.log(command);
@@ -215,13 +219,19 @@ function registerCommandOfReadVideo(
             return;
           }
         });
+        console.log("after exec ffmpeg command");
         // for each file under the output_temp_dir, call analyse_image
-        fs.readdirSync(output_temp_dir).map((file) => {
-          const base64String = fs.readFileSync(output_temp_dir + file).toString("base64");
-          const long_run_task = analyse_image(base64String, provider, imageAiModel, videoPrompt);
-          showStatusBarProgress(long_run_task, "Analysing the image..." + output_temp_dir + file);
-        });
 
+        fs.readdirSync(output_temp_dir).forEach((file) => {
+          
+            console.log("file: " + output_temp_dir + file)
+            const base64String = fs.readFileSync(output_temp_dir + file).toString("base64");
+            const long_task = limit(() => analyse_image(base64String, provider, imageAiModel, videoPrompt)) ;
+            tasks.push(long_task)
+        });
+        
+        showStatusBarProgress(Promise.all(tasks), 'Analysing the video...');
+        console.log("after analysing finished, delete the output_temp_dir");
         // after analysing finished, delete the output_temp_dir ???
       }
     })
@@ -246,6 +256,7 @@ function registerCommandOfReadImage(
         const base64String = fs.readFileSync(image_uri.fsPath).toString("base64");
         const long_run_task = analyse_image(base64String, provider, imageAiModel, imagePrompt);
         showStatusBarProgress(long_run_task, "Analysing the image...");
+        commands.executeCommand("jenkins-log-reader_result-view.focus");
       }
     })
   );
@@ -259,11 +270,10 @@ async function analyse_image(
 ) {
   await getImageAnalysis(imageAiModel, imagePrompt, base64String).then((information: string) => {
     if (provider._view) {
-      // commands.executeCommand("jenkins-log-reader_result-view.focus");
       if (information) {
         console.log(information);
         provider.updateContent(information);
-        commands.executeCommand("jenkins-log-reader_result-view.focus");
+        // commands.executeCommand("jenkins-log-reader_result-view.focus");
       }
     }
   });
