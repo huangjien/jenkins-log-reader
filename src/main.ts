@@ -267,11 +267,11 @@ function displayGridData() {
   const basicGrid = document.getElementById("basic-grid") as DataGrid;
 
   basicGrid.columnDefinitions = [
-    { columnDataKey: "url", title: "build url" },
-    { columnDataKey: "result", title: "result" },
-    { columnDataKey: "timestamp", title: "time stamp" },
-    { columnDataKey: "hash", title: "hash" },
-    { columnDataKey: "duration", title: "duration" },
+    { columnDataKey: "url", title: "Build" },
+    { columnDataKey: "result", title: "Result" },
+    { columnDataKey: "timestamp", title: "Timestamp" },
+    { columnDataKey: "hash", title: "Hash" },
+    { columnDataKey: "duration", title: "Duration" },
   ];
 
   if (basicGrid) {

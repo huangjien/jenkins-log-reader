@@ -209,7 +209,7 @@ function registerCommandOfReadVideo(
         fs.rmSync(output_temp_dir, { recursive: true });
         fs.mkdirSync(output_temp_dir, { recursive: true });
       }
-      let tasks: any[]= [];
+      let tasks: any[] = [];
       if (uri) {
         const command = `ffmpeg -i ${uri.fsPath} -r 1/1 ${output_temp_dir}frame-%04d.png`;
         console.log(command);
@@ -223,14 +223,15 @@ function registerCommandOfReadVideo(
         // for each file under the output_temp_dir, call analyse_image
 
         fs.readdirSync(output_temp_dir).forEach((file) => {
-          
-            console.log("file: " + output_temp_dir + file)
-            const base64String = fs.readFileSync(output_temp_dir + file).toString("base64");
-            const long_task = limit(() => analyse_image(base64String, provider, imageAiModel, videoPrompt)) ;
-            tasks.push(long_task)
+          console.log("file: " + output_temp_dir + file);
+          const base64String = fs.readFileSync(output_temp_dir + file).toString("base64");
+          const long_task = limit(() =>
+            analyse_image(base64String, provider, imageAiModel, videoPrompt)
+          );
+          tasks.push(long_task);
         });
-        
-        showStatusBarProgress(Promise.all(tasks), 'Analysing the video...');
+
+        showStatusBarProgress(Promise.all(tasks), "Analysing the video...");
         console.log("after analysing finished, delete the output_temp_dir");
         // after analysing finished, delete the output_temp_dir ???
       }

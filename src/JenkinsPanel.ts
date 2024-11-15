@@ -78,7 +78,7 @@ export class JenkinsPanel {
     <title>Jenkins Logs Analysis</title>
   </head>
     <body>
-      <div class="container mx-auto">          
+      <div class="container mx-auto divide-y">          
         <div class="grid grid-cols-4 gap-1  " >
           <h2 class="col-span-2 text-xl text-center font-bold mx-8 text-inherit">Jobs - Builds</h2>
           <vscode-button class="hover:animate-tada col-span-1 text-xs text-center h-6 w-20 place-self-end rounded" id="refresh">Refresh</vscode-button>
