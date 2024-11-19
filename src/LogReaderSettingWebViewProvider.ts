@@ -32,6 +32,9 @@ export class LogReaderSettingWebViewProvider implements vscode.WebviewViewProvid
             <li >AI Model: &emsp;<b>${settings?.aiModel}</b></li>
             <li >AI Temperature: &emsp;<b>${settings?.aiTemperature}</b></li>
             <li >Prompt: <br/><b>&emsp;${settings?.aiPrompt}</b></li>
+            <li >Image AI Model: <br/><b>&emsp;${settings?.imageAiModel}</b></li>
+            <li >Image Prompt: <br/><b>&emsp;${settings?.imagePrompt}</b></li>
+            <li >Video Prompt: <br/><b>&emsp;${settings?.videoPrompt}</b></li>
         </ul>
     </body>
     </html>
