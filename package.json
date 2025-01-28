@@ -2,7 +2,7 @@
   "name": "jenkins-log-reader",
   "displayName": "AI Log Reader",
   "description": "Read jenkins log, analyse with local AI.",
-  "version": "0.8.20",
+  "version": "0.8.21",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -73,7 +73,9 @@
             "gemma:latest",
             "phi3.5:latest",
             "phi4:latest",
+            "deepseek-r1:7b",
             "deepseek-r1:8b",
+            "deepseek-r1:14b",
             "mistral-small:latest",
             "mistral:7b"
           ],
@@ -221,16 +223,16 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@eslint/js": "^9.18.0",
+    "@eslint/js": "^9.19.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "22.10.9",
+    "@types/node": "22.12.0",
     "@types/vscode": "^1.96.0",
     "@types/vscode-webview": "^1.57.5",
     "@vscode/l10n": "^0.0.18",
     "esbuild": "^0.24.2",
     "esbuild-plugin-copy": "^2.1.1",
-    "eslint": "^9.18.0",
+    "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
     "glob": "^11.0.1",
@@ -241,7 +243,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.21.0"
+    "typescript-eslint": "^8.22.0"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.16",
@@ -251,7 +253,7 @@
     "crypto": "^1.0.1",
     "marked": "^15.0.6",
     "ollama": "^0.5.12",
-    "openai": "^4.80.0",
+    "openai": "^4.80.1",
     "p-limit": "^6.2.0",
     "tailwindcss": "^3.4.17"
   },

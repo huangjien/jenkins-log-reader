@@ -7,10 +7,9 @@ import { LogReaderSettingWebViewProvider } from "./LogReaderSettingWebViewProvid
 import { GroovyCodeFormat } from "./GroovyFormat";
 import * as fs from "fs";
 import { getImageAnalysis } from "./getInfoFromJenkins";
-import { exec } from "child_process";
-import pLimit from "p-limit";
+// import pLimit from "p-limit";
 
-const limit = pLimit(1); // at most, 3 concurrent tasks can be run at the same time
+// const limit = pLimit(1); // at most, 3 concurrent tasks can be run at the same time
 
 export function activate(context: ExtensionContext) {
   const storagePath = context.globalStorageUri.fsPath;
@@ -56,7 +55,7 @@ export function activate(context: ExtensionContext) {
 
   const imagePrompt = getConfig("jenkins-log-reader.imagePrompt");
 
-  const videoPrompt = getConfig("jenkins-log-reader.videoPrompt");
+  // const videoPrompt = getConfig("jenkins-log-reader.videoPrompt");
 
   const settings = new JenkinsSettings(
     jenkinsServerUrl,
@@ -105,139 +104,139 @@ function registerCommandOfFormatGrooby(context: ExtensionContext) {
   );
 }
 
-function registerCommandOfReadImages(
-  context: ExtensionContext,
-  provider: LogReaderResultWebViewProvider,
-  imageAiModel: string,
-  imagePrompt: string
-) {
-  commands.registerCommand("jenkins-log-reader.readImages", async (uri: Uri) => {
-    // get image file
-    // turn it into base64
-    // send to AI (llama3.2-vision)
-    // show result in result view
-    if (uri) {
-      // uri need to be a folder, then we check files one by one, only handle image files(check extension)
-      const dirItems = fs.readdir(uri.fsPath, (err, files) => {
-        if (err) {
-          console.error(err);
-        } else {
-          files
-            .filter((file) => {
-              return (
-                file.toLowerCase().endsWith(".png") ||
-                file.toLowerCase().endsWith(".jpg") ||
-                file.toLowerCase().endsWith(".jpeg") ||
-                file.toLowerCase().endsWith(".gif") ||
-                file.toLowerCase().endsWith(".bmp") ||
-                file.toLowerCase().endsWith(".webp") ||
-                file.toLowerCase().endsWith(".tiff") ||
-                file.toLowerCase().endsWith(".svg")
-              );
-            })
-            .map(async (file) => {
-              console.log("file: " + file);
-              const base64String = fs.readFileSync(uri.fsPath + "/" + file).toString("base64");
-              const long_run_task = analyse_image(
-                base64String,
-                provider,
-                imageAiModel,
-                imagePrompt
-              );
-              showStatusBarProgress(
-                long_run_task,
-                "Analysing the image..." + uri.fsPath + "/" + file
-              );
-            });
-        }
-      });
-    }
-  });
-}
+// function registerCommandOfReadImages(
+//   context: ExtensionContext,
+//   provider: LogReaderResultWebViewProvider,
+//   imageAiModel: string,
+//   imagePrompt: string
+// ) {
+//   commands.registerCommand("jenkins-log-reader.readImages", async (uri: Uri) => {
+//     // get image file
+//     // turn it into base64
+//     // send to AI (llama3.2-vision)
+//     // show result in result view
+//     if (uri) {
+//       // uri need to be a folder, then we check files one by one, only handle image files(check extension)
+//       const dirItems = fs.readdir(uri.fsPath, (err, files) => {
+//         if (err) {
+//           console.error(err);
+//         } else {
+//           files
+//             .filter((file) => {
+//               return (
+//                 file.toLowerCase().endsWith(".png") ||
+//                 file.toLowerCase().endsWith(".jpg") ||
+//                 file.toLowerCase().endsWith(".jpeg") ||
+//                 file.toLowerCase().endsWith(".gif") ||
+//                 file.toLowerCase().endsWith(".bmp") ||
+//                 file.toLowerCase().endsWith(".webp") ||
+//                 file.toLowerCase().endsWith(".tiff") ||
+//                 file.toLowerCase().endsWith(".svg")
+//               );
+//             })
+//             .map(async (file) => {
+//               console.log("file: " + file);
+//               const base64String = fs.readFileSync(uri.fsPath + "/" + file).toString("base64");
+//               const long_run_task = analyse_image(
+//                 base64String,
+//                 provider,
+//                 imageAiModel,
+//                 imagePrompt
+//               );
+//               showStatusBarProgress(
+//                 long_run_task,
+//                 "Analysing the image..." + uri.fsPath + "/" + file
+//               );
+//             });
+//         }
+//       });
+//     }
+//   });
+// }
 
-function registerCommandOfReadVideos(
-  context: ExtensionContext,
-  provider: LogReaderResultWebViewProvider,
-  imageAiModel: string,
-  videoPrompt: string
-) {
-  commands.registerCommand("jenkins-log-reader.readVideos", async (uri: Uri) => {
-    // get image file
-    // turn it into base64
-    // send to AI (llama3.2-vision)
-    // show result in result view
-    if (uri) {
-      // uri need to be a folder, then we check files one by one, only handle video files(check extension)
-      fs.readdir(uri.fsPath, (err, files) => {
-        if (err) {
-          console.error(err);
-        } else {
-          files
-            .filter((file) => {
-              file.toLowerCase().endsWith(".mp4") ||
-                file.toLowerCase().endsWith(".3pg") ||
-                file.toLowerCase().endsWith(".mov") ||
-                file.toLowerCase().endsWith(".ogg") ||
-                file.toLowerCase().endsWith(".avi") ||
-                file.toLowerCase().endsWith(".mpeg");
-            })
-            .map(async (file) => {
-              console.log("file: " + file);
-            });
-          // const image_uri = uri;
-          // const base64String = fs.readFileSync(image_uri.fsPath).toString("base64");
-          // const long_run_task = analyse_image(base64String, provider, imageAiModel, imagePrompt);
-          // showStatusBarProgress(long_run_task, "Analysing the image...");
-        }
-      });
-    }
-  });
-}
+// function registerCommandOfReadVideos(
+//   context: ExtensionContext,
+//   provider: LogReaderResultWebViewProvider,
+//   imageAiModel: string,
+//   videoPrompt: string
+// ) {
+//   commands.registerCommand("jenkins-log-reader.readVideos", async (uri: Uri) => {
+//     // get image file
+//     // turn it into base64
+//     // send to AI (llama3.2-vision)
+//     // show result in result view
+//     if (uri) {
+//       // uri need to be a folder, then we check files one by one, only handle video files(check extension)
+//       fs.readdir(uri.fsPath, (err, files) => {
+//         if (err) {
+//           console.error(err);
+//         } else {
+//           files
+//             .filter((file) => {
+//               file.toLowerCase().endsWith(".mp4") ||
+//                 file.toLowerCase().endsWith(".3pg") ||
+//                 file.toLowerCase().endsWith(".mov") ||
+//                 file.toLowerCase().endsWith(".ogg") ||
+//                 file.toLowerCase().endsWith(".avi") ||
+//                 file.toLowerCase().endsWith(".mpeg");
+//             })
+//             .map(async (file) => {
+//               console.log("file: " + file);
+//             });
+//           // const image_uri = uri;
+//           // const base64String = fs.readFileSync(image_uri.fsPath).toString("base64");
+//           // const long_run_task = analyse_image(base64String, provider, imageAiModel, imagePrompt);
+//           // showStatusBarProgress(long_run_task, "Analysing the image...");
+//         }
+//       });
+//     }
+//   });
+// }
 
-function registerCommandOfReadVideo(
-  context: ExtensionContext,
-  provider: LogReaderResultWebViewProvider,
-  imageAiModel: string,
-  videoPrompt: string
-) {
-  context.subscriptions.push(
-    commands.registerCommand("jenkins-log-reader.readVideo", async (uri: Uri) => {
-      const output_temp_dir = "/tmp/jenkins-log-reader/video/output/";
-      if (!fs.existsSync(output_temp_dir)) {
-        fs.mkdirSync(output_temp_dir, { recursive: true });
-      } else {
-        fs.rmSync(output_temp_dir, { recursive: true });
-        fs.mkdirSync(output_temp_dir, { recursive: true });
-      }
-      let tasks: any[] = [];
-      if (uri) {
-        const command = `ffmpeg -i ${uri.fsPath} -r 1/1 ${output_temp_dir}frame-%04d.png`;
-        console.log(command);
-        exec(command, (error: any, stdout: any, stderr: any): void => {
-          if (error) {
-            window.showErrorMessage(`Error: ${error.message}`, "error");
-            return;
-          }
-        });
-        console.log("after exec ffmpeg command");
-        // for each file under the output_temp_dir, call analyse_image
+// function registerCommandOfReadVideo(
+//   context: ExtensionContext,
+//   provider: LogReaderResultWebViewProvider,
+//   imageAiModel: string,
+//   videoPrompt: string
+// ) {
+//   context.subscriptions.push(
+//     commands.registerCommand("jenkins-log-reader.readVideo", async (uri: Uri) => {
+//       const output_temp_dir = "/tmp/jenkins-log-reader/video/output/";
+//       if (!fs.existsSync(output_temp_dir)) {
+//         fs.mkdirSync(output_temp_dir, { recursive: true });
+//       } else {
+//         fs.rmSync(output_temp_dir, { recursive: true });
+//         fs.mkdirSync(output_temp_dir, { recursive: true });
+//       }
+//       const tasks: any[] = [];
+//       if (uri) {
+//         const command = `ffmpeg -i ${uri.fsPath} -r 1/1 ${output_temp_dir}frame-%04d.png`;
+//         console.log(command);
+//         exec(command, (error: any, stdout: any, stderr: any): void => {
+//           if (error) {
+//             window.showErrorMessage(`Error: ${error.message}`, "error");
+//             return;
+//           }
+//         });
+//         console.log("after exec ffmpeg command");
+//         // for each file under the output_temp_dir, call analyse_image
 
-        fs.readdirSync(output_temp_dir).forEach((file) => {
-          console.log("file: " + output_temp_dir + file);
-          const base64String = fs.readFileSync(output_temp_dir + file).toString("base64");
-          const long_task = limit(() =>
-            analyse_image(base64String, provider, imageAiModel, videoPrompt)
-          );
-          tasks.push(long_task);
-        });
+//         fs.readdirSync(output_temp_dir).forEach((file) => {
+//           console.log("file: " + output_temp_dir + file);
+//           const base64String = fs.readFileSync(output_temp_dir + file).toString("base64");
+//           const long_task = limit(() =>
+//             analyse_image(base64String, provider, imageAiModel, videoPrompt)
+//           );
+//           tasks.push(long_task);
+//         });
 
-        showStatusBarProgress(Promise.all(tasks), "Analysing the video...");
-        console.log("after analysing finished, delete the output_temp_dir");
-        // after analysing finished, delete the output_temp_dir ???
-      }
-    })
-  );
-}
+//         showStatusBarProgress(Promise.all(tasks), "Analysing the video...");
+//         console.log("after analysing finished, delete the output_temp_dir");
+//         // after analysing finished, delete the output_temp_dir ???
+//       }
+//     })
+//   );
+// }
 
 function registerCommandOfReadImage(
   context: ExtensionContext,
